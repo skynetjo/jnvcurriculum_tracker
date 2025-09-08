@@ -69,6 +69,18 @@
                 <div id="adminLoginSection">
                     <h3 class="login-section-title">Administrator Access</h3>
                     <button type="button" id="adminLoginBtn" class="btn btn--secondary btn--full-width">Login as Admin</button>
+                    
+                    <!-- Admin Password Field (initially hidden) -->
+                    <div id="adminPasswordSection" class="admin-password-section hidden">
+                        <div class="form-group">
+                            <label for="adminPassword" class="form-label">Admin Password</label>
+                            <input type="password" id="adminPassword" class="form-control" placeholder="Enter admin password" autocomplete="off">
+                        </div>
+                        <div class="admin-login-buttons">
+                            <button type="button" id="cancelAdminBtn" class="btn btn--outline btn--sm">Cancel</button>
+                            <button type="button" id="confirmAdminBtn" class="btn btn--primary btn--sm">Login</button>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="errorMessage" class="error-message hidden"></div>
