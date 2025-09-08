@@ -1,2253 +1,1152 @@
-:root {
-  /* Primitive Color Tokens */
-  --color-white: rgba(255, 255, 255, 1);
-  --color-black: rgba(0, 0, 0, 1);
-  --color-cream-50: rgba(252, 252, 249, 1);
-  --color-cream-100: rgba(255, 255, 253, 1);
-  --color-gray-200: rgba(245, 245, 245, 1);
-  --color-gray-300: rgba(167, 169, 169, 1);
-  --color-gray-400: rgba(119, 124, 124, 1);
-  --color-slate-500: rgba(98, 108, 113, 1);
-  --color-brown-600: rgba(94, 82, 64, 1);
-  --color-charcoal-700: rgba(31, 33, 33, 1);
-  --color-charcoal-800: rgba(38, 40, 40, 1);
-  --color-slate-900: rgba(19, 52, 59, 1);
-  --color-teal-300: rgba(50, 184, 198, 1);
-  --color-teal-400: rgba(45, 166, 178, 1);
-  --color-teal-500: rgba(33, 128, 141, 1);
-  --color-teal-600: rgba(29, 116, 128, 1);
-  --color-teal-700: rgba(26, 104, 115, 1);
-  --color-teal-800: rgba(41, 150, 161, 1);
-  --color-red-400: rgba(255, 84, 89, 1);
-  --color-red-500: rgba(192, 21, 47, 1);
-  --color-orange-400: rgba(230, 129, 97, 1);
-  --color-orange-500: rgba(168, 75, 47, 1);
+// Application Data
+const appData = {
+  schools: {
+    "school1": "CoE Barwani",
+    "school2": "CoE Cuttak", 
+    "school3": "CoE Mahisagar",
+    "school4": "CoE Bundi",
+    "school5": "JNV Bharuch",
+    "school6": "EMRS Bhopal"
+  },
+  subjects: ["physics", "chemistry", "mathematics", "biology"],
+  grades: [11, 12],
+  adminPassword: "admin123",
+  curriculum: {
+    "physics": {
+      "11": ["Physical World", "Units and Measurements", "Motion in a Straight Line", "Motion in a Plane", "Laws of Motion", "Work, Energy and Power", "System of Particles and Rotational Motion", "Gravitation", "Mechanical Properties of Solids", "Mechanical Properties of Fluids", "Thermal Properties of Matter", "Thermodynamics", "Kinetic Theory", "Oscillations", "Waves"],
+      "12": ["Electric Charges and Fields", "Electrostatic Potential and Capacitance", "Current Electricity", "Moving Charges and Magnetism", "Magnetism and Matter", "Electromagnetic Induction", "Alternating Current", "Electromagnetic Waves", "Ray Optics and Optical Instruments", "Wave Optics", "Dual Nature of Radiation and Matter", "Atoms", "Nuclei", "Semiconductor Electronics", "Communication Systems"]
+    },
+    "chemistry": {
+      "11": ["Some Basic Concepts of Chemistry", "Structure of Atom", "Classification of Elements", "Chemical Bonding and Molecular Structure", "States of Matter", "Thermodynamics", "Equilibrium", "Redox Reactions", "Hydrogen", "The s-Block Elements", "The p-Block Elements", "Organic Chemistry", "Hydrocarbons", "Environmental Chemistry"],
+      "12": ["The Solid State", "Solutions", "Electrochemistry", "Chemical Kinetics", "Surface Chemistry", "General Principles of Metallurgy", "The p-Block Elements", "The d-Block and f-Block Elements", "Coordination Compounds", "Haloalkanes and Haloarenes", "Alcohols, Phenols and Ethers", "Aldehydes, Ketones and Carboxylic Acids", "Organic Compounds Containing Nitrogen", "Biomolecules", "Polymers", "Chemistry in Everyday Life"]
+    },
+    "mathematics": {
+      "11": ["Sets", "Relations and Functions", "Trigonometric Functions", "Principle of Mathematical Induction", "Complex Numbers and Quadratic Equations", "Linear Inequalities", "Permutations and Combinations", "Binomial Theorem", "Sequences and Series", "Straight Lines", "Conic Sections", "Introduction to Three Dimensional Geometry", "Limits and Derivatives", "Mathematical Reasoning", "Statistics", "Probability"],
+      "12": ["Relations and Functions", "Inverse Trigonometric Functions", "Matrices", "Determinants", "Continuity and Differentiability", "Application of Derivatives", "Integrals", "Application of Integrals", "Differential Equations", "Vector Algebra", "Three Dimensional Geometry", "Linear Programming", "Probability"]
+    },
+    "biology": {
+      "11": ["The Living World", "Biological Classification", "Plant Kingdom", "Animal Kingdom", "Morphology of Flowering Plants", "Anatomy of Flowering Plants", "Structural Organisation in Animals", "Cell: The Unit of Life", "Biomolecules", "Cell Cycle and Cell Division", "Transport in Plants", "Mineral Nutrition", "Photosynthesis in Higher Plants", "Respiration in Plants", "Plant Growth and Development", "Digestion and Absorption", "Breathing and Exchange of Gases", "Body Fluids and Circulation", "Excretory Products and their Elimination", "Locomotion and Movement", "Neural Control and Coordination", "Chemical Coordination and Integration"],
+      "12": ["Reproduction in Organisms", "Sexual Reproduction in Flowering Plants", "Human Reproduction", "Reproductive Health", "Principles of Inheritance and Variation", "Molecular Basis of Inheritance", "Evolution", "Human Health and Disease", "Strategies for Enhancement in Food Production", "Microbes in Human Welfare", "Biotechnology: Principles and Processes", "Biotechnology and its Applications", "Organisms and Populations", "Ecosystem", "Biodiversity and Conservation", "Environmental Issues"]
+    }
+  },
+  teachers: {
+    "AF464": { "name": "Dr. Rajesh Kumar", "school": "school1", "subject": "physics", "email": "rajesh@coebarwani.edu", "phone": "+91 9876543210", "dob": "1980-05-15" },
+    "AF248": { "name": "Prof. Priya Sharma", "school": "school1", "subject": "chemistry", "email": "priya@coebarwani.edu", "phone": "+91 9876543211", "dob": "1985-08-22" },
+    "AF842": { "name": "Mr. Amit Singh", "school": "school1", "subject": "mathematics", "email": "amit@coebarwani.edu", "phone": "+91 9876543212", "dob": "1982-12-10" },
+    "AF709": { "name": "Dr. Sunita Gupta", "school": "school2", "subject": "biology", "email": "sunita@coecuttak.edu", "phone": "+91 9876543213", "dob": "1979-03-18" },
+    "AF459": { "name": "Dr. Vikram Joshi", "school": "school2", "subject": "physics", "email": "vikram@coecuttak.edu", "phone": "+91 9876543214", "dob": "1981-09-25" },
+    "AF832": { "name": "Ms. Ritu Agarwal", "school": "school2", "subject": "chemistry", "email": "ritu@coecuttak.edu", "phone": "+91 9876543215", "dob": "1983-07-12" },
+    "AF843": { "name": "Prof. Deepak Patel", "school": "school3", "subject": "mathematics", "email": "deepak@coemahisagar.edu", "phone": "+91 9876543216", "dob": "1984-11-08" },
+    "AF620": { "name": "Dr. Meera Shah", "school": "school3", "subject": "physics", "email": "meera@coemahisagar.edu", "phone": "+91 9876543217", "dob": "1986-01-30" },
+    "AF635": { "name": "Ms. Kavita Jain", "school": "school3", "subject": "biology", "email": "kavita@coemahisagar.edu", "phone": "+91 9876543218", "dob": "1988-04-14" },
+    "AF789": { "name": "Dr. Anil Verma", "school": "school4", "subject": "chemistry", "email": "anil@coebundi.edu", "phone": "+91 9876543219", "dob": "1977-06-20" },
+    "AF788": { "name": "Prof. Sanjay Kumar", "school": "school4", "subject": "physics", "email": "sanjay@coebundi.edu", "phone": "+91 9876543220", "dob": "1982-10-05" },
+    "AF790": { "name": "Ms. Pooja Sharma", "school": "school4", "subject": "mathematics", "email": "pooja@coebundi.edu", "phone": "+91 9876543221", "dob": "1987-12-17" },
+    "AF786": { "name": "Dr. Ramesh Patel", "school": "school5", "subject": "biology", "email": "ramesh@jnvbharuch.edu", "phone": "+91 9876543222", "dob": "1980-02-28" },
+    "AF804": { "name": "Prof. Nisha Gupta", "school": "school5", "subject": "chemistry", "email": "nisha@jnvbharuch.edu", "phone": "+91 9876543223", "dob": "1985-05-11" },
+    "AF800": { "name": "Mr. Suresh Singh", "school": "school5", "subject": "physics", "email": "suresh@jnvbharuch.edu", "phone": "+91 9876543224", "dob": "1983-09-03" },
+    "AF723": { "name": "Ms. Divya Joshi", "school": "school5", "subject": "mathematics", "email": "divya@jnvbharuch.edu", "phone": "+91 9876543225", "dob": "1989-11-26" },
+    "AF529": { "name": "Dr. Ashok Tiwari", "school": "school6", "subject": "physics", "email": "ashok@emrsbhopal.edu", "phone": "+91 9876543226", "dob": "1979-08-15" },
+    "AF834": { "name": "Prof. Rekha Pandey", "school": "school6", "subject": "chemistry", "email": "rekha@emrsbhopal.edu", "phone": "+91 9876543227", "dob": "1984-12-02" },
+    "AF840": { "name": "Ms. Madhuri Singh", "school": "school6", "subject": "biology", "email": "madhuri@emrsbhopal.edu", "phone": "+91 9876543228", "dob": "1986-03-19" },
+    "admin": { "name": "System Administrator", "school": "all", "subject": "all", "email": "admin@schools.edu", "phone": "+91 9999999999", "dob": "1975-01-01" }
+  }
+};
 
-  /* RGB versions for opacity control */
-  --color-brown-600-rgb: 94, 82, 64;
-  --color-teal-500-rgb: 33, 128, 141;
-  --color-slate-900-rgb: 19, 52, 59;
-  --color-slate-500-rgb: 98, 108, 113;
-  --color-red-500-rgb: 192, 21, 47;
-  --color-red-400-rgb: 255, 84, 89;
-  --color-orange-500-rgb: 168, 75, 47;
-  --color-orange-400-rgb: 230, 129, 97;
+// Global State
+let currentUser = null;
+let currentGrade = 11;
+let currentModalChapter = null;
+let chapterProgress = {};
+let chatMessages = [];
 
-  /* Background color tokens (Light Mode) */
-  --color-bg-1: rgba(59, 130, 246, 0.08); /* Light blue */
-  --color-bg-2: rgba(245, 158, 11, 0.08); /* Light yellow */
-  --color-bg-3: rgba(34, 197, 94, 0.08); /* Light green */
-  --color-bg-4: rgba(239, 68, 68, 0.08); /* Light red */
-  --color-bg-5: rgba(147, 51, 234, 0.08); /* Light purple */
-  --color-bg-6: rgba(249, 115, 22, 0.08); /* Light orange */
-  --color-bg-7: rgba(236, 72, 153, 0.08); /* Light pink */
-  --color-bg-8: rgba(6, 182, 212, 0.08); /* Light cyan */
-
-  /* Semantic Color Tokens (Light Mode) */
-  --color-background: var(--color-cream-50);
-  --color-surface: var(--color-cream-100);
-  --color-text: var(--color-slate-900);
-  --color-text-secondary: var(--color-slate-500);
-  --color-primary: var(--color-teal-500);
-  --color-primary-hover: var(--color-teal-600);
-  --color-primary-active: var(--color-teal-700);
-  --color-secondary: rgba(var(--color-brown-600-rgb), 0.12);
-  --color-secondary-hover: rgba(var(--color-brown-600-rgb), 0.2);
-  --color-secondary-active: rgba(var(--color-brown-600-rgb), 0.25);
-  --color-border: rgba(var(--color-brown-600-rgb), 0.2);
-  --color-btn-primary-text: var(--color-cream-50);
-  --color-card-border: rgba(var(--color-brown-600-rgb), 0.12);
-  --color-card-border-inner: rgba(var(--color-brown-600-rgb), 0.12);
-  --color-error: var(--color-red-500);
-  --color-success: var(--color-teal-500);
-  --color-warning: var(--color-orange-500);
-  --color-info: var(--color-slate-500);
-  --color-focus-ring: rgba(var(--color-teal-500-rgb), 0.4);
-  --color-select-caret: rgba(var(--color-slate-900-rgb), 0.8);
-
-  /* Common style patterns */
-  --focus-ring: 0 0 0 3px var(--color-focus-ring);
-  --focus-outline: 2px solid var(--color-primary);
-  --status-bg-opacity: 0.15;
-  --status-border-opacity: 0.25;
-  --select-caret-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23134252' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-  --select-caret-dark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23f5f5f5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-
-  /* RGB versions for opacity control */
-  --color-success-rgb: 33, 128, 141;
-  --color-error-rgb: 192, 21, 47;
-  --color-warning-rgb: 168, 75, 47;
-  --color-info-rgb: 98, 108, 113;
-
-  /* Typography */
-  --font-family-base: "FKGroteskNeue", "Geist", "Inter", -apple-system,
-    BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-family-mono: "Berkeley Mono", ui-monospace, SFMono-Regular, Menlo,
-    Monaco, Consolas, monospace;
-  --font-size-xs: 11px;
-  --font-size-sm: 12px;
-  --font-size-base: 14px;
-  --font-size-md: 14px;
-  --font-size-lg: 16px;
-  --font-size-xl: 18px;
-  --font-size-2xl: 20px;
-  --font-size-3xl: 24px;
-  --font-size-4xl: 30px;
-  --font-weight-normal: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 550;
-  --font-weight-bold: 600;
-  --line-height-tight: 1.2;
-  --line-height-normal: 1.5;
-  --letter-spacing-tight: -0.01em;
-
-  /* Spacing */
-  --space-0: 0;
-  --space-1: 1px;
-  --space-2: 2px;
-  --space-4: 4px;
-  --space-6: 6px;
-  --space-8: 8px;
-  --space-10: 10px;
-  --space-12: 12px;
-  --space-16: 16px;
-  --space-20: 20px;
-  --space-24: 24px;
-  --space-32: 32px;
-
-  /* Border Radius */
-  --radius-sm: 6px;
-  --radius-base: 8px;
-  --radius-md: 10px;
-  --radius-lg: 12px;
-  --radius-full: 9999px;
-
-  /* Shadows */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.02);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.04),
-    0 2px 4px -1px rgba(0, 0, 0, 0.02);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.04),
-    0 4px 6px -2px rgba(0, 0, 0, 0.02);
-  --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.15),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.03);
-
-  /* Animation */
-  --duration-fast: 150ms;
-  --duration-normal: 250ms;
-  --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
-
-  /* Layout */
-  --container-sm: 640px;
-  --container-md: 768px;
-  --container-lg: 1024px;
-  --container-xl: 1280px;
-}
-
-/* Dark mode colors */
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* RGB versions for opacity control (Dark Mode) */
-    --color-gray-400-rgb: 119, 124, 124;
-    --color-teal-300-rgb: 50, 184, 198;
-    --color-gray-300-rgb: 167, 169, 169;
-    --color-gray-200-rgb: 245, 245, 245;
-
-    /* Background color tokens (Dark Mode) */
-    --color-bg-1: rgba(29, 78, 216, 0.15); /* Dark blue */
-    --color-bg-2: rgba(180, 83, 9, 0.15); /* Dark yellow */
-    --color-bg-3: rgba(21, 128, 61, 0.15); /* Dark green */
-    --color-bg-4: rgba(185, 28, 28, 0.15); /* Dark red */
-    --color-bg-5: rgba(107, 33, 168, 0.15); /* Dark purple */
-    --color-bg-6: rgba(194, 65, 12, 0.15); /* Dark orange */
-    --color-bg-7: rgba(190, 24, 93, 0.15); /* Dark pink */
-    --color-bg-8: rgba(8, 145, 178, 0.15); /* Dark cyan */
+// Initialize Application
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing app...');
     
-    /* Semantic Color Tokens (Dark Mode) */
-    --color-background: var(--color-charcoal-700);
-    --color-surface: var(--color-charcoal-800);
-    --color-text: var(--color-gray-200);
-    --color-text-secondary: rgba(var(--color-gray-300-rgb), 0.7);
-    --color-primary: var(--color-teal-300);
-    --color-primary-hover: var(--color-teal-400);
-    --color-primary-active: var(--color-teal-800);
-    --color-secondary: rgba(var(--color-gray-400-rgb), 0.15);
-    --color-secondary-hover: rgba(var(--color-gray-400-rgb), 0.25);
-    --color-secondary-active: rgba(var(--color-gray-400-rgb), 0.3);
-    --color-border: rgba(var(--color-gray-400-rgb), 0.3);
-    --color-error: var(--color-red-400);
-    --color-success: var(--color-teal-300);
-    --color-warning: var(--color-orange-400);
-    --color-info: var(--color-gray-300);
-    --color-focus-ring: rgba(var(--color-teal-300-rgb), 0.4);
-    --color-btn-primary-text: var(--color-slate-900);
-    --color-card-border: rgba(var(--color-gray-400-rgb), 0.2);
-    --color-card-border-inner: rgba(var(--color-gray-400-rgb), 0.15);
-    --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.1),
-      inset 0 -1px 0 rgba(0, 0, 0, 0.15);
-    --button-border-secondary: rgba(var(--color-gray-400-rgb), 0.2);
-    --color-border-secondary: rgba(var(--color-gray-400-rgb), 0.2);
-    --color-select-caret: rgba(var(--color-gray-200-rgb), 0.8);
-
-    /* Common style patterns - updated for dark mode */
-    --focus-ring: 0 0 0 3px var(--color-focus-ring);
-    --focus-outline: 2px solid var(--color-primary);
-    --status-bg-opacity: 0.15;
-    --status-border-opacity: 0.25;
-    --select-caret-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23134252' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-    --select-caret-dark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23f5f5f5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-
-    /* RGB versions for dark mode */
-    --color-success-rgb: var(--color-teal-300-rgb);
-    --color-error-rgb: var(--color-red-400-rgb);
-    --color-warning-rgb: var(--color-orange-400-rgb);
-    --color-info-rgb: var(--color-gray-300-rgb);
-  }
-}
-
-/* Data attribute for manual theme switching */
-[data-color-scheme="dark"] {
-  /* RGB versions for opacity control (dark mode) */
-  --color-gray-400-rgb: 119, 124, 124;
-  --color-teal-300-rgb: 50, 184, 198;
-  --color-gray-300-rgb: 167, 169, 169;
-  --color-gray-200-rgb: 245, 245, 245;
-
-  /* Colorful background palette - Dark Mode */
-  --color-bg-1: rgba(29, 78, 216, 0.15); /* Dark blue */
-  --color-bg-2: rgba(180, 83, 9, 0.15); /* Dark yellow */
-  --color-bg-3: rgba(21, 128, 61, 0.15); /* Dark green */
-  --color-bg-4: rgba(185, 28, 28, 0.15); /* Dark red */
-  --color-bg-5: rgba(107, 33, 168, 0.15); /* Dark purple */
-  --color-bg-6: rgba(194, 65, 12, 0.15); /* Dark orange */
-  --color-bg-7: rgba(190, 24, 93, 0.15); /* Dark pink */
-  --color-bg-8: rgba(8, 145, 178, 0.15); /* Dark cyan */
-  
-  /* Semantic Color Tokens (Dark Mode) */
-  --color-background: var(--color-charcoal-700);
-  --color-surface: var(--color-charcoal-800);
-  --color-text: var(--color-gray-200);
-  --color-text-secondary: rgba(var(--color-gray-300-rgb), 0.7);
-  --color-primary: var(--color-teal-300);
-  --color-primary-hover: var(--color-teal-400);
-  --color-primary-active: var(--color-teal-800);
-  --color-secondary: rgba(var(--color-gray-400-rgb), 0.15);
-  --color-secondary-hover: rgba(var(--color-gray-400-rgb), 0.25);
-  --color-secondary-active: rgba(var(--color-gray-400-rgb), 0.3);
-  --color-border: rgba(var(--color-gray-400-rgb), 0.3);
-  --color-error: var(--color-red-400);
-  --color-success: var(--color-teal-300);
-  --color-warning: var(--color-orange-400);
-  --color-info: var(--color-gray-300);
-  --color-focus-ring: rgba(var(--color-teal-300-rgb), 0.4);
-  --color-btn-primary-text: var(--color-slate-900);
-  --color-card-border: rgba(var(--color-gray-400-rgb), 0.15);
-  --color-card-border-inner: rgba(var(--color-gray-400-rgb), 0.15);
-  --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.15);
-  --color-border-secondary: rgba(var(--color-gray-400-rgb), 0.2);
-  --color-select-caret: rgba(var(--color-gray-200-rgb), 0.8);
-
-  /* Common style patterns - updated for dark mode */
-  --focus-ring: 0 0 0 3px var(--color-focus-ring);
-  --focus-outline: 2px solid var(--color-primary);
-  --status-bg-opacity: 0.15;
-  --status-border-opacity: 0.25;
-  --select-caret-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23134252' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-  --select-caret-dark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23f5f5f5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-
-  /* RGB versions for dark mode */
-  --color-success-rgb: var(--color-teal-300-rgb);
-  --color-error-rgb: var(--color-red-400-rgb);
-  --color-warning-rgb: var(--color-orange-400-rgb);
-  --color-info-rgb: var(--color-gray-300-rgb);
-}
-
-[data-color-scheme="light"] {
-  /* RGB versions for opacity control (light mode) */
-  --color-brown-600-rgb: 94, 82, 64;
-  --color-teal-500-rgb: 33, 128, 141;
-  --color-slate-900-rgb: 19, 52, 59;
-  
-  /* Semantic Color Tokens (Light Mode) */
-  --color-background: var(--color-cream-50);
-  --color-surface: var(--color-cream-100);
-  --color-text: var(--color-slate-900);
-  --color-text-secondary: var(--color-slate-500);
-  --color-primary: var(--color-teal-500);
-  --color-primary-hover: var(--color-teal-600);
-  --color-primary-active: var(--color-teal-700);
-  --color-secondary: rgba(var(--color-brown-600-rgb), 0.12);
-  --color-secondary-hover: rgba(var(--color-brown-600-rgb), 0.2);
-  --color-secondary-active: rgba(var(--color-brown-600-rgb), 0.25);
-  --color-border: rgba(var(--color-brown-600-rgb), 0.2);
-  --color-btn-primary-text: var(--color-cream-50);
-  --color-card-border: rgba(var(--color-brown-600-rgb), 0.12);
-  --color-card-border-inner: rgba(var(--color-brown-600-rgb), 0.12);
-  --color-error: var(--color-red-500);
-  --color-success: var(--color-teal-500);
-  --color-warning: var(--color-orange-500);
-  --color-info: var(--color-slate-500);
-  --color-focus-ring: rgba(var(--color-teal-500-rgb), 0.4);
-
-  /* RGB versions for light mode */
-  --color-success-rgb: var(--color-teal-500-rgb);
-  --color-error-rgb: var(--color-red-500-rgb);
-  --color-warning-rgb: var(--color-orange-500-rgb);
-  --color-info-rgb: var(--color-slate-500-rgb);
-}
-
-/* Base styles */
-html {
-  font-size: var(--font-size-base);
-  font-family: var(--font-family-base);
-  line-height: var(--line-height-normal);
-  color: var(--color-text);
-  background-color: var(--color-background);
-  -webkit-font-smoothing: antialiased;
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-}
-
-*,
-*::before,
-*::after {
-  box-sizing: inherit;
-}
-
-/* Typography */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  margin: 0;
-  font-weight: var(--font-weight-semibold);
-  line-height: var(--line-height-tight);
-  color: var(--color-text);
-  letter-spacing: var(--letter-spacing-tight);
-}
-
-h1 {
-  font-size: var(--font-size-4xl);
-}
-h2 {
-  font-size: var(--font-size-3xl);
-}
-h3 {
-  font-size: var(--font-size-2xl);
-}
-h4 {
-  font-size: var(--font-size-xl);
-}
-h5 {
-  font-size: var(--font-size-lg);
-}
-h6 {
-  font-size: var(--font-size-md);
-}
-
-p {
-  margin: 0 0 var(--space-16) 0;
-}
-
-a {
-  color: var(--color-primary);
-  text-decoration: none;
-  transition: color var(--duration-fast) var(--ease-standard);
-}
-
-a:hover {
-  color: var(--color-primary-hover);
-}
-
-code,
-pre {
-  font-family: var(--font-family-mono);
-  font-size: calc(var(--font-size-base) * 0.95);
-  background-color: var(--color-secondary);
-  border-radius: var(--radius-sm);
-}
-
-code {
-  padding: var(--space-1) var(--space-4);
-}
-
-pre {
-  padding: var(--space-16);
-  margin: var(--space-16) 0;
-  overflow: auto;
-  border: 1px solid var(--color-border);
-}
-
-pre code {
-  background: none;
-  padding: 0;
-}
-
-/* Buttons */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-8) var(--space-16);
-  border-radius: var(--radius-base);
-  font-size: var(--font-size-base);
-  font-weight: 500;
-  line-height: 1.5;
-  cursor: pointer;
-  transition: all var(--duration-normal) var(--ease-standard);
-  border: none;
-  text-decoration: none;
-  position: relative;
-}
-
-.btn:focus-visible {
-  outline: none;
-  box-shadow: var(--focus-ring);
-}
-
-.btn--primary {
-  background: var(--color-primary);
-  color: var(--color-btn-primary-text);
-}
-
-.btn--primary:hover {
-  background: var(--color-primary-hover);
-}
-
-.btn--primary:active {
-  background: var(--color-primary-active);
-}
-
-.btn--secondary {
-  background: var(--color-secondary);
-  color: var(--color-text);
-}
-
-.btn--secondary:hover {
-  background: var(--color-secondary-hover);
-}
-
-.btn--secondary:active {
-  background: var(--color-secondary-active);
-}
-
-.btn--outline {
-  background: transparent;
-  border: 1px solid var(--color-border);
-  color: var(--color-text);
-}
-
-.btn--outline:hover {
-  background: var(--color-secondary);
-}
-
-.btn--sm {
-  padding: var(--space-4) var(--space-12);
-  font-size: var(--font-size-sm);
-  border-radius: var(--radius-sm);
-}
-
-.btn--lg {
-  padding: var(--space-10) var(--space-20);
-  font-size: var(--font-size-lg);
-  border-radius: var(--radius-md);
-}
-
-.btn--full-width {
-  width: 100%;
-}
-
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Form elements */
-.form-control {
-  display: block;
-  width: 100%;
-  padding: var(--space-8) var(--space-12);
-  font-size: var(--font-size-md);
-  line-height: 1.5;
-  color: var(--color-text);
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-base);
-  transition: border-color var(--duration-fast) var(--ease-standard),
-    box-shadow var(--duration-fast) var(--ease-standard);
-}
-
-textarea.form-control {
-  font-family: var(--font-family-base);
-  font-size: var(--font-size-base);
-}
-
-select.form-control {
-  padding: var(--space-8) var(--space-12);
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  background-image: var(--select-caret-light);
-  background-repeat: no-repeat;
-  background-position: right var(--space-12) center;
-  background-size: 16px;
-  padding-right: var(--space-32);
-}
-
-/* Add a dark mode specific caret */
-@media (prefers-color-scheme: dark) {
-  select.form-control {
-    background-image: var(--select-caret-dark);
-  }
-}
-
-/* Also handle data-color-scheme */
-[data-color-scheme="dark"] select.form-control {
-  background-image: var(--select-caret-dark);
-}
-
-[data-color-scheme="light"] select.form-control {
-  background-image: var(--select-caret-light);
-}
-
-.form-control:focus {
-  border-color: var(--color-primary);
-  outline: var(--focus-outline);
-}
-
-.form-label {
-  display: block;
-  margin-bottom: var(--space-8);
-  font-weight: var(--font-weight-medium);
-  font-size: var(--font-size-sm);
-}
-
-.form-group {
-  margin-bottom: var(--space-16);
-}
-
-/* Card component */
-.card {
-  background-color: var(--color-surface);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-card-border);
-  box-shadow: var(--shadow-sm);
-  overflow: hidden;
-  transition: box-shadow var(--duration-normal) var(--ease-standard);
-}
-
-.card:hover {
-  box-shadow: var(--shadow-md);
-}
-
-.card__body {
-  padding: var(--space-16);
-}
-
-.card__header,
-.card__footer {
-  padding: var(--space-16);
-  border-bottom: 1px solid var(--color-card-border-inner);
-}
-
-/* Status indicators - simplified with CSS variables */
-.status {
-  display: inline-flex;
-  align-items: center;
-  padding: var(--space-6) var(--space-12);
-  border-radius: var(--radius-full);
-  font-weight: var(--font-weight-medium);
-  font-size: var(--font-size-sm);
-}
-
-.status--success {
-  background-color: rgba(
-    var(--color-success-rgb, 33, 128, 141),
-    var(--status-bg-opacity)
-  );
-  color: var(--color-success);
-  border: 1px solid
-    rgba(var(--color-success-rgb, 33, 128, 141), var(--status-border-opacity));
-}
-
-.status--error {
-  background-color: rgba(
-    var(--color-error-rgb, 192, 21, 47),
-    var(--status-bg-opacity)
-  );
-  color: var(--color-error);
-  border: 1px solid
-    rgba(var(--color-error-rgb, 192, 21, 47), var(--status-border-opacity));
-}
-
-.status--warning {
-  background-color: rgba(
-    var(--color-warning-rgb, 168, 75, 47),
-    var(--status-bg-opacity)
-  );
-  color: var(--color-warning);
-  border: 1px solid
-    rgba(var(--color-warning-rgb, 168, 75, 47), var(--status-border-opacity));
-}
-
-.status--info {
-  background-color: rgba(
-    var(--color-info-rgb, 98, 108, 113),
-    var(--status-bg-opacity)
-  );
-  color: var(--color-info);
-  border: 1px solid
-    rgba(var(--color-info-rgb, 98, 108, 113), var(--status-border-opacity));
-}
-
-/* Container layout */
-.container {
-  width: 100%;
-  margin-right: auto;
-  margin-left: auto;
-  padding-right: var(--space-16);
-  padding-left: var(--space-16);
-}
-
-@media (min-width: 640px) {
-  .container {
-    max-width: var(--container-sm);
-  }
-}
-@media (min-width: 768px) {
-  .container {
-    max-width: var(--container-md);
-  }
-}
-@media (min-width: 1024px) {
-  .container {
-    max-width: var(--container-lg);
-  }
-}
-@media (min-width: 1280px) {
-  .container {
-    max-width: var(--container-xl);
-  }
-}
-
-/* Utility classes */
-.flex {
-  display: flex;
-}
-.flex-col {
-  flex-direction: column;
-}
-.items-center {
-  align-items: center;
-}
-.justify-center {
-  justify-content: center;
-}
-.justify-between {
-  justify-content: space-between;
-}
-.gap-4 {
-  gap: var(--space-4);
-}
-.gap-8 {
-  gap: var(--space-8);
-}
-.gap-16 {
-  gap: var(--space-16);
-}
-
-.m-0 {
-  margin: 0;
-}
-.mt-8 {
-  margin-top: var(--space-8);
-}
-.mb-8 {
-  margin-bottom: var(--space-8);
-}
-.mx-8 {
-  margin-left: var(--space-8);
-  margin-right: var(--space-8);
-}
-.my-8 {
-  margin-top: var(--space-8);
-  margin-bottom: var(--space-8);
-}
-
-.p-0 {
-  padding: 0;
-}
-.py-8 {
-  padding-top: var(--space-8);
-  padding-bottom: var(--space-8);
-}
-.px-8 {
-  padding-left: var(--space-8);
-  padding-right: var(--space-8);
-}
-.py-16 {
-  padding-top: var(--space-16);
-  padding-bottom: var(--space-16);
-}
-.px-16 {
-  padding-left: var(--space-16);
-  padding-right: var(--space-16);
-}
-
-.block {
-  display: block;
-}
-.hidden {
-  display: none;
-}
-
-/* Accessibility */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border-width: 0;
-}
-
-:focus-visible {
-  outline: var(--focus-outline);
-  outline-offset: 2px;
-}
-
-/* Dark mode specifics */
-[data-color-scheme="dark"] .btn--outline {
-  border: 1px solid var(--color-border-secondary);
-}
-
-@font-face {
-  font-family: 'FKGroteskNeue';
-  src: url('https://r2cdn.perplexity.ai/fonts/FKGroteskNeue.woff2')
-    format('woff2');
-}
-
-/* END PERPLEXITY DESIGN SYSTEM */
-:root {
-  /* Primitive Color Tokens */
-  --color-white: rgba(255, 255, 255, 1);
-  --color-black: rgba(0, 0, 0, 1);
-  --color-cream-50: rgba(252, 252, 249, 1);
-  --color-cream-100: rgba(255, 255, 253, 1);
-  --color-gray-200: rgba(245, 245, 245, 1);
-  --color-gray-300: rgba(167, 169, 169, 1);
-  --color-gray-400: rgba(119, 124, 124, 1);
-  --color-slate-500: rgba(98, 108, 113, 1);
-  --color-brown-600: rgba(94, 82, 64, 1);
-  --color-charcoal-700: rgba(31, 33, 33, 1);
-  --color-charcoal-800: rgba(38, 40, 40, 1);
-  --color-slate-900: rgba(19, 52, 59, 1);
-  --color-teal-300: rgba(50, 184, 198, 1);
-  --color-teal-400: rgba(45, 166, 178, 1);
-  --color-teal-500: rgba(33, 128, 141, 1);
-  --color-teal-600: rgba(29, 116, 128, 1);
-  --color-teal-700: rgba(26, 104, 115, 1);
-  --color-teal-800: rgba(41, 150, 161, 1);
-  --color-red-400: rgba(255, 84, 89, 1);
-  --color-red-500: rgba(192, 21, 47, 1);
-  --color-orange-400: rgba(230, 129, 97, 1);
-  --color-orange-500: rgba(168, 75, 47, 1);
-
-  /* RGB versions for opacity control */
-  --color-brown-600-rgb: 94, 82, 64;
-  --color-teal-500-rgb: 33, 128, 141;
-  --color-slate-900-rgb: 19, 52, 59;
-  --color-slate-500-rgb: 98, 108, 113;
-  --color-red-500-rgb: 192, 21, 47;
-  --color-red-400-rgb: 255, 84, 89;
-  --color-orange-500-rgb: 168, 75, 47;
-  --color-orange-400-rgb: 230, 129, 97;
-
-  /* Background color tokens (Light Mode) */
-  --color-bg-1: rgba(59, 130, 246, 0.08); /* Light blue */
-  --color-bg-2: rgba(245, 158, 11, 0.08); /* Light yellow */
-  --color-bg-3: rgba(34, 197, 94, 0.08); /* Light green */
-  --color-bg-4: rgba(239, 68, 68, 0.08); /* Light red */
-  --color-bg-5: rgba(147, 51, 234, 0.08); /* Light purple */
-  --color-bg-6: rgba(249, 115, 22, 0.08); /* Light orange */
-  --color-bg-7: rgba(236, 72, 153, 0.08); /* Light pink */
-  --color-bg-8: rgba(6, 182, 212, 0.08); /* Light cyan */
-
-  /* Semantic Color Tokens (Light Mode) */
-  --color-background: var(--color-cream-50);
-  --color-surface: var(--color-cream-100);
-  --color-text: var(--color-slate-900);
-  --color-text-secondary: var(--color-slate-500);
-  --color-primary: var(--color-teal-500);
-  --color-primary-hover: var(--color-teal-600);
-  --color-primary-active: var(--color-teal-700);
-  --color-secondary: rgba(var(--color-brown-600-rgb), 0.12);
-  --color-secondary-hover: rgba(var(--color-brown-600-rgb), 0.2);
-  --color-secondary-active: rgba(var(--color-brown-600-rgb), 0.25);
-  --color-border: rgba(var(--color-brown-600-rgb), 0.2);
-  --color-btn-primary-text: var(--color-cream-50);
-  --color-card-border: rgba(var(--color-brown-600-rgb), 0.12);
-  --color-card-border-inner: rgba(var(--color-brown-600-rgb), 0.12);
-  --color-error: var(--color-red-500);
-  --color-success: var(--color-teal-500);
-  --color-warning: var(--color-orange-500);
-  --color-info: var(--color-slate-500);
-  --color-focus-ring: rgba(var(--color-teal-500-rgb), 0.4);
-  --color-select-caret: rgba(var(--color-slate-900-rgb), 0.8);
-
-  /* Common style patterns */
-  --focus-ring: 0 0 0 3px var(--color-focus-ring);
-  --focus-outline: 2px solid var(--color-primary);
-  --status-bg-opacity: 0.15;
-  --status-border-opacity: 0.25;
-  --select-caret-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23134252' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-  --select-caret-dark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23f5f5f5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-
-  /* RGB versions for opacity control */
-  --color-success-rgb: 33, 128, 141;
-  --color-error-rgb: 192, 21, 47;
-  --color-warning-rgb: 168, 75, 47;
-  --color-info-rgb: 98, 108, 113;
-
-  /* Typography */
-  --font-family-base: "FKGroteskNeue", "Geist", "Inter", -apple-system,
-    BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-family-mono: "Berkeley Mono", ui-monospace, SFMono-Regular, Menlo,
-    Monaco, Consolas, monospace;
-  --font-size-xs: 11px;
-  --font-size-sm: 12px;
-  --font-size-base: 14px;
-  --font-size-md: 14px;
-  --font-size-lg: 16px;
-  --font-size-xl: 18px;
-  --font-size-2xl: 20px;
-  --font-size-3xl: 24px;
-  --font-size-4xl: 30px;
-  --font-weight-normal: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 550;
-  --font-weight-bold: 600;
-  --line-height-tight: 1.2;
-  --line-height-normal: 1.5;
-  --letter-spacing-tight: -0.01em;
-
-  /* Spacing */
-  --space-0: 0;
-  --space-1: 1px;
-  --space-2: 2px;
-  --space-4: 4px;
-  --space-6: 6px;
-  --space-8: 8px;
-  --space-10: 10px;
-  --space-12: 12px;
-  --space-16: 16px;
-  --space-20: 20px;
-  --space-24: 24px;
-  --space-32: 32px;
-
-  /* Border Radius */
-  --radius-sm: 6px;
-  --radius-base: 8px;
-  --radius-md: 10px;
-  --radius-lg: 12px;
-  --radius-full: 9999px;
-
-  /* Shadows */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.02);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.04),
-    0 2px 4px -1px rgba(0, 0, 0, 0.02);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.04),
-    0 4px 6px -2px rgba(0, 0, 0, 0.02);
-  --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.15),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.03);
-
-  /* Animation */
-  --duration-fast: 150ms;
-  --duration-normal: 250ms;
-  --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
-
-  /* Layout */
-  --container-sm: 640px;
-  --container-md: 768px;
-  --container-lg: 1024px;
-  --container-xl: 1280px;
-}
-
-/* Dark mode colors */
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* RGB versions for opacity control (Dark Mode) */
-    --color-gray-400-rgb: 119, 124, 124;
-    --color-teal-300-rgb: 50, 184, 198;
-    --color-gray-300-rgb: 167, 169, 169;
-    --color-gray-200-rgb: 245, 245, 245;
-
-    /* Background color tokens (Dark Mode) */
-    --color-bg-1: rgba(29, 78, 216, 0.15); /* Dark blue */
-    --color-bg-2: rgba(180, 83, 9, 0.15); /* Dark yellow */
-    --color-bg-3: rgba(21, 128, 61, 0.15); /* Dark green */
-    --color-bg-4: rgba(185, 28, 28, 0.15); /* Dark red */
-    --color-bg-5: rgba(107, 33, 168, 0.15); /* Dark purple */
-    --color-bg-6: rgba(194, 65, 12, 0.15); /* Dark orange */
-    --color-bg-7: rgba(190, 24, 93, 0.15); /* Dark pink */
-    --color-bg-8: rgba(8, 145, 178, 0.15); /* Dark cyan */
+    // Add small delay to ensure all elements are rendered
+    setTimeout(() => {
+        initializeBackgroundAnimations();
+        initializeEventListeners();
+        loadStoredData();
+        console.log('App initialization completed');
+    }, 100);
+});
+
+// Background Animations
+function initializeBackgroundAnimations() {
+    createParticles();
+    createFloatingShapes();
+}
+
+function createParticles() {
+    const particlesContainer = document.getElementById('particles');
+    if (!particlesContainer) return;
     
-    /* Semantic Color Tokens (Dark Mode) */
-    --color-background: var(--color-charcoal-700);
-    --color-surface: var(--color-charcoal-800);
-    --color-text: var(--color-gray-200);
-    --color-text-secondary: rgba(var(--color-gray-300-rgb), 0.7);
-    --color-primary: var(--color-teal-300);
-    --color-primary-hover: var(--color-teal-400);
-    --color-primary-active: var(--color-teal-800);
-    --color-secondary: rgba(var(--color-gray-400-rgb), 0.15);
-    --color-secondary-hover: rgba(var(--color-gray-400-rgb), 0.25);
-    --color-secondary-active: rgba(var(--color-gray-400-rgb), 0.3);
-    --color-border: rgba(var(--color-gray-400-rgb), 0.3);
-    --color-error: var(--color-red-400);
-    --color-success: var(--color-teal-300);
-    --color-warning: var(--color-orange-400);
-    --color-info: var(--color-gray-300);
-    --color-focus-ring: rgba(var(--color-teal-300-rgb), 0.4);
-    --color-btn-primary-text: var(--color-slate-900);
-    --color-card-border: rgba(var(--color-gray-400-rgb), 0.2);
-    --color-card-border-inner: rgba(var(--color-gray-400-rgb), 0.15);
-    --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.1),
-      inset 0 -1px 0 rgba(0, 0, 0, 0.15);
-    --button-border-secondary: rgba(var(--color-gray-400-rgb), 0.2);
-    --color-border-secondary: rgba(var(--color-gray-400-rgb), 0.2);
-    --color-select-caret: rgba(var(--color-gray-200-rgb), 0.8);
-
-    /* Common style patterns - updated for dark mode */
-    --focus-ring: 0 0 0 3px var(--color-focus-ring);
-    --focus-outline: 2px solid var(--color-primary);
-    --status-bg-opacity: 0.15;
-    --status-border-opacity: 0.25;
-    --select-caret-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23134252' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-    --select-caret-dark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23f5f5f5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-
-    /* RGB versions for dark mode */
-    --color-success-rgb: var(--color-teal-300-rgb);
-    --color-error-rgb: var(--color-red-400-rgb);
-    --color-warning-rgb: var(--color-orange-400-rgb);
-    --color-info-rgb: var(--color-gray-300-rgb);
-  }
-}
-
-/* Data attribute for manual theme switching */
-[data-color-scheme="dark"] {
-  /* RGB versions for opacity control (dark mode) */
-  --color-gray-400-rgb: 119, 124, 124;
-  --color-teal-300-rgb: 50, 184, 198;
-  --color-gray-300-rgb: 167, 169, 169;
-  --color-gray-200-rgb: 245, 245, 245;
-
-  /* Colorful background palette - Dark Mode */
-  --color-bg-1: rgba(29, 78, 216, 0.15); /* Dark blue */
-  --color-bg-2: rgba(180, 83, 9, 0.15); /* Dark yellow */
-  --color-bg-3: rgba(21, 128, 61, 0.15); /* Dark green */
-  --color-bg-4: rgba(185, 28, 28, 0.15); /* Dark red */
-  --color-bg-5: rgba(107, 33, 168, 0.15); /* Dark purple */
-  --color-bg-6: rgba(194, 65, 12, 0.15); /* Dark orange */
-  --color-bg-7: rgba(190, 24, 93, 0.15); /* Dark pink */
-  --color-bg-8: rgba(8, 145, 178, 0.15); /* Dark cyan */
-  
-  /* Semantic Color Tokens (Dark Mode) */
-  --color-background: var(--color-charcoal-700);
-  --color-surface: var(--color-charcoal-800);
-  --color-text: var(--color-gray-200);
-  --color-text-secondary: rgba(var(--color-gray-300-rgb), 0.7);
-  --color-primary: var(--color-teal-300);
-  --color-primary-hover: var(--color-teal-400);
-  --color-primary-active: var(--color-teal-800);
-  --color-secondary: rgba(var(--color-gray-400-rgb), 0.15);
-  --color-secondary-hover: rgba(var(--color-gray-400-rgb), 0.25);
-  --color-secondary-active: rgba(var(--color-gray-400-rgb), 0.3);
-  --color-border: rgba(var(--color-gray-400-rgb), 0.3);
-  --color-error: var(--color-red-400);
-  --color-success: var(--color-teal-300);
-  --color-warning: var(--color-orange-400);
-  --color-info: var(--color-gray-300);
-  --color-focus-ring: rgba(var(--color-teal-300-rgb), 0.4);
-  --color-btn-primary-text: var(--color-slate-900);
-  --color-card-border: rgba(var(--color-gray-400-rgb), 0.15);
-  --color-card-border-inner: rgba(var(--color-gray-400-rgb), 0.15);
-  --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.15);
-  --color-border-secondary: rgba(var(--color-gray-400-rgb), 0.2);
-  --color-select-caret: rgba(var(--color-gray-200-rgb), 0.8);
-
-  /* Common style patterns - updated for dark mode */
-  --focus-ring: 0 0 0 3px var(--color-focus-ring);
-  --focus-outline: 2px solid var(--color-primary);
-  --status-bg-opacity: 0.15;
-  --status-border-opacity: 0.25;
-  --select-caret-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23134252' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-  --select-caret-dark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23f5f5f5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-
-  /* RGB versions for dark mode */
-  --color-success-rgb: var(--color-teal-300-rgb);
-  --color-error-rgb: var(--color-red-400-rgb);
-  --color-warning-rgb: var(--color-orange-400-rgb);
-  --color-info-rgb: var(--color-gray-300-rgb);
-}
-
-[data-color-scheme="light"] {
-  /* RGB versions for opacity control (light mode) */
-  --color-brown-600-rgb: 94, 82, 64;
-  --color-teal-500-rgb: 33, 128, 141;
-  --color-slate-900-rgb: 19, 52, 59;
-  
-  /* Semantic Color Tokens (Light Mode) */
-  --color-background: var(--color-cream-50);
-  --color-surface: var(--color-cream-100);
-  --color-text: var(--color-slate-900);
-  --color-text-secondary: var(--color-slate-500);
-  --color-primary: var(--color-teal-500);
-  --color-primary-hover: var(--color-teal-600);
-  --color-primary-active: var(--color-teal-700);
-  --color-secondary: rgba(var(--color-brown-600-rgb), 0.12);
-  --color-secondary-hover: rgba(var(--color-brown-600-rgb), 0.2);
-  --color-secondary-active: rgba(var(--color-brown-600-rgb), 0.25);
-  --color-border: rgba(var(--color-brown-600-rgb), 0.2);
-  --color-btn-primary-text: var(--color-cream-50);
-  --color-card-border: rgba(var(--color-brown-600-rgb), 0.12);
-  --color-card-border-inner: rgba(var(--color-brown-600-rgb), 0.12);
-  --color-error: var(--color-red-500);
-  --color-success: var(--color-teal-500);
-  --color-warning: var(--color-orange-500);
-  --color-info: var(--color-slate-500);
-  --color-focus-ring: rgba(var(--color-teal-500-rgb), 0.4);
-
-  /* RGB versions for light mode */
-  --color-success-rgb: var(--color-teal-500-rgb);
-  --color-error-rgb: var(--color-red-500-rgb);
-  --color-warning-rgb: var(--color-orange-500-rgb);
-  --color-info-rgb: var(--color-slate-500-rgb);
-}
-
-/* Base styles */
-html {
-  font-size: var(--font-size-base);
-  font-family: var(--font-family-base);
-  line-height: var(--line-height-normal);
-  color: var(--color-text);
-  background-color: var(--color-background);
-  -webkit-font-smoothing: antialiased;
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-}
-
-*,
-*::before,
-*::after {
-  box-sizing: inherit;
-}
-
-/* Typography */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  margin: 0;
-  font-weight: var(--font-weight-semibold);
-  line-height: var(--line-height-tight);
-  color: var(--color-text);
-  letter-spacing: var(--letter-spacing-tight);
-}
-
-h1 {
-  font-size: var(--font-size-4xl);
-}
-h2 {
-  font-size: var(--font-size-3xl);
-}
-h3 {
-  font-size: var(--font-size-2xl);
-}
-h4 {
-  font-size: var(--font-size-xl);
-}
-h5 {
-  font-size: var(--font-size-lg);
-}
-h6 {
-  font-size: var(--font-size-md);
-}
-
-p {
-  margin: 0 0 var(--space-16) 0;
-}
-
-a {
-  color: var(--color-primary);
-  text-decoration: none;
-  transition: color var(--duration-fast) var(--ease-standard);
-}
-
-a:hover {
-  color: var(--color-primary-hover);
-}
-
-code,
-pre {
-  font-family: var(--font-family-mono);
-  font-size: calc(var(--font-size-base) * 0.95);
-  background-color: var(--color-secondary);
-  border-radius: var(--radius-sm);
-}
-
-code {
-  padding: var(--space-1) var(--space-4);
-}
-
-pre {
-  padding: var(--space-16);
-  margin: var(--space-16) 0;
-  overflow: auto;
-  border: 1px solid var(--color-border);
-}
-
-pre code {
-  background: none;
-  padding: 0;
-}
-
-/* Animated Background Styles */
-.animated-bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -1;
-  overflow: hidden;
-}
-
-.gradient-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, 
-    rgba(59, 130, 246, 0.9) 0%, 
-    rgba(147, 51, 234, 0.8) 25%,
-    rgba(79, 70, 229, 0.9) 50%,
-    rgba(99, 102, 241, 0.8) 75%,
-    rgba(139, 92, 246, 0.9) 100%);
-  animation: gradientShift 20s ease-in-out infinite;
-}
-
-@keyframes gradientShift {
-  0%, 100% {
-    background: linear-gradient(135deg, 
-      rgba(59, 130, 246, 0.9) 0%, 
-      rgba(147, 51, 234, 0.8) 25%,
-      rgba(79, 70, 229, 0.9) 50%,
-      rgba(99, 102, 241, 0.8) 75%,
-      rgba(139, 92, 246, 0.9) 100%);
-  }
-  50% {
-    background: linear-gradient(135deg, 
-      rgba(139, 92, 246, 0.9) 0%, 
-      rgba(99, 102, 241, 0.8) 25%,
-      rgba(79, 70, 229, 0.9) 50%,
-      rgba(147, 51, 234, 0.8) 75%,
-      rgba(59, 130, 246, 0.9) 100%);
-  }
-}
-
-.particles {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.particle {
-  position: absolute;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
-  animation: float 15s infinite linear;
-}
-
-.particle:nth-child(odd) {
-  background: rgba(255, 255, 255, 0.15);
-  animation-duration: 20s;
-}
-
-.particle:nth-child(even) {
-  background: rgba(255, 255, 255, 0.08);
-  animation-duration: 25s;
-}
-
-@keyframes float {
-  0% {
-    transform: translateY(100vh) rotate(0deg);
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  90% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(-100vh) rotate(360deg);
-    opacity: 0;
-  }
-}
-
-.floating-shapes {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.floating-shape {
-  position: absolute;
-  animation: floatShape 30s infinite ease-in-out;
-}
-
-.floating-shape.triangle {
-  width: 0;
-  height: 0;
-  border-left: 15px solid transparent;
-  border-right: 15px solid transparent;
-  border-bottom: 26px solid rgba(255, 255, 255, 0.05);
-}
-
-.floating-shape.circle {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.floating-shape.square {
-  width: 16px;
-  height: 16px;
-  background: rgba(255, 255, 255, 0.05);
-  transform: rotate(45deg);
-}
-
-@keyframes floatShape {
-  0%, 100% {
-    transform: translateY(0px) translateX(0px) rotate(0deg);
-  }
-  25% {
-    transform: translateY(-20px) translateX(10px) rotate(90deg);
-  }
-  50% {
-    transform: translateY(0px) translateX(20px) rotate(180deg);
-  }
-  75% {
-    transform: translateY(10px) translateX(5px) rotate(270deg);
-  }
-}
-
-/* Base Application Styles */
-body {
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
-  font-family: var(--font-family-base);
-  background: transparent;
-  color: var(--color-text);
-}
-
-.screen {
-  min-height: 100vh;
-  display: none;
-}
-
-.screen.active {
-  display: block;
-}
-
-/* Login Screen Styles */
-#loginScreen {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-20);
-}
-
-.login-card {
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: var(--radius-lg);
-  padding: var(--space-32);
-  width: 100%;
-  max-width: 400px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  position: relative;
-  z-index: 10;
-}
-
-.login-header {
-  text-align: center;
-  margin-bottom: var(--space-32);
-}
-
-.login-header h1 {
-  color: var(--color-primary);
-  margin-bottom: var(--space-8);
-  font-size: var(--font-size-4xl);
-  font-weight: var(--font-weight-bold);
-}
-
-.login-header p {
-  color: var(--color-text-secondary);
-  margin: 0;
-}
-
-.login-section-title {
-  color: var(--color-text);
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-semibold);
-  margin-bottom: var(--space-20);
-  text-align: center;
-}
-
-.login-form .form-group {
-  margin-bottom: var(--space-20);
-}
-
-.login-divider {
-  display: flex;
-  align-items: center;
-  margin: var(--space-24) 0;
-}
-
-.divider-line {
-  flex: 1;
-  height: 1px;
-  background: var(--color-border);
-}
-
-.divider-text {
-  padding: 0 var(--space-16);
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-}
-
-.error-message {
-  background: rgba(var(--color-error-rgb), 0.1);
-  color: var(--color-error);
-  padding: var(--space-12);
-  border-radius: var(--radius-base);
-  border: 1px solid rgba(var(--color-error-rgb), 0.2);
-  margin-top: var(--space-16);
-  text-align: center;
-  font-size: var(--font-size-sm);
-}
-
-/* Admin Password Section Styles */
-.admin-password-section {
-  margin-top: var(--space-16);
-  padding-top: var(--space-16);
-  border-top: 1px solid var(--color-border);
-}
-
-.admin-login-buttons {
-  display: flex;
-  gap: var(--space-8);
-  margin-top: var(--space-12);
-}
-
-.admin-login-buttons .btn {
-  flex: 1;
-}
-
-/* FORM CONTROLS - SIMPLIFIED WITH BETTER CONTRAST */
-.form-control {
-  display: block;
-  width: 100%;
-  padding: 12px 16px;
-  font-size: 16px;
-  line-height: 1.5;
-  color: #1a1a1a;
-  background-color: #ffffff;
-  border: 2px solid #d1d5db;
-  border-radius: 8px;
-  box-sizing: border-box;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  font-family: system-ui, -apple-system, sans-serif;
-  position: relative;
-  z-index: 1;
-}
-
-.form-control:hover {
-  border-color: #218396;
-}
-
-.form-control:focus {
-  border-color: #218396;
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(33, 131, 150, 0.1);
-}
-
-/* SELECT SPECIFIC STYLES */
-select.form-control {
-  cursor: pointer;
-  padding-right: 40px;
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path fill="%231a1a1a" d="M6 8L2 4h8z"/></svg>');
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  background-size: 12px;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-}
-
-/* INPUT SPECIFIC STYLES */
-input.form-control {
-  cursor: text;
-}
-
-input.form-control::placeholder {
-  color: #6b7280;
-  opacity: 1;
-}
-
-.form-label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 500;
-  font-size: 14px;
-  color: #1a1a1a;
-}
-
-.form-group {
-  margin-bottom: 20px;
-  position: relative;
-}
-
-/* BUTTON STYLES */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 1.5;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: 2px solid transparent;
-  text-decoration: none;
-  font-family: system-ui, -apple-system, sans-serif;
-  box-sizing: border-box;
-  position: relative;
-  z-index: 1;
-}
-
-.btn:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(33, 131, 150, 0.3);
-}
-
-.btn--primary {
-  background: #218396;
-  color: white;
-  border-color: #218396;
-}
-
-.btn--primary:hover {
-  background: #1a6b7a;
-  border-color: #1a6b7a;
-}
-
-.btn--primary:active {
-  background: #145259;
-  border-color: #145259;
-}
-
-.btn--secondary {
-  background: rgba(94, 82, 64, 0.12);
-  color: #1a1a1a;
-  border-color: rgba(94, 82, 64, 0.2);
-}
-
-.btn--secondary:hover {
-  background: rgba(94, 82, 64, 0.2);
-}
-
-.btn--secondary:active {
-  background: rgba(94, 82, 64, 0.25);
-}
-
-.btn--outline {
-  background: transparent;
-  border: 2px solid #d1d5db;
-  color: #1a1a1a;
-}
-
-.btn--outline:hover {
-  background: rgba(94, 82, 64, 0.12);
-}
-
-.btn--sm {
-  padding: 6px 12px;
-  font-size: 14px;
-  border-radius: 6px;
-}
-
-.btn--lg {
-  padding: 16px 32px;
-  font-size: 18px;
-  border-radius: 10px;
-}
-
-.btn--full-width {
-  width: 100%;
-}
-
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Navigation Styles */
-.navbar {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  padding: var(--space-16) var(--space-24);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.nav-brand h2 {
-  color: var(--color-primary);
-  margin: 0;
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
-}
-
-.nav-links {
-  display: flex;
-  gap: var(--space-8);
-}
-
-.nav-link {
-  background: none;
-  border: none;
-  padding: var(--space-8) var(--space-16);
-  color: #1a1a1a;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  cursor: pointer;
-  border-radius: var(--radius-base);
-  transition: all var(--duration-fast) var(--ease-standard);
-}
-
-.nav-link:hover {
-  color: var(--color-primary);
-  background: rgba(var(--color-teal-500-rgb), 0.1);
-}
-
-.nav-link.active {
-  color: var(--color-primary);
-  background: rgba(var(--color-teal-500-rgb), 0.15);
-}
-
-/* Section Styles */
-.section {
-  display: none;
-  padding: var(--space-32) 0;
-  min-height: calc(100vh - 80px);
-}
-
-.section.active {
-  display: block;
-}
-
-.section-header {
-  margin-bottom: var(--space-32);
-}
-
-.section-header h1 {
-  margin-bottom: var(--space-8);
-  font-size: var(--font-size-3xl);
-  color: #1a1a1a;
-}
-
-.section-header p {
-  color: #4b5563;
-  margin: 0;
-}
-
-/* Dashboard Styles */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: var(--space-20);
-  margin-bottom: var(--space-32);
-}
-
-.stat-card {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: var(--radius-lg);
-  padding: var(--space-24);
-  display: flex;
-  align-items: center;
-  gap: var(--space-16);
-  box-shadow: var(--shadow-md);
-  transition: transform var(--duration-fast) var(--ease-standard);
-}
-
-.stat-card:hover {
-  transform: translateY(-2px);
-}
-
-.stat-icon {
-  font-size: 2rem;
-  width: 60px;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(var(--color-teal-500-rgb), 0.1);
-  border-radius: var(--radius-base);
-}
-
-.stat-number {
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
-  color: #1a1a1a;
-  margin-bottom: var(--space-4);
-}
-
-.stat-label {
-  color: #4b5563;
-  font-size: var(--font-size-sm);
-}
-
-.progress-bar-container {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: var(--radius-lg);
-  padding: var(--space-24);
-}
-
-.progress-label {
-  display: block;
-  margin-bottom: var(--space-12);
-  font-weight: var(--font-weight-medium);
-  color: #1a1a1a;
-}
-
-.progress-bar {
-  height: 20px;
-  background: rgba(var(--color-teal-500-rgb), 0.1);
-  border-radius: var(--radius-full);
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-hover));
-  border-radius: var(--radius-full);
-  transition: width var(--duration-normal) var(--ease-standard);
-}
-
-/* Grade Selector */
-.grade-selector {
-  display: flex;
-  gap: var(--space-8);
-}
-
-.grade-btn {
-  border-radius: var(--radius-full);
-}
-
-.grade-btn.active {
-  background: var(--color-primary);
-  color: var(--color-btn-primary-text);
-}
-
-/* Chapters List - FIXED TEXT COLORS */
-.chapters-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: var(--space-16);
-}
-
-.chapter-card {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: var(--radius-lg);
-  padding: var(--space-20);
-  transition: all var(--duration-fast) var(--ease-standard);
-  cursor: pointer;
-}
-
-.chapter-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
-}
-
-.chapter-card.completed {
-  border-color: var(--color-success);
-  background: rgba(var(--color-success-rgb), 0.05);
-}
-
-.chapter-header {
-  display: flex;
-  align-items: center;
-  gap: var(--space-12);
-  margin-bottom: var(--space-12);
-}
-
-.chapter-checkbox {
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.chapter-checkbox.checked {
-  background: var(--color-success);
-  border-color: var(--color-success);
-  color: white;
-}
-
-.chapter-title {
-  font-weight: var(--font-weight-medium);
-  font-size: var(--font-size-lg);
-  margin: 0;
-  flex: 1;
-  color: #1a1a1a !important; /* FIXED: Chapter names now black */
-}
-
-.chapter-details {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: #4b5563; /* FIXED: Better contrast for details */
-  font-size: var(--font-size-sm);
-}
-
-/* Profile Styles */
-.profile-grid {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: var(--space-24);
-}
-
-.profile-avatar {
-  text-align: center;
-  margin-bottom: var(--space-20);
-}
-
-.profile-img {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: var(--space-12);
-  border: 4px solid var(--color-primary);
-}
-
-.upload-btn {
-  display: block;
-  margin: 0 auto;
-}
-
-.profile-info {
-  text-align: center;
-}
-
-.profile-info h3 {
-  margin: 0 0 var(--space-4) 0;
-  color: #1a1a1a; /* FIXED: Profile name now black */
-}
-
-.profile-info p {
-  margin: 0;
-  color: #4b5563;
-}
-
-/* Card Styles */
-.card {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-}
-
-.card__header,
-.card__footer {
-  padding: var(--space-16);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.card__header h4 {
-  color: #1a1a1a; /* FIXED: Card headers now black */
-}
-
-.card__body {
-  padding: var(--space-16);
-}
-
-/* Team Grid - FIXED TEACHER NAMES */
-.team-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: var(--space-20);
-}
-
-.team-member-card {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: var(--radius-lg);
-  padding: var(--space-20);
-  text-align: center;
-  transition: transform var(--duration-fast) var(--ease-standard);
-}
-
-.team-member-card:hover {
-  transform: translateY(-2px);
-}
-
-.team-member-card h4 {
-  color: #1a1a1a !important; /* FIXED: Teacher names now black */
-}
-
-.team-member-card p {
-  color: #4b5563; /* Better contrast for team member details */
-}
-
-.team-avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  margin: 0 auto var(--space-12) auto;
-  background: var(--color-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
-}
-
-/* Chat Styles */
-.chat-container {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: var(--radius-lg);
-  height: 500px;
-  display: flex;
-  flex-direction: column;
-}
-
-.chat-messages {
-  flex: 1;
-  padding: var(--space-16);
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-12);
-}
-
-.chat-message {
-  max-width: 70%;
-  padding: var(--space-12) var(--space-16);
-  border-radius: var(--radius-lg);
-  word-wrap: break-word;
-}
-
-.chat-message.own {
-  align-self: flex-end;
-  background: var(--color-primary);
-  color: white;
-}
-
-.chat-message.other {
-  align-self: flex-start;
-  background: rgba(var(--color-text-secondary), 0.1);
-  color: #1a1a1a; /* FIXED: Chat messages now readable */
-}
-
-.chat-input {
-  padding: var(--space-16);
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  display: flex;
-  gap: var(--space-12);
-}
-
-.chat-input .form-control {
-  flex: 1;
-}
-
-/* Analytics Styles */
-.analytics-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: var(--space-24);
-}
-
-/* Admin Styles */
-.admin-tabs {
-  display: flex;
-  gap: var(--space-4);
-  margin-bottom: var(--space-24);
-  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-}
-
-.admin-tab-btn {
-  background: none;
-  border: none;
-  padding: var(--space-12) var(--space-20);
-  color: #4b5563;
-  font-weight: var(--font-weight-medium);
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: all var(--duration-fast) var(--ease-standard);
-}
-
-.admin-tab-btn.active {
-  color: var(--color-primary);
-  border-bottom-color: var(--color-primary);
-}
-
-.admin-tab-content {
-  display: none;
-}
-
-.admin-tab-content.active {
-  display: block;
-}
-
-.admin-actions {
-  display: flex;
-  gap: var(--space-12);
-  margin-bottom: var(--space-24);
-  flex-wrap: wrap;
-}
-
-.admin-actions > * {
-  flex: 1;
-  min-width: 200px;
-}
-
-.admin-chapters-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: var(--space-16);
-}
-
-.admin-chapter-item {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: var(--radius-base);
-  padding: var(--space-16);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.admin-chapter-item span {
-  color: #1a1a1a; /* FIXED: Admin chapter names now black */
-}
-
-.teachers-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: var(--space-16);
-}
-
-.teacher-item {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: var(--radius-lg);
-  padding: var(--space-20);
-}
-
-.teacher-item h4 {
-  color: #1a1a1a !important; /* FIXED: Teacher item names now black */
-}
-
-.teacher-item p {
-  color: #4b5563; /* Better contrast for teacher details */
-}
-
-/* Modal Styles */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal.hidden {
-  display: none;
-}
-
-.modal-backdrop {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-}
-
-.modal-content {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-  width: 90%;
-  max-width: 500px;
-  position: relative;
-  z-index: 1001;
-}
-
-.modal-header {
-  padding: var(--space-20);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.modal-header h3 {
-  margin: 0;
-  color: #1a1a1a; /* FIXED: Modal titles now black */
-}
-
-.modal-close {
-  background: none;
-  border: none;
-  font-size: var(--font-size-2xl);
-  cursor: pointer;
-  color: #4b5563;
-  padding: 0;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-body {
-  padding: var(--space-20);
-}
-
-.modal-footer {
-  padding: var(--space-20);
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  display: flex;
-  gap: var(--space-12);
-  justify-content: flex-end;
-}
-
-/* Checkbox Styles - FIXED LABELS */
-.checkbox-group {
-  margin-bottom: var(--space-16);
-}
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: var(--space-8);
-  cursor: pointer;
-  font-size: var(--font-size-base);
-  color: #1a1a1a !important; /* FIXED: Checkbox labels now black */
-}
-
-.checkbox-label input[type="checkbox"] {
-  display: none;
-}
-
-.checkbox-custom {
-  width: 18px;
-  height: 18px;
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--duration-fast) var(--ease-standard);
-}
-
-.checkbox-label input[type="checkbox"]:checked + .checkbox-custom {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-}
-
-.checkbox-label input[type="checkbox"]:checked + .checkbox-custom::after {
-  content: '✓';
-  color: white;
-  font-size: 12px;
-  font-weight: bold;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .navbar {
-    flex-direction: column;
-    gap: var(--space-16);
-    padding: var(--space-12);
-  }
-
-  .nav-links {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .nav-link {
-    font-size: var(--font-size-xs);
-    padding: var(--space-6) var(--space-8);
-  }
-
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .profile-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .admin-actions {
-    flex-direction: column;
-  }
-
-  .admin-actions > * {
-    min-width: auto;
-  }
-
-  .chapters-list,
-  .team-grid,
-  .admin-chapters-list,
-  .teachers-list {
-    grid-template-columns: 1fr;
-  }
-
-  .analytics-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .modal-content {
-    width: 95%;
-    margin: var(--space-16);
-  }
-
-  .admin-login-buttons {
-    flex-direction: column;
-  }
-}
-
-/* Utility Classes */
-.hidden {
-  display: none !important;
-}
-
-.admin-only {
-  display: none;
-}
-
-.admin-only.show {
-  display: block;
-}
-
-/* Loading Animation */
-.loading {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  border: 3px solid rgba(var(--color-teal-500-rgb), 0.3);
-  border-radius: 50%;
-  border-top-color: var(--color-primary);
-  animation: spin 1s ease-in-out infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* Container layout */
-.container {
-  width: 100%;
-  margin-right: auto;
-  margin-left: auto;
-  padding-right: var(--space-16);
-  padding-left: var(--space-16);
-}
-
-@media (min-width: 640px) {
-  .container {
-    max-width: var(--container-sm);
-  }
-}
-@media (min-width: 768px) {
-  .container {
-    max-width: var(--container-md);
-  }
-}
-@media (min-width: 1024px) {
-  .container {
-    max-width: var(--container-lg);
-  }
-}
-@media (min-width: 1280px) {
-  .container {
-    max-width: var(--container-xl);
-  }
-}
-
-@font-face {
-  font-family: 'FKGroteskNeue';
-  src: url('https://r2cdn.perplexity.ai/fonts/FKGroteskNeue.woff2')
-    format('woff2');
+    const particleCount = 50;
+    
+    for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        
+        // Random size between 2-8px
+        const size = Math.random() * 6 + 2;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        
+        // Random horizontal position
+        particle.style.left = `${Math.random() * 100}%`;
+        
+        // Random animation delay
+        particle.style.animationDelay = `${Math.random() * 15}s`;
+        
+        particlesContainer.appendChild(particle);
+    }
+}
+
+function createFloatingShapes() {
+    const shapesContainer = document.getElementById('floatingShapes');
+    if (!shapesContainer) return;
+    
+    const shapeCount = 20;
+    const shapes = ['circle', 'triangle', 'square'];
+    
+    for (let i = 0; i < shapeCount; i++) {
+        const shape = document.createElement('div');
+        const shapeType = shapes[Math.floor(Math.random() * shapes.length)];
+        shape.className = `floating-shape ${shapeType}`;
+        
+        // Random position
+        shape.style.left = `${Math.random() * 100}%`;
+        shape.style.top = `${Math.random() * 100}%`;
+        
+        // Random animation delay
+        shape.style.animationDelay = `${Math.random() * 30}s`;
+        
+        shapesContainer.appendChild(shape);
+    }
+}
+
+// FIXED Event Listeners - Properly targeting elements and preventing conflicts
+function initializeEventListeners() {
+    console.log('Setting up event listeners...');
+    
+    // FIXED: Teacher login form with proper event handling
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        // Remove any existing event listeners first
+        loginForm.replaceWith(loginForm.cloneNode(true));
+        const newLoginForm = document.getElementById('loginForm');
+        
+        newLoginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            handleTeacherLogin(e);
+        });
+        console.log('✅ Teacher login form listener added');
+    } else {
+        console.error('❌ Login form not found!');
+    }
+    
+    // FIXED: Admin login button with proper event handling
+    const adminBtn = document.getElementById('adminLoginBtn');
+    if (adminBtn) {
+        // Remove any existing event listeners first
+        adminBtn.replaceWith(adminBtn.cloneNode(true));
+        const newAdminBtn = document.getElementById('adminLoginBtn');
+        
+        newAdminBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Admin login button clicked');
+            showAdminPasswordField();
+        });
+        console.log('✅ Admin login button listener added');
+    } else {
+        console.error('❌ Admin login button not found!');
+    }
+    
+    // FIXED: Admin password buttons
+    const cancelAdminBtn = document.getElementById('cancelAdminBtn');
+    const confirmAdminBtn = document.getElementById('confirmAdminBtn');
+    const adminPasswordField = document.getElementById('adminPassword');
+    
+    if (cancelAdminBtn) {
+        cancelAdminBtn.replaceWith(cancelAdminBtn.cloneNode(true));
+        const newCancelBtn = document.getElementById('cancelAdminBtn');
+        newCancelBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            hideAdminPasswordField();
+        });
+    }
+    
+    if (confirmAdminBtn) {
+        confirmAdminBtn.replaceWith(confirmAdminBtn.cloneNode(true));
+        const newConfirmBtn = document.getElementById('confirmAdminBtn');
+        newConfirmBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            handleAdminPasswordSubmit();
+        });
+    }
+    
+    if (adminPasswordField) {
+        adminPasswordField.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleAdminPasswordSubmit();
+            }
+        });
+    }
+    
+    // Navigation - Only add once DOM is ready
+    setTimeout(() => {
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                navigateToSection(e.target.dataset.section);
+            });
+        });
+    }, 200);
+    
+    // Other event listeners with delayed initialization
+    setTimeout(() => {
+        setupOtherEventListeners();
+    }, 300);
+}
+
+function setupOtherEventListeners() {
+    // Logout
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', handleLogout);
+    }
+    
+    // Grade selector
+    document.querySelectorAll('.grade-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            switchGrade(parseInt(e.target.dataset.grade));
+        });
+    });
+    
+    // Modal handlers
+    const closeModal = document.getElementById('closeModal');
+    const cancelModal = document.getElementById('cancelModal');
+    const saveChapterBtn = document.getElementById('saveChapterBtn');
+    
+    if (closeModal) closeModal.addEventListener('click', closeChapterModal);
+    if (cancelModal) cancelModal.addEventListener('click', closeChapterModal);
+    if (saveChapterBtn) saveChapterBtn.addEventListener('click', saveChapterProgress);
+    
+    // Profile photo upload
+    const photoUpload = document.getElementById('photoUpload');
+    const saveProfileBtn = document.getElementById('saveProfileBtn');
+    
+    if (photoUpload) photoUpload.addEventListener('change', handlePhotoUpload);
+    if (saveProfileBtn) saveProfileBtn.addEventListener('click', saveProfile);
+    
+    // Chat functionality
+    const sendMessageBtn = document.getElementById('sendMessageBtn');
+    const messageInput = document.getElementById('messageInput');
+    
+    if (sendMessageBtn) sendMessageBtn.addEventListener('click', sendMessage);
+    if (messageInput) {
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    }
+    
+    // Admin functionality
+    document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            switchAdminTab(e.target.dataset.tab);
+        });
+    });
+    
+    const addChapterBtn = document.getElementById('addChapterBtn');
+    if (addChapterBtn) addChapterBtn.addEventListener('click', addNewChapter);
+    
+    // Admin subject/grade change handlers
+    const adminSubject = document.getElementById('adminSubject');
+    const adminGrade = document.getElementById('adminGrade');
+    
+    if (adminSubject) adminSubject.addEventListener('change', loadAdminChapters);
+    if (adminGrade) adminGrade.addEventListener('change', loadAdminChapters);
+}
+
+// Error Display Function
+function showError(message) {
+    console.log('Showing error:', message);
+    const errorDiv = document.getElementById('errorMessage');
+    if (errorDiv) {
+        errorDiv.textContent = message;
+        errorDiv.classList.remove('hidden');
+        
+        // Hide error after 5 seconds
+        setTimeout(() => {
+            errorDiv.classList.add('hidden');
+        }, 5000);
+    }
+}
+
+function hideError() {
+    const errorDiv = document.getElementById('errorMessage');
+    if (errorDiv) {
+        errorDiv.classList.add('hidden');
+    }
+}
+
+// FIXED Teacher Login Handler
+function handleTeacherLogin(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    console.log('🔄 Teacher login form submitted');
+    hideError();
+    
+    const schoolField = document.getElementById('school');
+    const employeeField = document.getElementById('employeeId');
+    const subjectField = document.getElementById('subject');
+    
+    if (!schoolField || !employeeField || !subjectField) {
+        console.error('❌ Form fields not found');
+        showError('Form fields not found. Please refresh the page.');
+        return;
+    }
+    
+    const school = schoolField.value;
+    const employeeId = employeeField.value.trim();
+    const subject = subjectField.value;
+    
+    console.log('🔍 Login attempt with credentials:', { school, employeeId, subject });
+    
+    if (!school || !employeeId || !subject) {
+        showError('Please fill in all fields');
+        return;
+    }
+    
+    // Check if user exists in teachers data
+    if (appData.teachers[employeeId]) {
+        const teacher = appData.teachers[employeeId];
+        console.log('✅ Teacher found in database:', teacher);
+        
+        // Validate school and subject match
+        if (teacher.school === school && teacher.subject === subject) {
+            console.log('✅ Credentials are valid - proceeding with login');
+            
+            // Set current user
+            currentUser = {
+                employeeId,
+                ...teacher,
+                isAdmin: false
+            };
+            
+            console.log('✅ Current user set:', currentUser);
+            
+            // Clear the form
+            schoolField.value = '';
+            employeeField.value = '';
+            subjectField.value = '';
+            
+            // Proceed to main app
+            showMainApp();
+            return;
+        } else {
+            console.log('❌ Credentials invalid - school or subject mismatch');
+            console.log('Expected:', { school: teacher.school, subject: teacher.subject });
+            console.log('Provided:', { school, subject });
+            showError('Invalid credentials. Please check your school and subject selection.');
+        }
+    } else {
+        console.log('❌ Employee ID not found in database');
+        showError('Employee ID not found. Please check your credentials.');
+    }
+}
+
+// FIXED: Show Admin Password Field
+function showAdminPasswordField() {
+    console.log('🔄 Showing admin password field');
+    hideError();
+    
+    const adminPasswordSection = document.getElementById('adminPasswordSection');
+    const adminLoginBtn = document.getElementById('adminLoginBtn');
+    
+    if (adminPasswordSection && adminLoginBtn) {
+        adminPasswordSection.classList.remove('hidden');
+        adminLoginBtn.style.display = 'none';
+        
+        // Focus on password field
+        const passwordField = document.getElementById('adminPassword');
+        if (passwordField) {
+            setTimeout(() => passwordField.focus(), 100);
+        }
+        console.log('✅ Admin password field shown');
+    } else {
+        console.error('❌ Admin password section elements not found');
+    }
+}
+
+// FIXED: Hide Admin Password Field
+function hideAdminPasswordField() {
+    console.log('🔄 Hiding admin password field');
+    hideError();
+    
+    const adminPasswordSection = document.getElementById('adminPasswordSection');
+    const adminLoginBtn = document.getElementById('adminLoginBtn');
+    const adminPasswordField = document.getElementById('adminPassword');
+    
+    if (adminPasswordSection && adminLoginBtn) {
+        adminPasswordSection.classList.add('hidden');
+        adminLoginBtn.style.display = 'block';
+        
+        // Clear password field
+        if (adminPasswordField) {
+            adminPasswordField.value = '';
+        }
+        console.log('✅ Admin password field hidden');
+    }
+}
+
+// FIXED: Handle Admin Password Submit
+function handleAdminPasswordSubmit() {
+    console.log('🔄 Admin password submitted');
+    hideError();
+    
+    const adminPasswordField = document.getElementById('adminPassword');
+    if (!adminPasswordField) {
+        showError('Password field not found. Please refresh the page.');
+        return;
+    }
+    
+    const password = adminPasswordField.value.trim();
+    
+    if (!password) {
+        showError('Please enter admin password');
+        return;
+    }
+    
+    // Validate admin password
+    if (password === appData.adminPassword) {
+        console.log('✅ Admin password correct - proceeding with login');
+        
+        // Set admin user
+        currentUser = {
+            employeeId: 'admin',
+            ...appData.teachers['admin'],
+            isAdmin: true
+        };
+        
+        console.log('✅ Admin user set:', currentUser);
+        
+        // Clear the forms
+        const loginForm = document.getElementById('loginForm');
+        if (loginForm) {
+            loginForm.reset();
+        }
+        adminPasswordField.value = '';
+        hideAdminPasswordField();
+        
+        // Proceed to main app
+        showMainApp();
+    } else {
+        console.log('❌ Admin password incorrect');
+        showError('Incorrect admin password. Please try again.');
+        adminPasswordField.value = '';
+        adminPasswordField.focus();
+    }
+}
+
+// Show Main Application
+function showMainApp() {
+    console.log('🔄 Showing main app - current user:', currentUser);
+    
+    if (!currentUser) {
+        console.error('❌ No current user set!');
+        showError('Login failed - no user data');
+        return;
+    }
+    
+    const loginScreen = document.getElementById('loginScreen');
+    const mainApp = document.getElementById('mainApp');
+    
+    if (!loginScreen || !mainApp) {
+        console.error('❌ Screen elements not found:', { loginScreen: !!loginScreen, mainApp: !!mainApp });
+        showError('Screen elements not found. Please refresh the page.');
+        return;
+    }
+    
+    console.log('🔄 Switching screens...');
+    
+    // Hide login screen
+    loginScreen.classList.remove('active');
+    loginScreen.style.display = 'none';
+    
+    // Show main app
+    mainApp.classList.remove('hidden');
+    mainApp.classList.add('active');
+    mainApp.style.display = 'block';
+    
+    console.log('✅ Screen transition completed');
+    
+    // Load user data and setup app
+    loadUserData();
+    
+    // Show admin features if admin user
+    if (currentUser.isAdmin) {
+        showAdminFeatures();
+    }
+}
+
+// Load User Data
+function loadUserData() {
+    console.log('🔄 Loading user data for:', currentUser.name);
+    loadDashboard();
+    loadProfile();
+    loadTeamMembers();
+    loadChatMessages();
+    loadChaptersList();
+    
+    if (currentUser.isAdmin) {
+        loadAnalytics();
+        loadAdminPanel();
+    }
+}
+
+// Navigation
+function navigateToSection(sectionName) {
+    console.log('🔄 Navigating to section:', sectionName);
+    
+    // Update nav links
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+    });
+    const activeLink = document.querySelector(`[data-section="${sectionName}"]`);
+    if (activeLink) {
+        activeLink.classList.add('active');
+    }
+    
+    // Update sections
+    document.querySelectorAll('.section').forEach(section => {
+        section.classList.remove('active');
+    });
+    const activeSection = document.getElementById(sectionName);
+    if (activeSection) {
+        activeSection.classList.add('active');
+    }
+}
+
+// Dashboard
+function loadDashboard() {
+    console.log('🔄 Loading dashboard...');
+    const welcomeUser = document.getElementById('welcomeUser');
+    if (welcomeUser && currentUser) {
+        welcomeUser.textContent = currentUser.name;
+        welcomeUser.style.color = '#1a1a1a'; // FIXED: Ensure name is black
+        console.log('✅ Welcome message set for:', currentUser.name);
+    }
+    
+    if (!currentUser) return;
+    
+    const subject = currentUser.isAdmin ? 'physics' : currentUser.subject; // Default for admin
+    const totalChapters11 = appData.curriculum[subject]['11'].length;
+    const totalChapters12 = appData.curriculum[subject]['12'].length;
+    const totalChapters = totalChapters11 + totalChapters12;
+    
+    let completedCount = 0;
+    let testsCount = 0;
+    
+    // Count completed chapters across both grades
+    [11, 12].forEach(grade => {
+        appData.curriculum[subject][grade].forEach(chapter => {
+            const key = `${subject}_${grade}_${chapter}`;
+            if (chapterProgress[key] && chapterProgress[key].completed) {
+                completedCount++;
+                if (chapterProgress[key].testCompleted) {
+                    testsCount++;
+                }
+            }
+        });
+    });
+    
+    const progressPercentage = Math.round((completedCount / totalChapters) * 100);
+    
+    const totalChaptersEl = document.getElementById('totalChapters');
+    const completedChaptersEl = document.getElementById('completedChapters');
+    const progressPercentageEl = document.getElementById('progressPercentage');
+    const testsCompletedEl = document.getElementById('testsCompleted');
+    const overallProgressEl = document.getElementById('overallProgress');
+    
+    if (totalChaptersEl) totalChaptersEl.textContent = totalChapters;
+    if (completedChaptersEl) completedChaptersEl.textContent = completedCount;
+    if (progressPercentageEl) progressPercentageEl.textContent = `${progressPercentage}%`;
+    if (testsCompletedEl) testsCompletedEl.textContent = testsCount;
+    if (overallProgressEl) overallProgressEl.style.width = `${progressPercentage}%`;
+    
+    console.log('✅ Dashboard stats loaded:', { totalChapters, completedCount, progressPercentage, testsCount });
+}
+
+// Curriculum
+function switchGrade(grade) {
+    currentGrade = grade;
+    
+    document.querySelectorAll('.grade-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    const activeBtn = document.querySelector(`[data-grade="${grade}"]`);
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+    }
+    
+    loadChaptersList();
+}
+
+function loadChaptersList() {
+    if (!currentUser) return;
+    
+    const subject = currentUser.isAdmin ? 'physics' : currentUser.subject;
+    const chapters = appData.curriculum[subject][currentGrade];
+    const container = document.getElementById('chaptersList');
+    
+    if (!container) return;
+    
+    container.innerHTML = chapters.map(chapter => {
+        const key = `${subject}_${currentGrade}_${chapter}`;
+        const progress = chapterProgress[key] || {};
+        const isCompleted = progress.completed || false;
+        const completionDate = progress.date || '';
+        const testCompleted = progress.testCompleted || false;
+        
+        return `
+            <div class="chapter-card ${isCompleted ? 'completed' : ''}" data-chapter="${chapter}">
+                <div class="chapter-header">
+                    <div class="chapter-checkbox ${isCompleted ? 'checked' : ''}">
+                        ${isCompleted ? '✓' : ''}
+                    </div>
+                    <h4 class="chapter-title" style="color: #1a1a1a !important;">${chapter}</h4>
+                </div>
+                <div class="chapter-details">
+                    <span style="color: #4b5563;">${completionDate ? `Completed: ${completionDate}` : 'Not completed'}</span>
+                    <span style="color: #4b5563;">${testCompleted ? '✅ Test Done' : '📝 Test Pending'}</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    // Add click handlers
+    container.querySelectorAll('.chapter-card').forEach(card => {
+        card.addEventListener('click', () => openChapterModal(card.dataset.chapter));
+    });
+}
+
+function openChapterModal(chapter) {
+    if (!currentUser) return;
+    
+    const subject = currentUser.isAdmin ? 'physics' : currentUser.subject;
+    const key = `${subject}_${currentGrade}_${chapter}`;
+    const progress = chapterProgress[key] || {};
+    
+    currentModalChapter = {
+        chapter,
+        key,
+        subject,
+        grade: currentGrade
+    };
+    
+    const modalTitle = document.getElementById('modalChapterTitle');
+    const completionDate = document.getElementById('completionDate');
+    const testCompleted = document.getElementById('testCompleted');
+    const modal = document.getElementById('chapterModal');
+    
+    if (modalTitle) {
+        modalTitle.textContent = chapter;
+        modalTitle.style.color = '#1a1a1a'; // FIXED: Ensure modal title is black
+    }
+    if (completionDate) completionDate.value = progress.date || '';
+    if (testCompleted) testCompleted.checked = progress.testCompleted || false;
+    if (modal) modal.classList.remove('hidden');
+}
+
+function closeChapterModal() {
+    const modal = document.getElementById('chapterModal');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+    currentModalChapter = null;
+}
+
+function saveChapterProgress() {
+    if (!currentModalChapter) return;
+    
+    const dateInput = document.getElementById('completionDate');
+    const testInput = document.getElementById('testCompleted');
+    
+    if (!dateInput || !testInput) return;
+    
+    const date = dateInput.value;
+    const testCompleted = testInput.checked;
+    
+    if (!date) {
+        alert('Please select a completion date');
+        return;
+    }
+    
+    const wasCompleted = chapterProgress[currentModalChapter.key]?.completed || false;
+    
+    chapterProgress[currentModalChapter.key] = {
+        completed: true,
+        date,
+        testCompleted,
+        chapter: currentModalChapter.chapter,
+        subject: currentModalChapter.subject,
+        grade: currentModalChapter.grade
+    };
+    
+    saveToStorage();
+    loadChaptersList();
+    loadDashboard();
+    closeChapterModal();
+    
+    // Show confetti if newly completed
+    if (!wasCompleted && typeof confetti !== 'undefined') {
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+        });
+    }
+}
+
+// Profile Management
+function loadProfile() {
+    if (!currentUser) return;
+    
+    const profileName = document.getElementById('profileName');
+    const profileRole = document.getElementById('profileRole');
+    const editName = document.getElementById('editName');
+    const editEmail = document.getElementById('editEmail');
+    const editPhone = document.getElementById('editPhone');
+    const editDob = document.getElementById('editDob');
+    
+    if (profileName) {
+        profileName.textContent = currentUser.name;
+        profileName.style.color = '#1a1a1a'; // FIXED: Ensure profile name is black
+    }
+    
+    if (profileRole) {
+        if (currentUser.isAdmin) {
+            profileRole.textContent = 'System Administrator';
+        } else {
+            profileRole.textContent = `${currentUser.subject.charAt(0).toUpperCase() + currentUser.subject.slice(1)} Teacher at ${appData.schools[currentUser.school]}`;
+        }
+        profileRole.style.color = '#4b5563'; // Good contrast for role
+    }
+    
+    if (editName) editName.value = currentUser.name;
+    if (editEmail) editEmail.value = currentUser.email;
+    if (editPhone) editPhone.value = currentUser.phone;
+    if (editDob) editDob.value = currentUser.dob;
+}
+
+function handlePhotoUpload(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const profileImage = document.getElementById('profileImage');
+            if (profileImage) {
+                profileImage.src = e.target.result;
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function saveProfile() {
+    if (!currentUser) return;
+    
+    const editName = document.getElementById('editName');
+    const editEmail = document.getElementById('editEmail');
+    const editPhone = document.getElementById('editPhone');
+    const editDob = document.getElementById('editDob');
+    
+    if (!editName || !editEmail || !editPhone || !editDob) return;
+    
+    const name = editName.value;
+    const email = editEmail.value;
+    const phone = editPhone.value;
+    const dob = editDob.value;
+    
+    if (!name || !email || !phone || !dob) {
+        alert('Please fill in all fields');
+        return;
+    }
+    
+    currentUser.name = name;
+    currentUser.email = email;
+    currentUser.phone = phone;
+    currentUser.dob = dob;
+    
+    loadProfile();
+    alert('Profile updated successfully!');
+}
+
+// Team Members
+function loadTeamMembers() {
+    if (!currentUser) return;
+    
+    const container = document.getElementById('teamMembers');
+    if (!container) return;
+    
+    const schoolTeachers = Object.entries(appData.teachers)
+        .filter(([id, teacher]) => 
+            currentUser.isAdmin || teacher.school === currentUser.school
+        )
+        .filter(([id]) => id !== 'admin');
+    
+    container.innerHTML = schoolTeachers.map(([id, teacher]) => `
+        <div class="team-member-card">
+            <div class="team-avatar">
+                ${teacher.name.charAt(0).toUpperCase()}
+            </div>
+            <h4 style="color: #1a1a1a !important;">${teacher.name}</h4>
+            <p style="color: #4b5563;">${teacher.subject.charAt(0).toUpperCase() + teacher.subject.slice(1)}</p>
+            <p style="color: #4b5563;">${appData.schools[teacher.school]}</p>
+            <p style="color: #4b5563;">${teacher.email}</p>
+            <p style="color: #4b5563;">${teacher.phone}</p>
+        </div>
+    `).join('');
+}
+
+// Chat Functionality
+function loadChatMessages() {
+    const container = document.getElementById('chatMessages');
+    if (!container || !currentUser) return;
+    
+    container.innerHTML = chatMessages.map(msg => `
+        <div class="chat-message ${msg.senderId === currentUser.employeeId ? 'own' : 'other'}">
+            <strong style="color: ${msg.senderId === currentUser.employeeId ? 'white' : '#1a1a1a'};">${msg.senderName}:</strong> 
+            <span style="color: ${msg.senderId === currentUser.employeeId ? 'white' : '#1a1a1a'};">${msg.message}</span>
+        </div>
+    `).join('');
+    container.scrollTop = container.scrollHeight;
+}
+
+function sendMessage() {
+    if (!currentUser) return;
+    
+    const input = document.getElementById('messageInput');
+    if (!input) return;
+    
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    const newMessage = {
+        id: Date.now(),
+        senderId: currentUser.employeeId,
+        senderName: currentUser.name,
+        message,
+        timestamp: new Date().toISOString()
+    };
+    
+    chatMessages.push(newMessage);
+    input.value = '';
+    
+    saveToStorage();
+    loadChatMessages();
+}
+
+// Admin Features
+function showAdminFeatures() {
+    console.log('🔄 Showing admin features...');
+    document.querySelectorAll('.admin-only').forEach(element => {
+        element.classList.remove('hidden');
+        element.classList.add('show');
+    });
+}
+
+function loadAnalytics() {
+    loadSubjectChart();
+    loadSchoolChart();
+}
+
+function loadSubjectChart() {
+    const canvas = document.getElementById('subjectChart');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    
+    const subjectData = appData.subjects.map(subject => {
+        let totalChapters = 0;
+        let completedChapters = 0;
+        
+        [11, 12].forEach(grade => {
+            const chapters = appData.curriculum[subject][grade];
+            totalChapters += chapters.length;
+            
+            chapters.forEach(chapter => {
+                const key = `${subject}_${grade}_${chapter}`;
+                if (chapterProgress[key]?.completed) {
+                    completedChapters++;
+                }
+            });
+        });
+        
+        return {
+            subject,
+            progress: totalChapters > 0 ? (completedChapters / totalChapters) * 100 : 0
+        };
+    });
+    
+    if (typeof Chart !== 'undefined') {
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: subjectData.map(d => d.subject.charAt(0).toUpperCase() + d.subject.slice(1)),
+                datasets: [{
+                    label: 'Progress (%)',
+                    data: subjectData.map(d => d.progress),
+                    backgroundColor: ['#1FB8CD', '#FFC185', '#B4413C', '#ECEBD5'],
+                    borderColor: ['#1FB8CD', '#FFC185', '#B4413C', '#ECEBD5'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
+    }
+}
+
+function loadSchoolChart() {
+    const canvas = document.getElementById('schoolChart');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    
+    const schoolData = Object.entries(appData.schools).map(([schoolId, schoolName]) => {
+        const schoolTeachers = Object.values(appData.teachers)
+            .filter(teacher => teacher.school === schoolId);
+        
+        return {
+            school: schoolName,
+            teachers: schoolTeachers.length
+        };
+    });
+    
+    if (typeof Chart !== 'undefined') {
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: schoolData.map(d => d.school),
+                datasets: [{
+                    data: schoolData.map(d => d.teachers),
+                    backgroundColor: ['#1FB8CD', '#FFC185', '#B4413C', '#ECEBD5', '#5D878F', '#DB4545']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    }
+}
+
+// Admin Panel
+function switchAdminTab(tab) {
+    document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    const activeBtn = document.querySelector(`[data-tab="${tab}"]`);
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+    }
+    
+    document.querySelectorAll('.admin-tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    const activeContent = document.getElementById(`admin${tab.charAt(0).toUpperCase() + tab.slice(1)}`);
+    if (activeContent) {
+        activeContent.classList.add('active');
+    }
+    
+    if (tab === 'chapters') {
+        loadAdminChapters();
+    } else if (tab === 'teachers') {
+        loadAdminTeachers();
+    }
+}
+
+function loadAdminPanel() {
+    loadAdminChapters();
+    loadAdminTeachers();
+}
+
+function loadAdminChapters() {
+    const subjectSelect = document.getElementById('adminSubject');
+    const gradeSelect = document.getElementById('adminGrade');
+    const container = document.getElementById('adminChaptersList');
+    
+    if (!subjectSelect || !gradeSelect || !container) return;
+    
+    const subject = subjectSelect.value;
+    const grade = gradeSelect.value;
+    const chapters = appData.curriculum[subject][grade];
+    
+    container.innerHTML = chapters.map(chapter => `
+        <div class="admin-chapter-item">
+            <span style="color: #1a1a1a !important;">${chapter}</span>
+            <button class="btn btn--outline btn--sm" onclick="removeChapter('${subject}', ${grade}, '${chapter}')">
+                Remove
+            </button>
+        </div>
+    `).join('');
+}
+
+function loadAdminTeachers() {
+    const container = document.getElementById('adminTeachersList');
+    if (!container) return;
+    
+    const teachers = Object.entries(appData.teachers)
+        .filter(([id]) => id !== 'admin');
+    
+    container.innerHTML = teachers.map(([id, teacher]) => `
+        <div class="teacher-item">
+            <h4 style="color: #1a1a1a !important;">${teacher.name}</h4>
+            <p style="color: #4b5563;"><strong>ID:</strong> ${id}</p>
+            <p style="color: #4b5563;"><strong>Subject:</strong> ${teacher.subject.charAt(0).toUpperCase() + teacher.subject.slice(1)}</p>
+            <p style="color: #4b5563;"><strong>School:</strong> ${appData.schools[teacher.school]}</p>
+            <p style="color: #4b5563;"><strong>Email:</strong> ${teacher.email}</p>
+            <p style="color: #4b5563;"><strong>Phone:</strong> ${teacher.phone}</p>
+        </div>
+    `).join('');
+}
+
+function addNewChapter() {
+    const subjectSelect = document.getElementById('adminSubject');
+    const gradeSelect = document.getElementById('adminGrade');
+    const chapterInput = document.getElementById('newChapter');
+    
+    if (!subjectSelect || !gradeSelect || !chapterInput) return;
+    
+    const subject = subjectSelect.value;
+    const grade = parseInt(gradeSelect.value);
+    const chapterName = chapterInput.value.trim();
+    
+    if (!chapterName) {
+        alert('Please enter a chapter name');
+        return;
+    }
+    
+    if (appData.curriculum[subject][grade].includes(chapterName)) {
+        alert('Chapter already exists');
+        return;
+    }
+    
+    appData.curriculum[subject][grade].push(chapterName);
+    chapterInput.value = '';
+    loadAdminChapters();
+    
+    // Refresh curriculum view if on that subject/grade
+    if (currentUser && currentUser.subject === subject && currentGrade === grade) {
+        loadChaptersList();
+    }
+    
+    alert('Chapter added successfully!');
+}
+
+// Make removeChapter globally accessible
+window.removeChapter = function(subject, grade, chapter) {
+    if (confirm(`Are you sure you want to remove "${chapter}"?`)) {
+        const index = appData.curriculum[subject][grade].indexOf(chapter);
+        if (index > -1) {
+            appData.curriculum[subject][grade].splice(index, 1);
+            loadAdminChapters();
+            
+            // Remove progress data for this chapter
+            const key = `${subject}_${grade}_${chapter}`;
+            delete chapterProgress[key];
+            saveToStorage();
+            
+            // Refresh curriculum view if on that subject/grade
+            if (currentUser && currentUser.subject === subject && currentGrade === grade) {
+                loadChaptersList();
+                loadDashboard();
+            }
+            
+            alert('Chapter removed successfully!');
+        }
+    }
+};
+
+// Data Storage
+function saveToStorage() {
+    try {
+        const data = {
+            chapterProgress,
+            chatMessages,
+            curriculum: appData.curriculum
+        };
+        // In a real app, this would be saved to a backend
+        console.log('Data saved:', data);
+    } catch (error) {
+        console.error('Error saving data:', error);
+    }
+}
+
+function loadStoredData() {
+    // Initialize with empty data
+    chapterProgress = {};
+    chatMessages = [];
+}
+
+// Logout
+function handleLogout() {
+    if (confirm('Are you sure you want to logout?')) {
+        currentUser = null;
+        currentGrade = 11;
+        currentModalChapter = null;
+        
+        // Reset forms
+        const loginForm = document.getElementById('loginForm');
+        if (loginForm) {
+            loginForm.reset();
+        }
+        hideError();
+        hideAdminPasswordField();
+        
+        // Hide admin features
+        document.querySelectorAll('.admin-only').forEach(element => {
+            element.classList.add('hidden');
+            element.classList.remove('show');
+        });
+        
+        // Show login screen
+        const loginScreen = document.getElementById('loginScreen');
+        const mainApp = document.getElementById('mainApp');
+        
+        if (loginScreen && mainApp) {
+            mainApp.classList.remove('active');
+            mainApp.classList.add('hidden');
+            mainApp.style.display = 'none';
+            loginScreen.classList.add('active');
+            loginScreen.style.display = 'flex';
+        }
+        
+        // Reset navigation
+        navigateToSection('dashboard');
+    }
 }
