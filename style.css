@@ -1365,19 +1365,36 @@ body {
   font-size: var(--font-size-sm);
 }
 
-/* SIMPLIFIED FORM CONTROLS - REMOVE ALL CONFLICTS */
+/* Admin Password Section Styles */
+.admin-password-section {
+  margin-top: var(--space-16);
+  padding-top: var(--space-16);
+  border-top: 1px solid var(--color-border);
+}
+
+.admin-login-buttons {
+  display: flex;
+  gap: var(--space-8);
+  margin-top: var(--space-12);
+}
+
+.admin-login-buttons .btn {
+  flex: 1;
+}
+
+/* FORM CONTROLS - SIMPLIFIED WITH BETTER CONTRAST */
 .form-control {
   display: block;
   width: 100%;
   padding: 12px 16px;
   font-size: 16px;
   line-height: 1.5;
-  color: #333;
-  background-color: #fff;
-  border: 2px solid #ddd;
+  color: #1a1a1a;
+  background-color: #ffffff;
+  border: 2px solid #d1d5db;
   border-radius: 8px;
   box-sizing: border-box;
-  transition: border-color 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
   font-family: system-ui, -apple-system, sans-serif;
   position: relative;
   z-index: 1;
@@ -1397,7 +1414,7 @@ body {
 select.form-control {
   cursor: pointer;
   padding-right: 40px;
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path fill="%23333" d="M6 8L2 4h8z"/></svg>');
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path fill="%231a1a1a" d="M6 8L2 4h8z"/></svg>');
   background-repeat: no-repeat;
   background-position: right 12px center;
   background-size: 12px;
@@ -1412,7 +1429,7 @@ input.form-control {
 }
 
 input.form-control::placeholder {
-  color: #999;
+  color: #6b7280;
   opacity: 1;
 }
 
@@ -1421,7 +1438,7 @@ input.form-control::placeholder {
   margin-bottom: 8px;
   font-weight: 500;
   font-size: 14px;
-  color: #333;
+  color: #1a1a1a;
 }
 
 .form-group {
@@ -1429,7 +1446,7 @@ input.form-control::placeholder {
   position: relative;
 }
 
-/* SIMPLIFIED BUTTON STYLES */
+/* BUTTON STYLES */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -1472,7 +1489,7 @@ input.form-control::placeholder {
 
 .btn--secondary {
   background: rgba(94, 82, 64, 0.12);
-  color: #333;
+  color: #1a1a1a;
   border-color: rgba(94, 82, 64, 0.2);
 }
 
@@ -1486,8 +1503,8 @@ input.form-control::placeholder {
 
 .btn--outline {
   background: transparent;
-  border: 2px solid #ddd;
-  color: #333;
+  border: 2px solid #d1d5db;
+  color: #1a1a1a;
 }
 
 .btn--outline:hover {
@@ -1545,7 +1562,7 @@ input.form-control::placeholder {
   background: none;
   border: none;
   padding: var(--space-8) var(--space-16);
-  color: var(--color-text-secondary);
+  color: #1a1a1a;
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   cursor: pointer;
@@ -1581,11 +1598,11 @@ input.form-control::placeholder {
 .section-header h1 {
   margin-bottom: var(--space-8);
   font-size: var(--font-size-3xl);
-  color: var(--color-text);
+  color: #1a1a1a;
 }
 
 .section-header p {
-  color: var(--color-text-secondary);
+  color: #4b5563;
   margin: 0;
 }
 
@@ -1628,12 +1645,12 @@ input.form-control::placeholder {
 .stat-number {
   font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-bold);
-  color: var(--color-text);
+  color: #1a1a1a;
   margin-bottom: var(--space-4);
 }
 
 .stat-label {
-  color: var(--color-text-secondary);
+  color: #4b5563;
   font-size: var(--font-size-sm);
 }
 
@@ -1649,6 +1666,7 @@ input.form-control::placeholder {
   display: block;
   margin-bottom: var(--space-12);
   font-weight: var(--font-weight-medium);
+  color: #1a1a1a;
 }
 
 .progress-bar {
@@ -1680,7 +1698,7 @@ input.form-control::placeholder {
   color: var(--color-btn-primary-text);
 }
 
-/* Chapters List */
+/* Chapters List - FIXED TEXT COLORS */
 .chapters-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -1736,13 +1754,14 @@ input.form-control::placeholder {
   font-size: var(--font-size-lg);
   margin: 0;
   flex: 1;
+  color: #1a1a1a !important; /* FIXED: Chapter names now black */
 }
 
 .chapter-details {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: var(--color-text-secondary);
+  color: #4b5563; /* FIXED: Better contrast for details */
   font-size: var(--font-size-sm);
 }
 
@@ -1778,12 +1797,12 @@ input.form-control::placeholder {
 
 .profile-info h3 {
   margin: 0 0 var(--space-4) 0;
-  color: var(--color-text);
+  color: #1a1a1a; /* FIXED: Profile name now black */
 }
 
 .profile-info p {
   margin: 0;
-  color: var(--color-text-secondary);
+  color: #4b5563;
 }
 
 /* Card Styles */
@@ -1801,11 +1820,15 @@ input.form-control::placeholder {
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
+.card__header h4 {
+  color: #1a1a1a; /* FIXED: Card headers now black */
+}
+
 .card__body {
   padding: var(--space-16);
 }
 
-/* Team Grid */
+/* Team Grid - FIXED TEACHER NAMES */
 .team-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -1824,6 +1847,14 @@ input.form-control::placeholder {
 
 .team-member-card:hover {
   transform: translateY(-2px);
+}
+
+.team-member-card h4 {
+  color: #1a1a1a !important; /* FIXED: Teacher names now black */
+}
+
+.team-member-card p {
+  color: #4b5563; /* Better contrast for team member details */
 }
 
 .team-avatar {
@@ -1876,7 +1907,7 @@ input.form-control::placeholder {
 .chat-message.other {
   align-self: flex-start;
   background: rgba(var(--color-text-secondary), 0.1);
-  color: var(--color-text);
+  color: #1a1a1a; /* FIXED: Chat messages now readable */
 }
 
 .chat-input {
@@ -1909,7 +1940,7 @@ input.form-control::placeholder {
   background: none;
   border: none;
   padding: var(--space-12) var(--space-20);
-  color: var(--color-text-secondary);
+  color: #4b5563;
   font-weight: var(--font-weight-medium);
   cursor: pointer;
   border-bottom: 2px solid transparent;
@@ -1958,6 +1989,10 @@ input.form-control::placeholder {
   align-items: center;
 }
 
+.admin-chapter-item span {
+  color: #1a1a1a; /* FIXED: Admin chapter names now black */
+}
+
 .teachers-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -1970,6 +2005,14 @@ input.form-control::placeholder {
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: var(--radius-lg);
   padding: var(--space-20);
+}
+
+.teacher-item h4 {
+  color: #1a1a1a !important; /* FIXED: Teacher item names now black */
+}
+
+.teacher-item p {
+  color: #4b5563; /* Better contrast for teacher details */
 }
 
 /* Modal Styles */
@@ -2020,7 +2063,7 @@ input.form-control::placeholder {
 
 .modal-header h3 {
   margin: 0;
-  color: var(--color-text);
+  color: #1a1a1a; /* FIXED: Modal titles now black */
 }
 
 .modal-close {
@@ -2028,7 +2071,7 @@ input.form-control::placeholder {
   border: none;
   font-size: var(--font-size-2xl);
   cursor: pointer;
-  color: var(--color-text-secondary);
+  color: #4b5563;
   padding: 0;
   width: 30px;
   height: 30px;
@@ -2049,7 +2092,7 @@ input.form-control::placeholder {
   justify-content: flex-end;
 }
 
-/* Checkbox Styles */
+/* Checkbox Styles - FIXED LABELS */
 .checkbox-group {
   margin-bottom: var(--space-16);
 }
@@ -2060,6 +2103,7 @@ input.form-control::placeholder {
   gap: var(--space-8);
   cursor: pointer;
   font-size: var(--font-size-base);
+  color: #1a1a1a !important; /* FIXED: Checkbox labels now black */
 }
 
 .checkbox-label input[type="checkbox"] {
@@ -2137,6 +2181,10 @@ input.form-control::placeholder {
   .modal-content {
     width: 95%;
     margin: var(--space-16);
+  }
+
+  .admin-login-buttons {
+    flex-direction: column;
   }
 }
 
