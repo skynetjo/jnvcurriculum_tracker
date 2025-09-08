@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduTrack - School Curriculum Tracker</title>
+    <title>JNV Curriculum Tracker - विद्या ददाति विनयम्</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
@@ -21,8 +21,9 @@
         <div class="container">
             <div class="login-card">
                 <div class="login-header">
-                    <h1>EduTrack</h1>
-                    <p>School Curriculum Management System</p>
+                    <h1>JNV Curriculum Tracker</h1>
+                    <p class="tagline">विद्या ददाति विनयम्</p>
+                    <p class="subtitle">School Curriculum Management System</p>
                 </div>
                 
                 <!-- Teacher Login Section -->
@@ -69,18 +70,6 @@
                 <div id="adminLoginSection">
                     <h3 class="login-section-title">Administrator Access</h3>
                     <button type="button" id="adminLoginBtn" class="btn btn--secondary btn--full-width">Login as Admin</button>
-                    
-                    <!-- Admin Password Field (initially hidden) -->
-                    <div id="adminPasswordSection" class="admin-password-section hidden">
-                        <div class="form-group">
-                            <label for="adminPassword" class="form-label">Admin Password</label>
-                            <input type="password" id="adminPassword" class="form-control" placeholder="Enter admin password" autocomplete="off">
-                        </div>
-                        <div class="admin-login-buttons">
-                            <button type="button" id="cancelAdminBtn" class="btn btn--outline btn--sm">Cancel</button>
-                            <button type="button" id="confirmAdminBtn" class="btn btn--primary btn--sm">Login</button>
-                        </div>
-                    </div>
                 </div>
 
                 <div id="errorMessage" class="error-message hidden"></div>
@@ -93,7 +82,7 @@
         <!-- Navigation -->
         <nav class="navbar">
             <div class="nav-brand">
-                <h2>EduTrack</h2>
+                <h2>JNV Curriculum Tracker</h2>
             </div>
             <div class="nav-links">
                 <button class="nav-link active" data-section="dashboard">Dashboard</button>
@@ -300,10 +289,36 @@
                     <div id="adminChaptersList" class="admin-chapters-list"></div>
                 </div>
                 <div id="adminTeachers" class="admin-tab-content">
-                    <div class="teachers-list" id="adminTeachersList"></div>
+                    <div class="teacher-management-header">
+                        <button class="btn btn--primary" id="addNewTeacherBtn">Add New Teacher</button>
+                    </div>
+                    <div class="teachers-table-container">
+                        <table class="teachers-table" id="teachersTable">
+                            <thead>
+                                <tr>
+                                    <th>Employee ID</th>
+                                    <th>Name</th>
+                                    <th>School</th>
+                                    <th>Subject</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="teachersTableBody">
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div class="container">
+                <p>made by Anand ♥</p>
+            </div>
+        </footer>
     </div>
 
     <!-- Chapter Modal -->
@@ -331,6 +346,93 @@
                 <button class="btn btn--secondary" id="cancelModal">Cancel</button>
                 <button class="btn btn--primary" id="saveChapterBtn">Save</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Teacher Management Modal -->
+    <div id="teacherModal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="teacherModalTitle">Add New Teacher</h3>
+                <button class="modal-close" id="closeTeacherModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="teacherForm">
+                    <div class="form-group">
+                        <label class="form-label">Employee ID</label>
+                        <input type="text" id="teacherEmployeeId" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Name</label>
+                        <input type="text" id="teacherName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">School</label>
+                        <select id="teacherSchool" class="form-control" required>
+                            <option value="">Select School...</option>
+                            <option value="school1">CoE Barwani</option>
+                            <option value="school2">CoE Cuttak</option>
+                            <option value="school3">CoE Mahisagar</option>
+                            <option value="school4">CoE Bundi</option>
+                            <option value="school5">JNV Bharuch</option>
+                            <option value="school6">EMRS Bhopal</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Subject</label>
+                        <select id="teacherSubject" class="form-control" required>
+                            <option value="">Select Subject...</option>
+                            <option value="physics">Physics</option>
+                            <option value="chemistry">Chemistry</option>
+                            <option value="mathematics">Mathematics</option>
+                            <option value="biology">Biology</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" id="teacherEmail" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone</label>
+                        <input type="tel" id="teacherPhone" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Date of Birth</label>
+                        <input type="date" id="teacherDob" class="form-control" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn--secondary" id="cancelTeacherModal">Cancel</button>
+                <button class="btn btn--primary" id="saveTeacherBtn">Save Teacher</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="confirmModalTitle">Confirm Action</h3>
+                <button class="modal-close" id="closeConfirmModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmModalMessage">Are you sure you want to perform this action?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn--secondary" id="cancelConfirmModal">Cancel</button>
+                <button class="btn btn--primary" id="confirmActionBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Message -->
+    <div id="messageToast" class="message-toast hidden">
+        <div class="toast-content">
+            <span id="toastMessage"></span>
+            <button class="toast-close" id="closeToast">&times;</button>
         </div>
     </div>
 
