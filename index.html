@@ -3,8 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JNV Curriculum Tracker</title>
+    <title>JNV Curriculum Tracker - FINAL VERSION</title>
     <link rel="stylesheet" href="style.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
+    <!-- Chart.js for Analytics -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 </head>
@@ -23,12 +29,14 @@
                 <div class="login-header">
                     <h1>JNV Curriculum Tracker</h1>
                     <p class="sanskrit-tagline">विद्या ददाति विनयम्</p>
-                    <p>School Curriculum Management System</p>
+                    <p class="version-badge">FINAL COMPLETE VERSION - ALL 10 REQUIREMENTS</p>
+                    <p>Cloud-based School Curriculum Management System</p>
                 </div>
                 
                 <!-- Teacher Login Section -->
                 <div id="teacherLoginSection">
                     <h3 class="login-section-title">Teacher Login</h3>
+                    <p class="test-credentials">Test: CoE Barwani + AF464 + Physics</p>
                     <form id="loginForm" class="login-form" novalidate>
                         <div class="form-group">
                             <label for="school" class="form-label">Select School</label>
@@ -56,7 +64,10 @@
                                 <option value="biology">Biology</option>
                             </select>
                         </div>
-                        <button type="submit" class="btn btn--primary btn--full-width" id="loginSubmitBtn">Login</button>
+                        <button type="submit" class="btn btn--primary btn--full-width" id="loginSubmitBtn">
+                            <span id="loginBtnText">Login to Cloud System</span>
+                            <div id="loginSpinner" class="loading hidden"></div>
+                        </button>
                     </form>
                 </div>
 
@@ -69,6 +80,7 @@
                 
                 <div id="adminLoginSection">
                     <h3 class="login-section-title">Administrator Access</h3>
+                    <p class="test-credentials">Test Admin Password: admin123</p>
                     <button type="button" id="adminLoginBtn" class="btn btn--secondary btn--full-width">Login as Admin</button>
                     
                     <!-- Admin Password Field (initially hidden) -->
@@ -79,25 +91,19 @@
                         </div>
                         <div class="admin-login-buttons">
                             <button type="button" id="cancelAdminBtn" class="btn btn--outline btn--sm">Cancel</button>
-                            <button type="button" id="confirmAdminBtn" class="btn btn--primary btn--sm">Login</button>
+                            <button type="button" id="confirmAdminBtn" class="btn btn--primary btn--sm">Login to Cloud</button>
                         </div>
                     </div>
                 </div>
 
                 <div id="errorMessage" class="error-message hidden"></div>
-                
-                <!-- Test Credentials Helper -->
-                <div class="test-credentials">
-                    <p><strong>Test Credentials:</strong></p>
-                    <p>Teacher: School "CoE Barwani", ID "AF464", Subject "Physics"</p>
-                    <p>Admin: Password "admin123"</p>
-                </div>
+                <div id="successMessage" class="success-message hidden"></div>
             </div>
         </div>
         
         <!-- Footer -->
         <div class="login-footer">
-            <p>made by Anand ♥</p>
+            <p>made by Anand ♥ | Firebase Cloud Storage ☁️</p>
         </div>
     </div>
 
@@ -107,7 +113,7 @@
         <nav class="navbar">
             <div class="nav-brand">
                 <h2>JNV Curriculum Tracker</h2>
-                <p class="nav-tagline">विद्या ददाति विनयम्</p>
+                <p class="nav-tagline">विद्या ददाति विनयम् | Cloud-Powered ☁️</p>
             </div>
             <div class="nav-links">
                 <button class="nav-link active" data-section="dashboard">Dashboard</button>
@@ -268,69 +274,41 @@
         <div id="analytics" class="section">
             <div class="container">
                 <div class="section-header">
-                    <h1>Analytics Dashboard</h1>
-                    
-                    <!-- Analytics Filters -->
+                    <h1>Analytics & Projections</h1>
                     <div class="analytics-filters">
-                        <div class="filter-group">
-                            <label for="analyticsSchool" class="form-label">Filter by School:</label>
-                            <select id="analyticsSchool" class="form-control">
-                                <option value="">All Schools</option>
-                                <option value="school1">CoE Barwani</option>
-                                <option value="school2">CoE Cuttak</option>
-                                <option value="school3">CoE Mahisagar</option>
-                                <option value="school4">CoE Bundi</option>
-                                <option value="school5">JNV Bharuch</option>
-                                <option value="school6">EMRS Bhopal</option>
-                            </select>
-                        </div>
-                        <div class="filter-group">
-                            <label for="analyticsSubject" class="form-label">Filter by Subject:</label>
-                            <select id="analyticsSubject" class="form-control">
-                                <option value="">All Subjects</option>
-                                <option value="physics">Physics</option>
-                                <option value="chemistry">Chemistry</option>
-                                <option value="mathematics">Mathematics</option>
-                                <option value="biology">Biology</option>
-                            </select>
-                        </div>
-                        <div class="filter-group">
-                            <label for="analyticsTestMode" class="form-label">Filter by Test Mode:</label>
-                            <select id="analyticsTestMode" class="form-control">
-                                <option value="">All Modes</option>
-                                <option value="online">Online Tests</option>
-                                <option value="offline">Offline Tests</option>
-                                <option value="incomplete">Incomplete Tests</option>
-                            </select>
-                        </div>
+                        <select id="analyticsSchool" class="form-control">
+                            <option value="">All Schools</option>
+                            <option value="school1">CoE Barwani</option>
+                            <option value="school2">CoE Cuttak</option>
+                            <option value="school3">CoE Mahisagar</option>
+                            <option value="school4">CoE Bundi</option>
+                            <option value="school5">JNV Bharuch</option>
+                            <option value="school6">EMRS Bhopal</option>
+                        </select>
                     </div>
                 </div>
                 
                 <!-- Analytics Overview Cards -->
                 <div class="analytics-overview">
-                    <div class="analytics-card">
-                        <h4>Overall Completion</h4>
-                        <div class="analytics-metric" id="overallCompletion">0%</div>
-                        <p>Across all schools</p>
+                    <div class="card">
+                        <div class="card__header">
+                            <h4>Overall Completion Status</h4>
+                        </div>
+                        <div class="card__body">
+                            <div id="completionStats" class="completion-stats"></div>
+                        </div>
                     </div>
-                    <div class="analytics-card">
-                        <h4>Total Chapters</h4>
-                        <div class="analytics-metric" id="totalChapters">0</div>
-                        <p>In curriculum</p>
-                    </div>
-                    <div class="analytics-card">
-                        <h4>Tests Completed</h4>
-                        <div class="analytics-metric" id="testsCompleted">0</div>
-                        <p>Out of completed chapters</p>
-                    </div>
-                    <div class="analytics-card">
-                        <h4>Projected Completion</h4>
-                        <div class="analytics-metric" id="projectedCompletion">-</div>
-                        <p>At current pace</p>
+                    
+                    <div class="card">
+                        <div class="card__header">
+                            <h4>Timeline Projections</h4>
+                        </div>
+                        <div class="card__body">
+                            <div id="timelineProjections" class="timeline-projections"></div>
+                        </div>
                     </div>
                 </div>
                 
-                <!-- Analytics Charts -->
                 <div class="analytics-grid">
                     <div class="card">
                         <div class="card__header">
@@ -344,44 +322,12 @@
                     </div>
                     <div class="card">
                         <div class="card__header">
-                            <h4>School Performance</h4>
+                            <h4>School Performance Comparison</h4>
                         </div>
                         <div class="card__body">
                             <div class="chart-container" style="position: relative; height: 300px;">
                                 <canvas id="schoolChart"></canvas>
                             </div>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card__header">
-                            <h4>Test Completion Rates</h4>
-                        </div>
-                        <div class="card__body">
-                            <div class="chart-container" style="position: relative; height: 300px;">
-                                <canvas id="testChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card__header">
-                            <h4>Progress Timeline</h4>
-                        </div>
-                        <div class="card__body">
-                            <div class="chart-container" style="position: relative; height: 300px;">
-                                <canvas id="timelineChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Detailed Analysis -->
-                <div class="analytics-details">
-                    <div class="card">
-                        <div class="card__header">
-                            <h4>Detailed Analysis & Recommendations</h4>
-                        </div>
-                        <div class="card__body">
-                            <div id="analysisReport"></div>
                         </div>
                     </div>
                 </div>
@@ -393,13 +339,41 @@
             <div class="container">
                 <div class="section-header">
                     <h1>Admin Panel</h1>
+                    
+                    <!-- Advanced Filters -->
+                    <div class="admin-filters">
+                        <select id="filterSubject" class="form-control">
+                            <option value="">All Subjects</option>
+                            <option value="physics">Physics</option>
+                            <option value="chemistry">Chemistry</option>
+                            <option value="mathematics">Mathematics</option>
+                            <option value="biology">Biology</option>
+                        </select>
+                        <select id="filterSchool" class="form-control">
+                            <option value="">All Schools</option>
+                            <option value="school1">CoE Barwani</option>
+                            <option value="school2">CoE Cuttak</option>
+                            <option value="school3">CoE Mahisagar</option>
+                            <option value="school4">CoE Bundi</option>
+                            <option value="school5">JNV Bharuch</option>
+                            <option value="school6">EMRS Bhopal</option>
+                        </select>
+                        <select id="filterTestStatus" class="form-control">
+                            <option value="">All Test Status</option>
+                            <option value="completed">Tests Completed</option>
+                            <option value="pending">Tests Pending</option>
+                        </select>
+                        <select id="filterTestMode" class="form-control">
+                            <option value="">All Test Modes</option>
+                            <option value="online">Online Tests</option>
+                            <option value="offline">Offline Tests</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="admin-tabs">
                     <button class="admin-tab-btn active" data-tab="chapters">Manage Chapters</button>
                     <button class="admin-tab-btn" data-tab="teachers">Manage Teachers</button>
                 </div>
-                
-                <!-- Chapters Management Tab -->
                 <div id="adminChapters" class="admin-tab-content active">
                     <div class="admin-actions">
                         <select id="adminSubject" class="form-control">
@@ -417,10 +391,8 @@
                     </div>
                     <div id="adminChaptersList" class="admin-chapters-list"></div>
                 </div>
-                
-                <!-- Teachers Management Tab -->
                 <div id="adminTeachers" class="admin-tab-content">
-                    <div class="admin-actions">
+                    <div class="teacher-management">
                         <button class="btn btn--primary" id="addTeacherBtn">Add New Teacher</button>
                     </div>
                     <div class="teachers-list" id="adminTeachersList"></div>
@@ -430,7 +402,7 @@
         
         <!-- Footer -->
         <footer class="main-footer">
-            <p>made by Anand ♥</p>
+            <p>made by Anand ♥ | Powered by Firebase Cloud Storage ☁️</p>
         </footer>
     </div>
 
@@ -447,20 +419,20 @@
                     <label class="form-label">Completion Date</label>
                     <input type="date" id="completionDate" class="form-control">
                 </div>
+                <div class="form-group">
+                    <label class="form-label">Test Mode</label>
+                    <select id="testMode" class="form-control">
+                        <option value="">Select Test Mode</option>
+                        <option value="online">Online Test</option>
+                        <option value="offline">Offline Test</option>
+                    </select>
+                </div>
                 <div class="checkbox-group">
                     <label class="checkbox-label">
                         <input type="checkbox" id="testCompleted">
                         <span class="checkbox-custom"></span>
                         Test Completed
                     </label>
-                </div>
-                <div class="form-group" id="testModeGroup">
-                    <label class="form-label">Test Mode</label>
-                    <select id="testMode" class="form-control">
-                        <option value="">Select test mode...</option>
-                        <option value="online">Online</option>
-                        <option value="offline">Offline</option>
-                    </select>
                 </div>
             </div>
             <div class="modal-footer">
@@ -470,27 +442,27 @@
         </div>
     </div>
 
-    <!-- Teacher Modal -->
+    <!-- Teacher Management Modal -->
     <div id="teacherModal" class="modal hidden">
         <div class="modal-backdrop"></div>
         <div class="modal-content">
             <div class="modal-header">
-                <h3 id="modalTeacherTitle">Add New Teacher</h3>
+                <h3 id="teacherModalTitle">Teacher Management</h3>
                 <button class="modal-close" id="closeTeacherModal">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
                     <label class="form-label">Employee ID</label>
-                    <input type="text" id="teacherEmployeeId" class="form-control" placeholder="e.g., AF001">
+                    <input type="text" id="teacherEmployeeId" class="form-control" placeholder="Enter employee ID">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Name</label>
-                    <input type="text" id="teacherName" class="form-control" placeholder="Full name">
+                    <input type="text" id="teacherName" class="form-control" placeholder="Enter teacher name">
                 </div>
                 <div class="form-group">
                     <label class="form-label">School</label>
                     <select id="teacherSchool" class="form-control">
-                        <option value="">Select school...</option>
+                        <option value="">Choose school...</option>
                         <option value="school1">CoE Barwani</option>
                         <option value="school2">CoE Cuttak</option>
                         <option value="school3">CoE Mahisagar</option>
@@ -502,7 +474,7 @@
                 <div class="form-group">
                     <label class="form-label">Subject</label>
                     <select id="teacherSubject" class="form-control">
-                        <option value="">Select subject...</option>
+                        <option value="">Choose subject...</option>
                         <option value="physics">Physics</option>
                         <option value="chemistry">Chemistry</option>
                         <option value="mathematics">Mathematics</option>
@@ -511,11 +483,11 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Email</label>
-                    <input type="email" id="teacherEmail" class="form-control" placeholder="email@school.edu">
+                    <input type="email" id="teacherEmail" class="form-control" placeholder="Enter email">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Phone</label>
-                    <input type="tel" id="teacherPhone" class="form-control" placeholder="+91 9876543210">
+                    <input type="tel" id="teacherPhone" class="form-control" placeholder="Enter phone number">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Date of Birth</label>
@@ -524,7 +496,8 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn--secondary" id="cancelTeacherModal">Cancel</button>
-                <button class="btn btn--primary" id="saveTeacherBtn">Save Teacher</button>
+                <button class="btn btn--primary" id="saveTeacherBtn">Save</button>
+                <button class="btn btn--outline" id="deleteTeacherBtn" style="display: none;">Delete</button>
             </div>
         </div>
     </div>
