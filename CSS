@@ -1,0 +1,15 @@
+/* Universal black text rule */
+* { color: #000000 !important; }
+
+/* Target every possible text element */
+h1, h2, h3, h4, h5, h6, p, span, div, label, input, 
+select, option, button, a, td, th, li {
+  color: #000000 !important;
+}
+
+/* Final override to catch everything */
+body * { color: #000000 !important; }
+
+/* Exceptions for specific UI elements */
+.btn { color: white !important; }
+.user-info { color: white !important; }
