@@ -22,7 +22,8 @@
             <div class="login-card">
                 <div class="login-header">
                     <h1>JNV Curriculum Tracker</h1>
-                    <p>विद्या ददाति विनयम्</p>
+                    <p class="sanskrit-tagline">विद्या ददाति विनयम्</p>
+                    <p>School Curriculum Management System</p>
                 </div>
                 
                 <!-- Teacher Login Section -->
@@ -70,21 +71,26 @@
                     <h3 class="login-section-title">Administrator Access</h3>
                     <button type="button" id="adminLoginBtn" class="btn btn--secondary btn--full-width">Login as Admin</button>
                     
-                    <!-- Admin Password Form (initially hidden) -->
+                    <!-- Admin Password Field (initially hidden) -->
                     <div id="adminPasswordSection" class="admin-password-section hidden">
                         <div class="form-group">
                             <label for="adminPassword" class="form-label">Admin Password</label>
                             <input type="password" id="adminPassword" class="form-control" placeholder="Enter admin password" autocomplete="off">
                         </div>
-                        <div class="admin-password-buttons">
-                            <button type="button" id="adminPasswordSubmit" class="btn btn--primary">Login</button>
-                            <button type="button" id="adminPasswordCancel" class="btn btn--outline">Cancel</button>
+                        <div class="admin-login-buttons">
+                            <button type="button" id="cancelAdminBtn" class="btn btn--outline btn--sm">Cancel</button>
+                            <button type="button" id="confirmAdminBtn" class="btn btn--primary btn--sm">Login</button>
                         </div>
                     </div>
                 </div>
 
                 <div id="errorMessage" class="error-message hidden"></div>
             </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="login-footer">
+            <p>made by Anand ♥</p>
         </div>
     </div>
 
@@ -94,6 +100,7 @@
         <nav class="navbar">
             <div class="nav-brand">
                 <h2>JNV Curriculum Tracker</h2>
+                <p class="nav-tagline">विद्या ददाति विनयम्</p>
             </div>
             <div class="nav-links">
                 <button class="nav-link active" data-section="dashboard">Dashboard</button>
@@ -113,42 +120,24 @@
                 <div class="section-header">
                     <h1>Dashboard</h1>
                     <p>Welcome back, <span id="welcomeUser"></span>!</p>
-                </div>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">📚</div>
-                        <div class="stat-content">
-                            <div class="stat-number" id="totalChapters">0</div>
-                            <div class="stat-label">Total Chapters</div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">✅</div>
-                        <div class="stat-content">
-                            <div class="stat-number" id="completedChapters">0</div>
-                            <div class="stat-label">Completed</div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">📈</div>
-                        <div class="stat-content">
-                            <div class="stat-number" id="progressPercentage">0%</div>
-                            <div class="stat-label">Progress</div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">🎯</div>
-                        <div class="stat-content">
-                            <div class="stat-number" id="testsCompleted">0</div>
-                            <div class="stat-label">Tests Done</div>
-                        </div>
+                    
+                    <!-- School Selector for Teachers -->
+                    <div id="teacherSchoolSelector" class="school-selector hidden">
+                        <label for="dashboardSchool" class="form-label">View School Progress:</label>
+                        <select id="dashboardSchool" class="form-control">
+                            <option value="school1">CoE Barwani</option>
+                            <option value="school2">CoE Cuttak</option>
+                            <option value="school3">CoE Mahisagar</option>
+                            <option value="school4">CoE Bundi</option>
+                            <option value="school5">JNV Bharuch</option>
+                            <option value="school6">EMRS Bhopal</option>
+                        </select>
                     </div>
                 </div>
-                <div class="progress-bar-container">
-                    <label class="progress-label">Overall Progress</label>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="overallProgress" style="width: 0%"></div>
-                    </div>
+                
+                <!-- Multi-Subject Stats Grid -->
+                <div id="multiSubjectStats" class="multi-subject-container">
+                    <!-- This will be populated dynamically with all subjects -->
                 </div>
             </div>
         </div>
@@ -158,9 +147,36 @@
             <div class="container">
                 <div class="section-header">
                     <h1>Curriculum Progress</h1>
-                    <div class="grade-selector">
-                        <button class="btn btn--secondary grade-btn active" data-grade="11">Grade 11</button>
-                        <button class="btn btn--secondary grade-btn" data-grade="12">Grade 12</button>
+                    
+                    <!-- Subject Selector for Admin/Teacher -->
+                    <div class="curriculum-controls">
+                        <div class="subject-selector">
+                            <label for="curriculumSubject" class="form-label">Select Subject:</label>
+                            <select id="curriculumSubject" class="form-control">
+                                <option value="physics">Physics</option>
+                                <option value="chemistry">Chemistry</option>
+                                <option value="mathematics">Mathematics</option>
+                                <option value="biology">Biology</option>
+                            </select>
+                        </div>
+                        
+                        <!-- School Selector for Teachers in Curriculum -->
+                        <div id="curriculumSchoolSelector" class="curriculum-school-selector hidden">
+                            <label for="curriculumSchool" class="form-label">Select School:</label>
+                            <select id="curriculumSchool" class="form-control">
+                                <option value="school1">CoE Barwani</option>
+                                <option value="school2">CoE Cuttak</option>
+                                <option value="school3">CoE Mahisagar</option>
+                                <option value="school4">CoE Bundi</option>
+                                <option value="school5">JNV Bharuch</option>
+                                <option value="school6">EMRS Bhopal</option>
+                            </select>
+                        </div>
+                        
+                        <div class="grade-selector">
+                            <button class="btn btn--secondary grade-btn active" data-grade="11">Grade 11</button>
+                            <button class="btn btn--secondary grade-btn" data-grade="12">Grade 12</button>
+                        </div>
                     </div>
                 </div>
                 <div id="chaptersList" class="chapters-list"></div>
@@ -300,13 +316,15 @@
                     <div id="adminChaptersList" class="admin-chapters-list"></div>
                 </div>
                 <div id="adminTeachers" class="admin-tab-content">
-                    <div class="admin-teacher-actions">
-                        <button class="btn btn--primary" id="addTeacherBtn">Add New Teacher</button>
-                    </div>
                     <div class="teachers-list" id="adminTeachersList"></div>
                 </div>
             </div>
         </div>
+        
+        <!-- Footer -->
+        <footer class="main-footer">
+            <p>made by Anand ♥</p>
+        </footer>
     </div>
 
     <!-- Chapter Modal -->
@@ -334,70 +352,6 @@
                 <button class="btn btn--secondary" id="cancelModal">Cancel</button>
                 <button class="btn btn--primary" id="saveChapterBtn">Save</button>
             </div>
-        </div>
-    </div>
-
-    <!-- Teacher Modal -->
-    <div id="teacherModal" class="modal hidden">
-        <div class="modal-backdrop"></div>
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modalTeacherTitle">Teacher Details</h3>
-                <button class="modal-close" id="closeTeacherModal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label">Name</label>
-                    <input type="text" id="teacherName" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Employee ID</label>
-                    <input type="text" id="teacherEmployeeId" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">School</label>
-                    <select id="teacherSchool" class="form-control" required>
-                        <option value="school1">CoE Barwani</option>
-                        <option value="school2">CoE Cuttak</option>
-                        <option value="school3">CoE Mahisagar</option>
-                        <option value="school4">CoE Bundi</option>
-                        <option value="school5">JNV Bharuch</option>
-                        <option value="school6">EMRS Bhopal</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Subject</label>
-                    <select id="teacherSubject" class="form-control" required>
-                        <option value="physics">Physics</option>
-                        <option value="chemistry">Chemistry</option>
-                        <option value="mathematics">Mathematics</option>
-                        <option value="biology">Biology</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Email</label>
-                    <input type="email" id="teacherEmail" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Phone</label>
-                    <input type="tel" id="teacherPhone" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Date of Birth</label>
-                    <input type="date" id="teacherDob" class="form-control" required>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn--secondary" id="cancelTeacherModal">Cancel</button>
-                <button class="btn btn--primary" id="saveTeacherBtn">Save</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Footer -->
-    <div class="footer">
-        <div class="container">
-            <p>made by Anand ♥</p>
         </div>
     </div>
 
