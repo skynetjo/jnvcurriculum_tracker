@@ -1,5 +1,5 @@
-// Application Data - Default/Initial Data
-const defaultAppData = {
+// Application Data
+const appData = {
   schools: {
     "school1": "CoE Barwani",
     "school2": "CoE Cuttak", 
@@ -53,104 +53,47 @@ const defaultAppData = {
   }
 };
 
-// Current Application Data - will be merged with localStorage data
-let appData = JSON.parse(JSON.stringify(defaultAppData));
-
 // Global State
 let currentUser = null;
 let currentGrade = 11;
 let currentModalChapter = null;
+let currentEditingTeacher = null;
 let currentSelectedSchool = null;
 let currentCurriculumSubject = 'physics';
 let chapterProgress = {};
 let chatMessages = [];
-let currentEditingTeacher = null;
-
-// FIXED: localStorage persistence functions
-function saveToStorage() {
-    try {
-        const dataToSave = {
-            teachers: appData.teachers,
-            curriculum: appData.curriculum,
-            chapterProgress: chapterProgress,
-            chatMessages: chatMessages,
-            version: '1.0',
-            timestamp: Date.now()
-        };
-        localStorage.setItem('jnvCurriculumData', JSON.stringify(dataToSave));
-        console.log('✅ Data saved to localStorage:', Object.keys(dataToSave));
-    } catch (error) {
-        console.error('❌ Error saving data to localStorage:', error);
-    }
-}
-
-function loadStoredData() {
-    try {
-        console.log('🔄 Loading stored data from localStorage...');
-        
-        const storedData = localStorage.getItem('jnvCurriculumData');
-        
-        if (storedData) {
-            const parsedData = JSON.parse(storedData);
-            console.log('✅ Found stored data:', Object.keys(parsedData));
-            
-            // Merge stored teachers with default teachers (stored takes priority)
-            if (parsedData.teachers) {
-                appData.teachers = { ...defaultAppData.teachers, ...parsedData.teachers };
-                console.log('✅ Merged teacher data. Total teachers:', Object.keys(appData.teachers).length);
-            }
-            
-            // Merge curriculum data
-            if (parsedData.curriculum) {
-                appData.curriculum = parsedData.curriculum;
-                console.log('✅ Loaded curriculum data');
-            }
-            
-            // Load progress and messages
-            if (parsedData.chapterProgress) {
-                chapterProgress = parsedData.chapterProgress;
-                console.log('✅ Loaded chapter progress:', Object.keys(chapterProgress).length, 'chapters');
-            }
-            
-            if (parsedData.chatMessages) {
-                chatMessages = parsedData.chatMessages;
-                console.log('✅ Loaded chat messages:', chatMessages.length, 'messages');
-            }
-            
-            console.log('✅ Data loading completed successfully');
-        } else {
-            console.log('ℹ️ No stored data found, using default data');
-            // Initialize empty progress and messages
-            chapterProgress = {};
-            chatMessages = [];
-        }
-    } catch (error) {
-        console.error('❌ Error loading data from localStorage:', error);
-        console.log('🔄 Falling back to default data');
-        // Fallback to default data
-        appData = JSON.parse(JSON.stringify(defaultAppData));
-        chapterProgress = {};
-        chatMessages = [];
-    }
-}
+let analyticsFilters = {
+  school: '',
+  subject: '',
+  testMode: ''
+};
 
 // Initialize Application
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('📱 JNV Curriculum Tracker starting up...');
-    console.log('🔄 DOM loaded, initializing app...');
-    
-    // CRITICAL FIX: Load stored data FIRST before anything else
-    loadStoredData();
-    
-    initializeBackgroundAnimations();
-    initializeEventListeners();
-    console.log('✅ App initialization completed');
+    console.log('🚀 JNV Curriculum Tracker - Initializing...');
+    try {
+        initializeBackgroundAnimations();
+        loadStoredData();
+        generateSampleData();
+        
+        // CRITICAL FIX: Initialize event listeners after a short delay to ensure DOM is fully ready
+        setTimeout(initializeEventListeners, 100);
+        
+        console.log('✅ Application initialized successfully');
+    } catch (error) {
+        console.error('❌ Initialization error:', error);
+        showError('Application failed to initialize. Please refresh the page.');
+    }
 });
 
 // Background Animations
 function initializeBackgroundAnimations() {
-    createParticles();
-    createFloatingShapes();
+    try {
+        createParticles();
+        createFloatingShapes();
+    } catch (error) {
+        console.error('Background animation error:', error);
+    }
 }
 
 function createParticles() {
@@ -193,78 +136,162 @@ function createFloatingShapes() {
     }
 }
 
-// FIXED Event Listeners Setup - Improved mouse interaction handling
+// Generate Sample Data for Testing
+function generateSampleData() {
+    try {
+        const sampleProgress = {};
+        const subjects = ['physics', 'chemistry', 'mathematics', 'biology'];
+        const schools = Object.keys(appData.schools);
+        const testModes = ['online', 'offline'];
+        
+        subjects.forEach(subject => {
+            [11, 12].forEach(grade => {
+                const chapters = appData.curriculum[subject][grade];
+                chapters.forEach((chapter, index) => {
+                    if (Math.random() < 0.7) {
+                        const key = `${subject}_${grade}_${chapter}`;
+                        const randomSchool = schools[Math.floor(Math.random() * schools.length)];
+                        const randomDate = new Date(2024, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1);
+                        
+                        sampleProgress[key] = {
+                            completed: true,
+                            date: randomDate.toISOString().split('T')[0],
+                            testCompleted: Math.random() < 0.8,
+                            testMode: testModes[Math.floor(Math.random() * testModes.length)],
+                            chapter: chapter,
+                            subject: subject,
+                            grade: grade,
+                            school: randomSchool
+                        };
+                    }
+                });
+            });
+        });
+        
+        chapterProgress = sampleProgress;
+        saveToStorage();
+    } catch (error) {
+        console.error('Sample data generation error:', error);
+    }
+}
+
+// CRITICAL FIX - Event Listeners Setup with proper element targeting
 function initializeEventListeners() {
     console.log('🔧 Setting up event listeners...');
     
-    // Teacher Login Form - Fixed to prevent default behavior issues
-    const loginForm = document.getElementById('loginForm');
-    if (loginForm) {
-        loginForm.addEventListener('submit', handleTeacherLogin);
-        console.log('✅ Teacher login form listener added');
-    }
-    
-    // Admin Login Button - Fixed with proper event handling
-    const adminLoginBtn = document.getElementById('adminLoginBtn');
-    if (adminLoginBtn) {
-        adminLoginBtn.addEventListener('click', showAdminPasswordField);
-        console.log('✅ Admin login button listener added');
-    }
-    
-    // Admin Password Buttons - Fixed
-    const cancelAdminBtn = document.getElementById('cancelAdminBtn');
-    const confirmAdminBtn = document.getElementById('confirmAdminBtn');
-    const adminPasswordField = document.getElementById('adminPassword');
-    
-    if (cancelAdminBtn) {
-        cancelAdminBtn.addEventListener('click', hideAdminPasswordField);
-    }
-    
-    if (confirmAdminBtn) {
-        confirmAdminBtn.addEventListener('click', handleAdminPasswordSubmit);
-    }
-    
-    if (adminPasswordField) {
-        adminPasswordField.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
+    try {
+        // CRITICAL FIX: Clear any existing event listeners first
+        clearExistingListeners();
+        
+        // CRITICAL FIX: Login form submission - use specific targeting
+        const loginSubmitBtn = document.getElementById('loginSubmitBtn');
+        if (loginSubmitBtn) {
+            loginSubmitBtn.onclick = function(e) {
                 e.preventDefault();
+                e.stopPropagation();
+                console.log('🔄 Login button clicked via onclick');
+                handleTeacherLogin();
+                return false;
+            };
+            console.log('✅ Login button onclick handler set');
+        }
+
+        // CRITICAL FIX: Admin Login Button - use onclick to avoid conflicts
+        const adminLoginBtn = document.getElementById('adminLoginBtn');
+        if (adminLoginBtn) {
+            adminLoginBtn.onclick = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🔄 Admin login button clicked via onclick');
+                showAdminPasswordField();
+                return false;
+            };
+            console.log('✅ Admin login button onclick handler set');
+        }
+        
+        // Admin Password Handlers
+        const cancelAdminBtn = document.getElementById('cancelAdminBtn');
+        const confirmAdminBtn = document.getElementById('confirmAdminBtn');
+        const adminPasswordField = document.getElementById('adminPassword');
+        
+        if (cancelAdminBtn) {
+            cancelAdminBtn.onclick = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                hideAdminPasswordField();
+                return false;
+            };
+        }
+        
+        if (confirmAdminBtn) {
+            confirmAdminBtn.onclick = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
                 handleAdminPasswordSubmit();
-            }
-        });
+                return false;
+            };
+        }
+        
+        if (adminPasswordField) {
+            adminPasswordField.onkeypress = function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleAdminPasswordSubmit();
+                }
+            };
+        }
+        
+        // Setup other listeners
+        setupOtherEventListeners();
+        console.log('✅ All event listeners initialized successfully');
+        
+    } catch (error) {
+        console.error('❌ Event listener setup error:', error);
+        showError('Failed to initialize controls. Please refresh the page.');
+    }
+}
+
+function clearExistingListeners() {
+    // Clear any existing conflicting listeners
+    const loginSubmitBtn = document.getElementById('loginSubmitBtn');
+    const adminLoginBtn = document.getElementById('adminLoginBtn');
+    
+    if (loginSubmitBtn) {
+        loginSubmitBtn.onclick = null;
+        loginSubmitBtn.removeEventListener('click', handleTeacherLogin);
     }
     
-    setupOtherEventListeners();
+    if (adminLoginBtn) {
+        adminLoginBtn.onclick = null;
+        adminLoginBtn.removeEventListener('click', showAdminPasswordField);
+    }
 }
 
 function setupOtherEventListeners() {
-    // FIXED Navigation - Improved event handling
+    // Navigation - use onclick to avoid conflicts
     document.querySelectorAll('.nav-link').forEach(link => {
-        link.addEventListener('click', function(e) {
+        link.onclick = function(e) {
             e.preventDefault();
-            e.stopPropagation();
-            const section = this.getAttribute('data-section');
-            if (section) {
-                navigateToSection(section);
-            }
-        });
+            navigateToSection(this.dataset.section);
+        };
     });
     
-    // Logout - Fixed
+    // Logout
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
-        logoutBtn.addEventListener('click', function(e) {
+        logoutBtn.onclick = function(e) {
             e.preventDefault();
             handleLogout();
-        });
+        };
     }
     
     // Dashboard School Selector for Teachers
     const dashboardSchool = document.getElementById('dashboardSchool');
     if (dashboardSchool) {
-        dashboardSchool.addEventListener('change', function(e) {
+        dashboardSchool.onchange = function(e) {
             currentSelectedSchool = e.target.value;
             loadMultiSubjectDashboard();
-        });
+        };
     }
     
     // Curriculum controls
@@ -272,166 +299,132 @@ function setupOtherEventListeners() {
     const curriculumSchool = document.getElementById('curriculumSchool');
     
     if (curriculumSubject) {
-        curriculumSubject.addEventListener('change', function(e) {
+        curriculumSubject.onchange = function(e) {
             currentCurriculumSubject = e.target.value;
             loadChaptersList();
-        });
+        };
     }
     
     if (curriculumSchool) {
-        curriculumSchool.addEventListener('change', loadChaptersList);
+        curriculumSchool.onchange = loadChaptersList;
     }
     
-    // Grade selector - Fixed
+    // Grade selector
     document.querySelectorAll('.grade-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
+        btn.onclick = function(e) {
             e.preventDefault();
-            const grade = parseInt(this.getAttribute('data-grade'));
-            if (grade) {
-                switchGrade(grade);
-            }
-        });
+            switchGrade(parseInt(this.dataset.grade));
+        };
     });
     
-    // Modal handlers - Fixed
+    // Modal handlers
+    setupModalHandlers();
+    
+    // Profile handlers
+    setupProfileHandlers();
+    
+    // Chat functionality
+    setupChatHandlers();
+    
+    // Admin functionality
+    setupAdminHandlers();
+    
+    // Analytics filters
+    setupAnalyticsFilters();
+}
+
+function setupModalHandlers() {
+    // Chapter Modal
     const closeModal = document.getElementById('closeModal');
     const cancelModal = document.getElementById('cancelModal');
     const saveChapterBtn = document.getElementById('saveChapterBtn');
     
-    if (closeModal) {
-        closeModal.addEventListener('click', function(e) {
-            e.preventDefault();
-            closeChapterModal();
-        });
-    }
-    if (cancelModal) {
-        cancelModal.addEventListener('click', function(e) {
-            e.preventDefault();
-            closeChapterModal();
-        });
-    }
-    if (saveChapterBtn) {
-        saveChapterBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            saveChapterProgress();
-        });
-    }
+    if (closeModal) closeModal.onclick = closeChapterModal;
+    if (cancelModal) cancelModal.onclick = closeChapterModal;
+    if (saveChapterBtn) saveChapterBtn.onclick = saveChapterProgress;
     
-    // Profile handlers
+    // Teacher Modal
+    const closeTeacherModal = document.getElementById('closeTeacherModal');
+    const cancelTeacherModal = document.getElementById('cancelTeacherModal');
+    const saveTeacherBtn = document.getElementById('saveTeacherBtn');
+    
+    if (closeTeacherModal) closeTeacherModal.onclick = closeTeacherModal;
+    if (cancelTeacherModal) cancelTeacherModal.onclick = closeTeacherModal;
+    if (saveTeacherBtn) saveTeacherBtn.onclick = saveTeacher;
+}
+
+function setupProfileHandlers() {
     const photoUpload = document.getElementById('photoUpload');
     const saveProfileBtn = document.getElementById('saveProfileBtn');
     
-    if (photoUpload) photoUpload.addEventListener('change', handlePhotoUpload);
-    if (saveProfileBtn) {
-        saveProfileBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            saveProfile();
-        });
-    }
-    
-    // Chat functionality
+    if (photoUpload) photoUpload.onchange = handlePhotoUpload;
+    if (saveProfileBtn) saveProfileBtn.onclick = saveProfile;
+}
+
+function setupChatHandlers() {
     const sendMessageBtn = document.getElementById('sendMessageBtn');
     const messageInput = document.getElementById('messageInput');
     
-    if (sendMessageBtn) {
-        sendMessageBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            sendMessage();
-        });
-    }
+    if (sendMessageBtn) sendMessageBtn.onclick = sendMessage;
     if (messageInput) {
-        messageInput.addEventListener('keypress', function(e) {
+        messageInput.onkeypress = function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
                 sendMessage();
             }
-        });
+        };
     }
-    
-    // FIXED Admin functionality - Better event handling
+}
+
+function setupAdminHandlers() {
+    // Tab switching
     document.querySelectorAll('.admin-tab-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
+        btn.onclick = function(e) {
             e.preventDefault();
-            const tab = this.getAttribute('data-tab');
-            if (tab) {
-                switchAdminTab(tab);
-            }
-        });
+            switchAdminTab(this.dataset.tab);
+        };
     });
     
+    // Chapter management
     const addChapterBtn = document.getElementById('addChapterBtn');
-    if (addChapterBtn) {
-        addChapterBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            addNewChapter();
-        });
-    }
+    if (addChapterBtn) addChapterBtn.onclick = addNewChapter;
+    
+    // Teacher management
+    const addTeacherBtn = document.getElementById('addTeacherBtn');
+    if (addTeacherBtn) addTeacherBtn.onclick = showAddTeacherModal;
     
     // Admin subject/grade change handlers
     const adminSubject = document.getElementById('adminSubject');
     const adminGrade = document.getElementById('adminGrade');
     
-    if (adminSubject) adminSubject.addEventListener('change', loadAdminChapters);
-    if (adminGrade) adminGrade.addEventListener('change', loadAdminChapters);
+    if (adminSubject) adminSubject.onchange = loadAdminChapters;
+    if (adminGrade) adminGrade.onchange = loadAdminChapters;
+}
+
+function setupAnalyticsFilters() {
+    const analyticsSchool = document.getElementById('analyticsSchool');
+    const analyticsSubject = document.getElementById('analyticsSubject');
+    const analyticsTestMode = document.getElementById('analyticsTestMode');
     
-    // FIXED Teacher Management - Better event handling
-    const addTeacherBtn = document.getElementById('addTeacherBtn');
-    if (addTeacherBtn) {
-        addTeacherBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            openAddTeacherModal();
-        });
+    if (analyticsSchool) {
+        analyticsSchool.onchange = function(e) {
+            analyticsFilters.school = e.target.value;
+            updateAnalytics();
+        };
     }
     
-    // FIXED Teacher Modal handlers
-    const closeTeacherModal = document.getElementById('closeTeacherModal');
-    const cancelTeacherModal = document.getElementById('cancelTeacherModal');
-    const saveTeacherBtn = document.getElementById('saveTeacherBtn');
-    const deleteTeacherBtn = document.getElementById('deleteTeacherBtn');
-    
-    if (closeTeacherModal) {
-        closeTeacherModal.addEventListener('click', function(e) {
-            e.preventDefault();
-            closeTeacherModalHandler();
-        });
-    }
-    if (cancelTeacherModal) {
-        cancelTeacherModal.addEventListener('click', function(e) {
-            e.preventDefault();
-            closeTeacherModalHandler();
-        });
-    }
-    if (saveTeacherBtn) {
-        saveTeacherBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            saveTeacher();
-        });
-    }
-    if (deleteTeacherBtn) {
-        deleteTeacherBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            deleteTeacher();
-        });
+    if (analyticsSubject) {
+        analyticsSubject.onchange = function(e) {
+            analyticsFilters.subject = e.target.value;
+            updateAnalytics();
+        };
     }
     
-    // FIXED Modal backdrop click handlers
-    const chapterModal = document.getElementById('chapterModal');
-    const teacherModal = document.getElementById('teacherModal');
-    
-    if (chapterModal) {
-        chapterModal.addEventListener('click', function(e) {
-            if (e.target === this || e.target.classList.contains('modal-backdrop')) {
-                closeChapterModal();
-            }
-        });
-    }
-    
-    if (teacherModal) {
-        teacherModal.addEventListener('click', function(e) {
-            if (e.target === this || e.target.classList.contains('modal-backdrop')) {
-                closeTeacherModalHandler();
-            }
-        });
+    if (analyticsTestMode) {
+        analyticsTestMode.onchange = function(e) {
+            analyticsFilters.testMode = e.target.value;
+            updateAnalytics();
+        };
     }
 }
 
@@ -455,177 +448,178 @@ function hideError() {
     }
 }
 
-// FIXED Login Handlers
-function handleTeacherLogin(e) {
-    if (e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
-    
-    console.log('🔐 Teacher login form submitted');
+// CRITICAL FIX - WORKING LOGIN HANDLERS
+function handleTeacherLogin() {
+    console.log('🔐 Processing teacher login...');
     hideError();
     
-    const schoolField = document.getElementById('school');
-    const employeeField = document.getElementById('employeeId');
-    const subjectField = document.getElementById('subject');
-    
-    if (!schoolField || !employeeField || !subjectField) {
-        console.error('❌ Form fields not found');
-        showError('Form fields not found. Please refresh the page.');
-        return;
-    }
-    
-    const school = schoolField.value.trim();
-    const employeeId = employeeField.value.trim();
-    const subject = subjectField.value.trim();
-    
-    console.log('🔍 Login attempt with credentials:', { school, employeeId, subject });
-    
-    if (!school || !employeeId || !subject) {
-        showError('Please fill in all fields');
-        return;
-    }
-    
-    // CRITICAL FIX: Check appData.teachers (which includes localStorage changes)
-    if (appData.teachers[employeeId]) {
-        const teacher = appData.teachers[employeeId];
-        console.log('✅ Teacher found in current database:', teacher);
+    try {
+        const schoolField = document.getElementById('school');
+        const employeeField = document.getElementById('employeeId');
+        const subjectField = document.getElementById('subject');
         
-        // Validate school and subject match
-        if (teacher.school === school && teacher.subject === subject) {
-            console.log('✅ Credentials are valid - proceeding with login');
+        if (!schoolField || !employeeField || !subjectField) {
+            console.error('❌ Form fields not found');
+            showError('Login form error. Please refresh the page.');
+            return false;
+        }
+        
+        const school = schoolField.value.trim();
+        const employeeId = employeeField.value.trim();
+        const subject = subjectField.value.trim();
+        
+        console.log('🔍 Login attempt:', { school, employeeId, subject });
+        console.log('🔍 School value:', schoolField.value);
+        console.log('🔍 Employee value:', employeeField.value);
+        console.log('🔍 Subject value:', subjectField.value);
+        
+        // Validation
+        if (!school || !employeeId || !subject) {
+            showError('Please fill in all fields');
+            return false;
+        }
+        
+        // Check credentials
+        if (appData.teachers[employeeId]) {
+            const teacher = appData.teachers[employeeId];
+            console.log('👤 Teacher data found:', teacher);
             
-            // Set current user
+            if (teacher.school === school && teacher.subject === subject) {
+                console.log('✅ Credentials valid - logging in...');
+                
+                currentUser = {
+                    employeeId,
+                    ...teacher,
+                    isAdmin: false
+                };
+                
+                currentSelectedSchool = teacher.school;
+                
+                // Clear form
+                schoolField.selectedIndex = 0;
+                employeeField.value = '';
+                subjectField.selectedIndex = 0;
+                
+                // Show main app
+                showMainApp();
+                return true;
+            } else {
+                console.log('❌ School or subject mismatch');
+                console.log('Expected:', { school: teacher.school, subject: teacher.subject });
+                console.log('Provided:', { school, subject });
+                showError('Invalid credentials. Please check your school and subject selection.');
+                return false;
+            }
+        } else {
+            console.log('❌ Employee ID not found');
+            showError('Employee ID not found. Please check your credentials.');
+            return false;
+        }
+    } catch (error) {
+        console.error('❌ Login error:', error);
+        showError('Login failed. Please try again.');
+        return false;
+    }
+}
+
+function showAdminPasswordField() {
+    console.log('🔐 Showing admin password field...');
+    hideError();
+    
+    try {
+        const adminPasswordSection = document.getElementById('adminPasswordSection');
+        const adminLoginBtn = document.getElementById('adminLoginBtn');
+        
+        if (adminPasswordSection && adminLoginBtn) {
+            adminPasswordSection.classList.remove('hidden');
+            adminLoginBtn.style.display = 'none';
+            
+            const passwordField = document.getElementById('adminPassword');
+            if (passwordField) {
+                setTimeout(() => passwordField.focus(), 100);
+            }
+            console.log('✅ Admin password field shown');
+        }
+    } catch (error) {
+        console.error('❌ Admin password field error:', error);
+        showError('Admin login error. Please refresh the page.');
+    }
+}
+
+function hideAdminPasswordField() {
+    console.log('🔐 Hiding admin password field...');
+    hideError();
+    
+    try {
+        const adminPasswordSection = document.getElementById('adminPasswordSection');
+        const adminLoginBtn = document.getElementById('adminLoginBtn');
+        const adminPasswordField = document.getElementById('adminPassword');
+        
+        if (adminPasswordSection && adminLoginBtn) {
+            adminPasswordSection.classList.add('hidden');
+            adminLoginBtn.style.display = 'block';
+            
+            if (adminPasswordField) {
+                adminPasswordField.value = '';
+            }
+            console.log('✅ Admin password field hidden');
+        }
+    } catch (error) {
+        console.error('❌ Hide admin password error:', error);
+    }
+}
+
+function handleAdminPasswordSubmit() {
+    console.log('🔐 Processing admin password...');
+    hideError();
+    
+    try {
+        const adminPasswordField = document.getElementById('adminPassword');
+        if (!adminPasswordField) {
+            showError('Password field not found. Please refresh the page.');
+            return false;
+        }
+        
+        const password = adminPasswordField.value.trim();
+        
+        if (!password) {
+            showError('Please enter admin password');
+            return false;
+        }
+        
+        if (password === appData.adminPassword) {
+            console.log('✅ Admin password correct - logging in...');
+            
             currentUser = {
-                employeeId,
-                ...teacher,
-                isAdmin: false
+                employeeId: 'admin',
+                ...appData.teachers['admin'],
+                isAdmin: true
             };
             
-            currentSelectedSchool = teacher.school;
+            currentSelectedSchool = 'school1';
             
-            console.log('✅ Current user set:', currentUser);
-            
-            // Clear the form
-            schoolField.value = '';
-            employeeField.value = '';
-            subjectField.value = '';
-            
-            // Proceed to main app
-            showMainApp();
-            return;
-        } else {
-            console.log('❌ Credentials invalid - school or subject mismatch');
-            showError('Invalid credentials. Please check your school and subject selection.');
-        }
-    } else {
-        console.log('❌ Employee ID not found in current database');
-        showError('Employee ID not found. Please check your credentials or contact admin.');
-    }
-}
-
-function showAdminPasswordField(e) {
-    if (e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
-    
-    console.log('🔐 Showing admin password field');
-    hideError();
-    
-    const adminPasswordSection = document.getElementById('adminPasswordSection');
-    const adminLoginBtn = document.getElementById('adminLoginBtn');
-    
-    if (adminPasswordSection && adminLoginBtn) {
-        adminPasswordSection.classList.remove('hidden');
-        adminLoginBtn.style.display = 'none';
-        
-        const passwordField = document.getElementById('adminPassword');
-        if (passwordField) {
-            setTimeout(() => passwordField.focus(), 100);
-        }
-        console.log('✅ Admin password field shown');
-    }
-}
-
-function hideAdminPasswordField(e) {
-    if (e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
-    
-    console.log('🔐 Hiding admin password field');
-    hideError();
-    
-    const adminPasswordSection = document.getElementById('adminPasswordSection');
-    const adminLoginBtn = document.getElementById('adminLoginBtn');
-    const adminPasswordField = document.getElementById('adminPassword');
-    
-    if (adminPasswordSection && adminLoginBtn) {
-        adminPasswordSection.classList.add('hidden');
-        adminLoginBtn.style.display = 'block';
-        
-        if (adminPasswordField) {
             adminPasswordField.value = '';
+            hideAdminPasswordField();
+            
+            showMainApp();
+            return true;
+        } else {
+            console.log('❌ Admin password incorrect');
+            showError('Incorrect admin password. Please try again.');
+            adminPasswordField.value = '';
+            adminPasswordField.focus();
+            return false;
         }
-        console.log('✅ Admin password field hidden');
+    } catch (error) {
+        console.error('❌ Admin password error:', error);
+        showError('Admin login failed. Please try again.');
+        return false;
     }
 }
 
-function handleAdminPasswordSubmit(e) {
-    if (e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
-    
-    console.log('🔐 Admin password submitted');
-    hideError();
-    
-    const adminPasswordField = document.getElementById('adminPassword');
-    if (!adminPasswordField) {
-        showError('Password field not found. Please refresh the page.');
-        return;
-    }
-    
-    const password = adminPasswordField.value.trim();
-    
-    if (!password) {
-        showError('Please enter admin password');
-        return;
-    }
-    
-    if (password === appData.adminPassword) {
-        console.log('✅ Admin password correct - proceeding with login');
-        
-        currentUser = {
-            employeeId: 'admin',
-            ...appData.teachers['admin'],
-            isAdmin: true
-        };
-        
-        currentSelectedSchool = 'school1';
-        
-        console.log('✅ Admin user set:', currentUser);
-        
-        const loginForm = document.getElementById('loginForm');
-        if (loginForm) {
-            loginForm.reset();
-        }
-        adminPasswordField.value = '';
-        hideAdminPasswordField();
-        
-        showMainApp();
-    } else {
-        console.log('❌ Admin password incorrect');
-        showError('Incorrect admin password. Please try again.');
-        adminPasswordField.value = '';
-        adminPasswordField.focus();
-    }
-}
-
-// Show Main Application
+// Show Main Application - FIXED
 function showMainApp() {
-    console.log('🚀 Showing main app - current user:', currentUser);
+    console.log('🚀 Launching main application...');
     
     if (!currentUser) {
         console.error('❌ No current user set!');
@@ -633,98 +627,120 @@ function showMainApp() {
         return;
     }
     
-    const loginScreen = document.getElementById('loginScreen');
-    const mainApp = document.getElementById('mainApp');
-    
-    if (!loginScreen || !mainApp) {
-        console.error('❌ Screen elements not found');
-        showError('Screen elements not found. Please refresh the page.');
-        return;
-    }
-    
-    console.log('🔄 Switching screens...');
-    
-    loginScreen.classList.remove('active');
-    loginScreen.style.display = 'none';
-    
-    mainApp.classList.remove('hidden');
-    mainApp.classList.add('active');
-    mainApp.style.display = 'block';
-    
-    console.log('✅ Screen transition completed');
-    
-    loadUserData();
-    
-    if (currentUser.isAdmin) {
-        showAdminFeatures();
-    } else {
-        showTeacherFeatures();
+    try {
+        const loginScreen = document.getElementById('loginScreen');
+        const mainApp = document.getElementById('mainApp');
+        
+        if (!loginScreen || !mainApp) {
+            console.error('❌ Screen elements not found');
+            showError('Screen elements not found. Please refresh the page.');
+            return;
+        }
+        
+        console.log('🔄 Switching screens...');
+        
+        // Hide login screen
+        loginScreen.classList.remove('active');
+        loginScreen.style.display = 'none';
+        
+        // Show main app
+        mainApp.classList.remove('hidden');
+        mainApp.classList.add('active');
+        mainApp.style.display = 'block';
+        
+        console.log('✅ Screen transition completed');
+        
+        // Load application data
+        loadUserData();
+        
+        // Show appropriate features
+        if (currentUser.isAdmin) {
+            showAdminFeatures();
+        } else {
+            showTeacherFeatures();
+        }
+        
+        console.log('🎉 Main application loaded successfully!');
+        
+    } catch (error) {
+        console.error('❌ Main app error:', error);
+        showError('Failed to load main application. Please refresh the page.');
     }
 }
 
 // Load User Data
 function loadUserData() {
     console.log('📊 Loading user data for:', currentUser.name);
-    loadMultiSubjectDashboard();
-    loadProfile();
-    loadTeamMembers();
-    loadChatMessages();
-    loadChaptersList();
-    
-    if (currentUser.isAdmin) {
-        loadAnalytics();
-        loadAdminPanel();
+    try {
+        loadMultiSubjectDashboard();
+        loadProfile();
+        loadTeamMembers();
+        loadChatMessages();
+        loadChaptersList();
+        
+        if (currentUser.isAdmin) {
+            loadAnalytics();
+            loadAdminPanel();
+        }
+    } catch (error) {
+        console.error('User data loading error:', error);
     }
 }
 
-// Enhanced Multi-Subject Dashboard
+// Enhanced Multi-Subject Dashboard - REQUIREMENT 3
 function loadMultiSubjectDashboard() {
     console.log('📈 Loading multi-subject dashboard...');
     
-    const welcomeUser = document.getElementById('welcomeUser');
-    if (welcomeUser && currentUser) {
-        welcomeUser.textContent = currentUser.name;
-        console.log('✅ Welcome message set for:', currentUser.name);
-    }
-    
-    if (!currentUser.isAdmin) {
-        const teacherSchoolSelector = document.getElementById('teacherSchoolSelector');
-        const dashboardSchool = document.getElementById('dashboardSchool');
-        
-        if (teacherSchoolSelector && dashboardSchool) {
-            teacherSchoolSelector.classList.remove('hidden');
-            dashboardSchool.value = currentSelectedSchool;
+    try {
+        const welcomeUser = document.getElementById('welcomeUser');
+        if (welcomeUser && currentUser) {
+            welcomeUser.textContent = currentUser.name;
         }
-    }
-    
-    const container = document.getElementById('multiSubjectStats');
-    if (!container) return;
-    
-    const schoolToShow = currentUser.isAdmin ? null : (currentSelectedSchool || currentUser.school);
-    
-    const subjectsData = appData.subjects.map(subject => {
-        const subjectStats = calculateSubjectStats(subject, schoolToShow);
-        return {
-            subject,
-            ...subjectStats
-        };
-    });
-    
-    container.innerHTML = `
-        <div class="subjects-grid">
-            ${subjectsData.map(data => createSubjectCard(data)).join('')}
-        </div>
         
-        <div class="progress-bar-container">
-            <label class="progress-label">Overall Progress Across All Subjects</label>
-            <div class="progress-bar">
-                <div class="progress-fill" style="width: ${calculateOverallProgress(subjectsData)}%"></div>
+        // Show teacher school selector - REQUIREMENT 3
+        if (!currentUser.isAdmin) {
+            const teacherSchoolSelector = document.getElementById('teacherSchoolSelector');
+            const dashboardSchool = document.getElementById('dashboardSchool');
+            
+            if (teacherSchoolSelector && dashboardSchool) {
+                teacherSchoolSelector.classList.remove('hidden');
+                dashboardSchool.value = currentSelectedSchool;
+            }
+        }
+        
+        const container = document.getElementById('multiSubjectStats');
+        if (!container) return;
+        
+        const schoolToShow = currentUser.isAdmin ? null : (currentSelectedSchool || currentUser.school);
+        
+        const subjectsData = appData.subjects.map(subject => {
+            const subjectStats = calculateSubjectStats(subject, schoolToShow);
+            return {
+                subject,
+                ...subjectStats
+            };
+        });
+        
+        container.innerHTML = `
+            <div class="subjects-grid">
+                ${subjectsData.map(data => createSubjectCard(data)).join('')}
             </div>
-            <p style="margin-top: 8px; text-align: center; color: #000000 !important;">
-                ${calculateOverallProgress(subjectsData).toFixed(1)}% Complete
-            </p>
-        </div>
-    `;
+            
+            <div class="progress-bar-container">
+                <label class="progress-label">Overall Progress Across All Subjects</label>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${calculateOverallProgress(subjectsData)}%"></div>
+                </div>
+                <p style="margin-top: 8px; text-align: center;">
+                    ${calculateOverallProgress(subjectsData).toFixed(1)}% Complete
+                </p>
+            </div>
+        `;
+        
+        console.log('✅ Multi-subject dashboard loaded');
+    } catch (error) {
+        console.error('Dashboard loading error:', error);
+    }
 }
 
 function calculateSubjectStats(subject, schoolFilter = null) {
@@ -812,26 +828,35 @@ function calculateOverallProgress(subjectsData) {
 
 // Navigation
 function navigateToSection(sectionName) {
-    console.log('🧭 Navigating to section:', sectionName);
+    console.log('🔄 Navigating to section:', sectionName);
     
-    document.querySelectorAll('.nav-link').forEach(link => {
-        link.classList.remove('active');
-    });
-    const activeLink = document.querySelector(`[data-section="${sectionName}"]`);
-    if (activeLink) {
-        activeLink.classList.add('active');
-    }
-    
-    document.querySelectorAll('.section').forEach(section => {
-        section.classList.remove('active');
-    });
-    const activeSection = document.getElementById(sectionName);
-    if (activeSection) {
-        activeSection.classList.add('active');
+    try {
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.remove('active');
+        });
+        const activeLink = document.querySelector(`[data-section="${sectionName}"]`);
+        if (activeLink) {
+            activeLink.classList.add('active');
+        }
+        
+        document.querySelectorAll('.section').forEach(section => {
+            section.classList.remove('active');
+        });
+        const activeSection = document.getElementById(sectionName);
+        if (activeSection) {
+            activeSection.classList.add('active');
+            
+            // Load section-specific data
+            if (sectionName === 'analytics' && currentUser && currentUser.isAdmin) {
+                updateAnalytics();
+            }
+        }
+    } catch (error) {
+        console.error('Navigation error:', error);
     }
 }
 
-// Enhanced Curriculum Section
+// Curriculum Section with Teacher Restrictions - REQUIREMENT 2
 function switchGrade(grade) {
     currentGrade = grade;
     
@@ -849,76 +874,99 @@ function switchGrade(grade) {
 function loadChaptersList() {
     if (!currentUser) return;
     
-    const subject = currentCurriculumSubject;
-    const chapters = appData.curriculum[subject][currentGrade];
-    const container = document.getElementById('chaptersList');
-    
-    if (!container) return;
-    
-    if (!currentUser.isAdmin) {
-        const curriculumSchoolSelector = document.getElementById('curriculumSchoolSelector');
-        if (curriculumSchoolSelector) {
-            curriculumSchoolSelector.classList.remove('hidden');
-        }
-    }
-    
-    container.innerHTML = chapters.map(chapter => {
-        const key = `${subject}_${currentGrade}_${chapter}`;
-        const progress = chapterProgress[key] || {};
-        const isCompleted = progress.completed || false;
-        const completionDate = progress.date || '';
-        const testCompleted = progress.testCompleted || false;
+    try {
+        const subject = currentCurriculumSubject;
+        const chapters = appData.curriculum[subject][currentGrade];
+        const container = document.getElementById('chaptersList');
         
-        return `
-            <div class="chapter-card ${isCompleted ? 'completed' : ''}" data-chapter="${chapter}">
-                <div class="chapter-header">
-                    <div class="chapter-checkbox ${isCompleted ? 'checked' : ''}">
-                        ${isCompleted ? '✓' : ''}
+        if (!container) return;
+        
+        // Show school selector for teachers - REQUIREMENT 2
+        if (!currentUser.isAdmin) {
+            const curriculumSchoolSelector = document.getElementById('curriculumSchoolSelector');
+            if (curriculumSchoolSelector) {
+                curriculumSchoolSelector.classList.remove('hidden');
+            }
+        }
+        
+        const selectedSchool = currentUser.isAdmin ? null : (document.getElementById('curriculumSchool')?.value || currentUser.school);
+        const canEdit = currentUser.isAdmin || (currentUser.subject === subject); // REQUIREMENT 2: Teachers can only edit their own subject
+        
+        container.innerHTML = chapters.map(chapter => {
+            const key = `${subject}_${currentGrade}_${chapter}`;
+            const progress = chapterProgress[key] || {};
+            const isCompleted = progress.completed || false;
+            const completionDate = progress.date || '';
+            const testCompleted = progress.testCompleted || false;
+            const testMode = progress.testMode || '';
+            
+            // REQUIREMENT 8: Warning for incomplete tests
+            const hasTestWarning = isCompleted && !testCompleted;
+            const testStatus = testCompleted ? 
+                `✅ Test Done (${testMode ? testMode.charAt(0).toUpperCase() + testMode.slice(1) : 'Unknown'})` : 
+                '❌ Test Pending';
+            
+            return `
+                <div class="chapter-card ${isCompleted ? 'completed' : ''} ${hasTestWarning ? 'test-warning' : ''}" 
+                     data-chapter="${chapter}" ${canEdit ? 'style="cursor: pointer;"' : 'style="cursor: default; opacity: 0.8;"'}>
+                    <div class="chapter-header">
+                        <div class="chapter-checkbox ${isCompleted ? 'checked' : ''}">
+                            ${isCompleted ? '✓' : ''}
+                        </div>
+                        <h4 class="chapter-title">${chapter}</h4>
+                        ${!canEdit ? '<span style="font-size: 12px; opacity: 0.7;">(View Only)</span>' : ''}
                     </div>
-                    <h4 class="chapter-title">${chapter}</h4>
+                    <div class="chapter-details">
+                        <span>${completionDate ? `Completed: ${completionDate}` : 'Not completed'}</span>
+                        <span class="${hasTestWarning ? 'test-warning-indicator' : ''}">${testStatus}</span>
+                    </div>
                 </div>
-                <div class="chapter-details">
-                    <span>${completionDate ? `Completed: ${completionDate}` : 'Not completed'}</span>
-                    <span>${testCompleted ? '✅ Test Done' : '📝 Test Pending'}</span>
-                </div>
-            </div>
-        `;
-    }).join('');
-    
-    // FIXED: Add click listeners to chapter cards
-    container.querySelectorAll('.chapter-card').forEach(card => {
-        card.addEventListener('click', function() {
-            const chapter = this.getAttribute('data-chapter');
-            if (chapter) {
-                openChapterModal(chapter);
+            `;
+        }).join('');
+        
+        // Add click handlers only for editable chapters - REQUIREMENT 2
+        container.querySelectorAll('.chapter-card').forEach(card => {
+            if (canEdit) {
+                card.onclick = function() {
+                    openChapterModal(this.dataset.chapter);
+                };
             }
         });
-    });
+        
+    } catch (error) {
+        console.error('Chapters list loading error:', error);
+    }
 }
 
 function openChapterModal(chapter) {
     if (!currentUser) return;
     
-    const subject = currentCurriculumSubject;
-    const key = `${subject}_${currentGrade}_${chapter}`;
-    const progress = chapterProgress[key] || {};
-    
-    currentModalChapter = {
-        chapter,
-        key,
-        subject,
-        grade: currentGrade
-    };
-    
-    const modalTitle = document.getElementById('modalChapterTitle');
-    const completionDate = document.getElementById('completionDate');
-    const testCompleted = document.getElementById('testCompleted');
-    const modal = document.getElementById('chapterModal');
-    
-    if (modalTitle) modalTitle.textContent = chapter;
-    if (completionDate) completionDate.value = progress.date || '';
-    if (testCompleted) testCompleted.checked = progress.testCompleted || false;
-    if (modal) modal.classList.remove('hidden');
+    try {
+        const subject = currentCurriculumSubject;
+        const key = `${subject}_${currentGrade}_${chapter}`;
+        const progress = chapterProgress[key] || {};
+        
+        currentModalChapter = {
+            chapter,
+            key,
+            subject,
+            grade: currentGrade
+        };
+        
+        const modalTitle = document.getElementById('modalChapterTitle');
+        const completionDate = document.getElementById('completionDate');
+        const testCompleted = document.getElementById('testCompleted');
+        const testMode = document.getElementById('testMode');
+        const modal = document.getElementById('chapterModal');
+        
+        if (modalTitle) modalTitle.textContent = chapter;
+        if (completionDate) completionDate.value = progress.date || '';
+        if (testCompleted) testCompleted.checked = progress.testCompleted || false;
+        if (testMode) testMode.value = progress.testMode || '';
+        if (modal) modal.classList.remove('hidden');
+    } catch (error) {
+        console.error('Chapter modal error:', error);
+    }
 }
 
 function closeChapterModal() {
@@ -932,44 +980,57 @@ function closeChapterModal() {
 function saveChapterProgress() {
     if (!currentModalChapter) return;
     
-    const dateInput = document.getElementById('completionDate');
-    const testInput = document.getElementById('testCompleted');
-    
-    if (!dateInput || !testInput) return;
-    
-    const date = dateInput.value;
-    const testCompleted = testInput.checked;
-    
-    if (!date) {
-        alert('Please select a completion date');
-        return;
-    }
-    
-    const wasCompleted = chapterProgress[currentModalChapter.key]?.completed || false;
-    
-    chapterProgress[currentModalChapter.key] = {
-        completed: true,
-        date,
-        testCompleted,
-        chapter: currentModalChapter.chapter,
-        subject: currentModalChapter.subject,
-        grade: currentModalChapter.grade,
-        school: currentSelectedSchool || currentUser.school
-    };
-    
-    // CRITICAL FIX: Save to localStorage immediately
-    saveToStorage();
-    
-    loadChaptersList();
-    loadMultiSubjectDashboard();
-    closeChapterModal();
-    
-    if (!wasCompleted && typeof confetti !== 'undefined') {
-        confetti({
-            particleCount: 100,
-            spread: 70,
-            origin: { y: 0.6 }
-        });
+    try {
+        const dateInput = document.getElementById('completionDate');
+        const testInput = document.getElementById('testCompleted');
+        const testModeInput = document.getElementById('testMode');
+        
+        if (!dateInput || !testInput || !testModeInput) return;
+        
+        const date = dateInput.value;
+        const testCompleted = testInput.checked;
+        const testMode = testModeInput.value;
+        
+        if (!date) {
+            alert('Please select a completion date');
+            return;
+        }
+        
+        // REQUIREMENT 9: Test mode selection validation
+        if (testCompleted && !testMode) {
+            alert('Please select test mode when marking test as completed');
+            return;
+        }
+        
+        const wasCompleted = chapterProgress[currentModalChapter.key]?.completed || false;
+        
+        chapterProgress[currentModalChapter.key] = {
+            completed: true,
+            date,
+            testCompleted,
+            testMode: testCompleted ? testMode : '',
+            chapter: currentModalChapter.chapter,
+            subject: currentModalChapter.subject,
+            grade: currentModalChapter.grade,
+            school: currentSelectedSchool || currentUser.school
+        };
+        
+        saveToStorage();
+        loadChaptersList();
+        loadMultiSubjectDashboard();
+        closeChapterModal();
+        
+        // Confetti for first-time completion
+        if (!wasCompleted && typeof confetti !== 'undefined') {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+        }
+    } catch (error) {
+        console.error('Save chapter progress error:', error);
+        alert('Error saving progress. Please try again.');
     }
 }
 
@@ -977,29 +1038,33 @@ function saveChapterProgress() {
 function loadProfile() {
     if (!currentUser) return;
     
-    const profileName = document.getElementById('profileName');
-    const profileRole = document.getElementById('profileRole');
-    const editName = document.getElementById('editName');
-    const editEmail = document.getElementById('editEmail');
-    const editPhone = document.getElementById('editPhone');
-    const editDob = document.getElementById('editDob');
-    
-    if (profileName) {
-        profileName.textContent = currentUser.name;
-    }
-    
-    if (profileRole) {
-        if (currentUser.isAdmin) {
-            profileRole.textContent = 'System Administrator';
-        } else {
-            profileRole.textContent = `${currentUser.subject.charAt(0).toUpperCase() + currentUser.subject.slice(1)} Teacher at ${appData.schools[currentUser.school]}`;
+    try {
+        const profileName = document.getElementById('profileName');
+        const profileRole = document.getElementById('profileRole');
+        const editName = document.getElementById('editName');
+        const editEmail = document.getElementById('editEmail');
+        const editPhone = document.getElementById('editPhone');
+        const editDob = document.getElementById('editDob');
+        
+        if (profileName) {
+            profileName.textContent = currentUser.name;
         }
+        
+        if (profileRole) {
+            if (currentUser.isAdmin) {
+                profileRole.textContent = 'System Administrator';
+            } else {
+                profileRole.textContent = `${currentUser.subject.charAt(0).toUpperCase() + currentUser.subject.slice(1)} Teacher at ${appData.schools[currentUser.school]}`;
+            }
+        }
+        
+        if (editName) editName.value = currentUser.name;
+        if (editEmail) editEmail.value = currentUser.email;
+        if (editPhone) editPhone.value = currentUser.phone;
+        if (editDob) editDob.value = currentUser.dob;
+    } catch (error) {
+        console.error('Profile loading error:', error);
     }
-    
-    if (editName) editName.value = currentUser.name;
-    if (editEmail) editEmail.value = currentUser.email;
-    if (editPhone) editPhone.value = currentUser.phone;
-    if (editDob) editDob.value = currentUser.dob;
 }
 
 function handlePhotoUpload(e) {
@@ -1019,168 +1084,313 @@ function handlePhotoUpload(e) {
 function saveProfile() {
     if (!currentUser) return;
     
-    const editName = document.getElementById('editName');
-    const editEmail = document.getElementById('editEmail');
-    const editPhone = document.getElementById('editPhone');
-    const editDob = document.getElementById('editDob');
-    
-    if (!editName || !editEmail || !editPhone || !editDob) return;
-    
-    const name = editName.value;
-    const email = editEmail.value;
-    const phone = editPhone.value;
-    const dob = editDob.value;
-    
-    if (!name || !email || !phone || !dob) {
-        alert('Please fill in all fields');
-        return;
-    }
-    
-    currentUser.name = name;
-    currentUser.email = email;
-    currentUser.phone = phone;
-    currentUser.dob = dob;
-    
-    // Update in appData and save to localStorage
-    if (appData.teachers[currentUser.employeeId]) {
-        appData.teachers[currentUser.employeeId].name = name;
-        appData.teachers[currentUser.employeeId].email = email;
-        appData.teachers[currentUser.employeeId].phone = phone;
-        appData.teachers[currentUser.employeeId].dob = dob;
+    try {
+        const editName = document.getElementById('editName');
+        const editEmail = document.getElementById('editEmail');
+        const editPhone = document.getElementById('editPhone');
+        const editDob = document.getElementById('editDob');
+        
+        if (!editName || !editEmail || !editPhone || !editDob) return;
+        
+        const name = editName.value;
+        const email = editEmail.value;
+        const phone = editPhone.value;
+        const dob = editDob.value;
+        
+        if (!name || !email || !phone || !dob) {
+            alert('Please fill in all fields');
+            return;
+        }
+        
+        // Update in appData.teachers if admin
+        if (currentUser.isAdmin || currentUser.employeeId in appData.teachers) {
+            appData.teachers[currentUser.employeeId] = {
+                ...appData.teachers[currentUser.employeeId],
+                name,
+                email,
+                phone,
+                dob
+            };
+        }
+        
+        currentUser.name = name;
+        currentUser.email = email;
+        currentUser.phone = phone;
+        currentUser.dob = dob;
+        
+        loadProfile();
         saveToStorage();
+        alert('Profile updated successfully!');
+    } catch (error) {
+        console.error('Profile save error:', error);
+        alert('Error saving profile. Please try again.');
     }
-    
-    loadProfile();
-    alert('Profile updated successfully!');
 }
 
 // Team Members
 function loadTeamMembers() {
     if (!currentUser) return;
     
-    const container = document.getElementById('teamMembers');
-    if (!container) return;
-    
-    const schoolTeachers = Object.entries(appData.teachers)
-        .filter(([id, teacher]) => 
-            currentUser.isAdmin || teacher.school === currentUser.school
-        )
-        .filter(([id]) => id !== 'admin');
-    
-    container.innerHTML = schoolTeachers.map(([id, teacher]) => `
-        <div class="team-member-card">
-            <div class="team-avatar">
-                ${teacher.name.charAt(0).toUpperCase()}
+    try {
+        const container = document.getElementById('teamMembers');
+        if (!container) return;
+        
+        const schoolTeachers = Object.entries(appData.teachers)
+            .filter(([id, teacher]) => 
+                currentUser.isAdmin || teacher.school === currentUser.school
+            )
+            .filter(([id]) => id !== 'admin');
+        
+        container.innerHTML = schoolTeachers.map(([id, teacher]) => `
+            <div class="team-member-card">
+                <div class="team-avatar">
+                    ${teacher.name.charAt(0).toUpperCase()}
+                </div>
+                <h4>${teacher.name}</h4>
+                <p>${teacher.subject.charAt(0).toUpperCase() + teacher.subject.slice(1)}</p>
+                <p>${appData.schools[teacher.school]}</p>
+                <p>${teacher.email}</p>
+                <p>${teacher.phone}</p>
             </div>
-            <h4>${teacher.name}</h4>
-            <p>${teacher.subject.charAt(0).toUpperCase() + teacher.subject.slice(1)}</p>
-            <p>${appData.schools[teacher.school]}</p>
-            <p>${teacher.email}</p>
-            <p>${teacher.phone}</p>
-        </div>
-    `).join('');
+        `).join('');
+    } catch (error) {
+        console.error('Team members loading error:', error);
+    }
 }
 
 // Chat Functionality
 function loadChatMessages() {
-    const container = document.getElementById('chatMessages');
-    if (!container || !currentUser) return;
-    
-    container.innerHTML = chatMessages.map(msg => `
-        <div class="chat-message ${msg.senderId === currentUser.employeeId ? 'own' : 'other'}">
-            <strong>${msg.senderName}:</strong> ${msg.message}
-        </div>
-    `).join('');
-    container.scrollTop = container.scrollHeight;
+    try {
+        const container = document.getElementById('chatMessages');
+        if (!container || !currentUser) return;
+        
+        container.innerHTML = chatMessages.map(msg => `
+            <div class="chat-message ${msg.senderId === currentUser.employeeId ? 'own' : 'other'}">
+                <strong>${msg.senderName}:</strong> ${msg.message}
+            </div>
+        `).join('');
+        container.scrollTop = container.scrollHeight;
+    } catch (error) {
+        console.error('Chat messages loading error:', error);
+    }
 }
 
 function sendMessage() {
     if (!currentUser) return;
     
-    const input = document.getElementById('messageInput');
-    if (!input) return;
-    
-    const message = input.value.trim();
-    
-    if (!message) return;
-    
-    const newMessage = {
-        id: Date.now(),
-        senderId: currentUser.employeeId,
-        senderName: currentUser.name,
-        message,
-        timestamp: new Date().toISOString()
-    };
-    
-    chatMessages.push(newMessage);
-    input.value = '';
-    
-    // CRITICAL FIX: Save to localStorage immediately
-    saveToStorage();
-    loadChatMessages();
+    try {
+        const input = document.getElementById('messageInput');
+        if (!input) return;
+        
+        const message = input.value.trim();
+        
+        if (!message) return;
+        
+        const newMessage = {
+            id: Date.now(),
+            senderId: currentUser.employeeId,
+            senderName: currentUser.name,
+            message,
+            timestamp: new Date().toISOString()
+        };
+        
+        chatMessages.push(newMessage);
+        input.value = '';
+        
+        saveToStorage();
+        loadChatMessages();
+    } catch (error) {
+        console.error('Send message error:', error);
+    }
 }
 
 // Admin and Teacher Features
 function showAdminFeatures() {
-    console.log('👨‍💼 Showing admin features...');
-    document.querySelectorAll('.admin-only').forEach(element => {
-        element.classList.remove('hidden');
-        element.classList.add('show');
-    });
+    console.log('🔧 Showing admin features...');
+    try {
+        document.querySelectorAll('.admin-only').forEach(element => {
+            element.classList.remove('hidden');
+            element.classList.add('show');
+        });
+    } catch (error) {
+        console.error('Show admin features error:', error);
+    }
 }
 
 function showTeacherFeatures() {
     console.log('👨‍🏫 Showing teacher features...');
-    const teacherSchoolSelector = document.getElementById('teacherSchoolSelector');
-    const curriculumSchoolSelector = document.getElementById('curriculumSchoolSelector');
-    
-    if (teacherSchoolSelector) teacherSchoolSelector.classList.remove('hidden');
-    if (curriculumSchoolSelector) curriculumSchoolSelector.classList.remove('hidden');
+    try {
+        const teacherSchoolSelector = document.getElementById('teacherSchoolSelector');
+        const curriculumSchoolSelector = document.getElementById('curriculumSchoolSelector');
+        
+        if (teacherSchoolSelector) teacherSchoolSelector.classList.remove('hidden');
+        if (curriculumSchoolSelector) curriculumSchoolSelector.classList.remove('hidden');
+    } catch (error) {
+        console.error('Show teacher features error:', error);
+    }
 }
 
+// Advanced Analytics with Filtering - REQUIREMENTS 7 & 10
 function loadAnalytics() {
-    loadSubjectChart();
-    loadSchoolChart();
+    try {
+        updateAnalytics();
+    } catch (error) {
+        console.error('Analytics loading error:', error);
+    }
+}
+
+function updateAnalytics() {
+    try {
+        updateAnalyticsOverview();
+        loadSubjectChart();
+        loadSchoolChart();
+        loadTestChart();
+        loadTimelineChart();
+        generateAnalysisReport();
+    } catch (error) {
+        console.error('Analytics update error:', error);
+    }
+}
+
+function updateAnalyticsOverview() {
+    try {
+        const filteredProgress = getFilteredProgress();
+        const totalChapters = getTotalChaptersCount();
+        
+        const completedChapters = Object.values(filteredProgress).filter(p => p.completed).length;
+        const testsCompleted = Object.values(filteredProgress).filter(p => p.completed && p.testCompleted).length;
+        const overallCompletion = totalChapters > 0 ? (completedChapters / totalChapters) * 100 : 0;
+        
+        // Calculate projected completion
+        const completedWithDates = Object.values(filteredProgress)
+            .filter(p => p.completed && p.date)
+            .map(p => new Date(p.date))
+            .sort((a, b) => a - b);
+        
+        let projectedCompletion = 'N/A';
+        if (completedWithDates.length > 5) {
+            const recentCompletions = completedWithDates.slice(-5);
+            const avgDaysBetween = (recentCompletions[recentCompletions.length - 1] - recentCompletions[0]) / (recentCompletions.length - 1) / (1000 * 60 * 60 * 24);
+            const remainingChapters = totalChapters - completedChapters;
+            const daysToComplete = remainingChapters * avgDaysBetween;
+            const projectedDate = new Date();
+            projectedDate.setDate(projectedDate.getDate() + daysToComplete);
+            projectedCompletion = projectedDate.toLocaleDateString();
+        }
+        
+        // Update overview cards
+        const overallCompletionEl = document.getElementById('overallCompletion');
+        const totalChaptersEl = document.getElementById('totalChapters');
+        const testsCompletedEl = document.getElementById('testsCompleted');
+        const projectedCompletionEl = document.getElementById('projectedCompletion');
+        
+        if (overallCompletionEl) overallCompletionEl.textContent = `${overallCompletion.toFixed(1)}%`;
+        if (totalChaptersEl) totalChaptersEl.textContent = totalChapters.toString();
+        if (testsCompletedEl) testsCompletedEl.textContent = testsCompleted.toString();
+        if (projectedCompletionEl) projectedCompletionEl.textContent = projectedCompletion;
+    } catch (error) {
+        console.error('Analytics overview error:', error);
+    }
+}
+
+function getFilteredProgress() {
+    let filtered = { ...chapterProgress };
+    
+    if (analyticsFilters.school) {
+        filtered = Object.fromEntries(
+            Object.entries(filtered).filter(([key, progress]) => 
+                progress.school === analyticsFilters.school
+            )
+        );
+    }
+    
+    if (analyticsFilters.subject) {
+        filtered = Object.fromEntries(
+            Object.entries(filtered).filter(([key, progress]) => 
+                progress.subject === analyticsFilters.subject
+            )
+        );
+    }
+    
+    if (analyticsFilters.testMode) {
+        if (analyticsFilters.testMode === 'incomplete') {
+            filtered = Object.fromEntries(
+                Object.entries(filtered).filter(([key, progress]) => 
+                    progress.completed && !progress.testCompleted
+                )
+            );
+        } else {
+            filtered = Object.fromEntries(
+                Object.entries(filtered).filter(([key, progress]) => 
+                    progress.testMode === analyticsFilters.testMode
+                )
+            );
+        }
+    }
+    
+    return filtered;
+}
+
+function getTotalChaptersCount() {
+    let total = 0;
+    const subjects = analyticsFilters.subject ? [analyticsFilters.subject] : appData.subjects;
+    
+    subjects.forEach(subject => {
+        total += appData.curriculum[subject]['11'].length;
+        total += appData.curriculum[subject]['12'].length;
+    });
+    
+    return total;
 }
 
 function loadSubjectChart() {
     const canvas = document.getElementById('subjectChart');
     if (!canvas) return;
     
-    const ctx = canvas.getContext('2d');
-    
-    const subjectData = appData.subjects.map(subject => {
-        const stats = calculateSubjectStats(subject);
-        return {
-            subject,
-            progress: stats.progressPercentage
-        };
-    });
-    
-    if (typeof Chart !== 'undefined') {
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: subjectData.map(d => d.subject.charAt(0).toUpperCase() + d.subject.slice(1)),
-                datasets: [{
-                    label: 'Progress (%)',
-                    data: subjectData.map(d => d.progress),
-                    backgroundColor: ['#1FB8CD', '#FFC185', '#B4413C', '#ECEBD5'],
-                    borderColor: ['#1FB8CD', '#FFC185', '#B4413C', '#ECEBD5'],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 100
+    try {
+        const ctx = canvas.getContext('2d');
+        
+        const subjects = analyticsFilters.subject ? [analyticsFilters.subject] : appData.subjects;
+        const subjectData = subjects.map(subject => {
+            const stats = calculateSubjectStats(subject, analyticsFilters.school);
+            return {
+                subject,
+                progress: stats.progressPercentage
+            };
+        });
+        
+        if (typeof Chart !== 'undefined') {
+            // Destroy existing chart if it exists
+            if (window.subjectChartInstance) {
+                window.subjectChartInstance.destroy();
+            }
+            
+            window.subjectChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: subjectData.map(d => d.subject.charAt(0).toUpperCase() + d.subject.slice(1)),
+                    datasets: [{
+                        label: 'Progress (%)',
+                        data: subjectData.map(d => d.progress),
+                        backgroundColor: ['#1FB8CD', '#FFC185', '#B4413C', '#ECEBD5'],
+                        borderColor: ['#1FB8CD', '#FFC185', '#B4413C', '#ECEBD5'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
+    } catch (error) {
+        console.error('Subject chart error:', error);
     }
 }
 
@@ -1188,378 +1398,600 @@ function loadSchoolChart() {
     const canvas = document.getElementById('schoolChart');
     if (!canvas) return;
     
-    const ctx = canvas.getContext('2d');
-    
-    const schoolData = Object.entries(appData.schools).map(([schoolId, schoolName]) => {
-        const schoolTeachers = Object.values(appData.teachers)
-            .filter(teacher => teacher.school === schoolId);
+    try {
+        const ctx = canvas.getContext('2d');
         
-        return {
-            school: schoolName,
-            teachers: schoolTeachers.length
-        };
-    });
-    
-    if (typeof Chart !== 'undefined') {
-        new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: schoolData.map(d => d.school),
-                datasets: [{
-                    data: schoolData.map(d => d.teachers),
-                    backgroundColor: ['#1FB8CD', '#FFC185', '#B4413C', '#ECEBD5', '#5D878F', '#DB4545']
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
-            }
+        const schools = analyticsFilters.school ? [analyticsFilters.school] : Object.keys(appData.schools);
+        const schoolData = schools.map(schoolId => {
+            const schoolProgress = Object.values(chapterProgress)
+                .filter(p => p.school === schoolId && p.completed);
+            
+            return {
+                school: appData.schools[schoolId],
+                completed: schoolProgress.length
+            };
         });
+        
+        if (typeof Chart !== 'undefined') {
+            // Destroy existing chart if it exists
+            if (window.schoolChartInstance) {
+                window.schoolChartInstance.destroy();
+            }
+            
+            window.schoolChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: schoolData.map(d => d.school),
+                    datasets: [{
+                        data: schoolData.map(d => d.completed),
+                        backgroundColor: ['#1FB8CD', '#FFC185', '#B4413C', '#ECEBD5', '#5D878F', '#DB4545']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+    } catch (error) {
+        console.error('School chart error:', error);
     }
 }
 
-// Admin Panel
+function loadTestChart() {
+    const canvas = document.getElementById('testChart');
+    if (!canvas) return;
+    
+    try {
+        const ctx = canvas.getContext('2d');
+        
+        const filteredProgress = getFilteredProgress();
+        const completedChapters = Object.values(filteredProgress).filter(p => p.completed);
+        
+        const onlineTests = completedChapters.filter(p => p.testCompleted && p.testMode === 'online').length;
+        const offlineTests = completedChapters.filter(p => p.testCompleted && p.testMode === 'offline').length;
+        const incompleteTests = completedChapters.filter(p => !p.testCompleted).length;
+        
+        if (typeof Chart !== 'undefined') {
+            // Destroy existing chart if it exists
+            if (window.testChartInstance) {
+                window.testChartInstance.destroy();
+            }
+            
+            window.testChartInstance = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Online Tests', 'Offline Tests', 'Incomplete Tests'],
+                    datasets: [{
+                        data: [onlineTests, offlineTests, incompleteTests],
+                        backgroundColor: ['#5D878F', '#D2BA4C', '#B4413C']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+    } catch (error) {
+        console.error('Test chart error:', error);
+    }
+}
+
+function loadTimelineChart() {
+    const canvas = document.getElementById('timelineChart');
+    if (!canvas) return;
+    
+    try {
+        const ctx = canvas.getContext('2d');
+        
+        const filteredProgress = getFilteredProgress();
+        const completionsWithDates = Object.values(filteredProgress)
+            .filter(p => p.completed && p.date)
+            .map(p => ({ date: new Date(p.date), count: 1 }))
+            .sort((a, b) => a.date - b.date);
+        
+        // Group by month
+        const monthlyData = {};
+        completionsWithDates.forEach(item => {
+            const monthKey = `${item.date.getFullYear()}-${item.date.getMonth() + 1}`;
+            if (!monthlyData[monthKey]) {
+                monthlyData[monthKey] = 0;
+            }
+            monthlyData[monthKey]++;
+        });
+        
+        const sortedMonths = Object.keys(monthlyData).sort();
+        const labels = sortedMonths.map(month => {
+            const [year, monthNum] = month.split('-');
+            return new Date(year, monthNum - 1).toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+        });
+        const data = sortedMonths.map(month => monthlyData[month]);
+        
+        if (typeof Chart !== 'undefined') {
+            // Destroy existing chart if it exists
+            if (window.timelineChartInstance) {
+                window.timelineChartInstance.destroy();
+            }
+            
+            window.timelineChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Chapters Completed',
+                        data,
+                        borderColor: '#1FB8CD',
+                        backgroundColor: 'rgba(31, 184, 205, 0.1)',
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    } catch (error) {
+        console.error('Timeline chart error:', error);
+    }
+}
+
+function generateAnalysisReport() {
+    try {
+        const reportContainer = document.getElementById('analysisReport');
+        if (!reportContainer) return;
+        
+        const filteredProgress = getFilteredProgress();
+        const completedChapters = Object.values(filteredProgress).filter(p => p.completed);
+        const totalChapters = getTotalChaptersCount();
+        const testsCompleted = completedChapters.filter(p => p.testCompleted).length;
+        const overallCompletion = totalChapters > 0 ? (completedChapters.length / totalChapters) * 100 : 0;
+        
+        // Calculate subject-wise performance
+        const subjectPerformance = appData.subjects.map(subject => {
+            const stats = calculateSubjectStats(subject, analyticsFilters.school);
+            return { subject, progress: stats.progressPercentage };
+        }).sort((a, b) => b.progress - a.progress);
+        
+        // Calculate school-wise performance
+        const schoolPerformance = Object.keys(appData.schools).map(schoolId => {
+            const schoolProgress = Object.values(chapterProgress)
+                .filter(p => p.school === schoolId && p.completed);
+            return { school: appData.schools[schoolId], completed: schoolProgress.length };
+        }).sort((a, b) => b.completed - a.completed);
+        
+        const report = `
+            <div class="analysis-section">
+                <h5>Current Status Overview</h5>
+                <p><strong>Overall Completion:</strong> ${overallCompletion.toFixed(1)}% (${completedChapters.length}/${totalChapters} chapters)</p>
+                <p><strong>Test Completion Rate:</strong> ${completedChapters.length > 0 ? ((testsCompleted / completedChapters.length) * 100).toFixed(1) : 0}% (${testsCompleted}/${completedChapters.length} completed chapters)</p>
+            </div>
+            
+            <div class="analysis-section">
+                <h5>Subject Performance Ranking</h5>
+                <ul>
+                    ${subjectPerformance.map((subj, index) => 
+                        `<li>${index + 1}. ${subj.subject.charAt(0).toUpperCase() + subj.subject.slice(1)}: ${subj.progress.toFixed(1)}%</li>`
+                    ).join('')}
+                </ul>
+            </div>
+            
+            <div class="analysis-section">
+                <h5>School Performance Ranking</h5>
+                <ul>
+                    ${schoolPerformance.slice(0, 3).map((school, index) => 
+                        `<li>${index + 1}. ${school.school}: ${school.completed} chapters completed</li>`
+                    ).join('')}
+                </ul>
+            </div>
+            
+            <div class="analysis-section">
+                <h5>Recommendations</h5>
+                <ul>
+                    ${overallCompletion < 50 ? '<li><strong>Priority Action Required:</strong> Overall progress is below 50%. Consider increasing teaching pace and additional support.</li>' : ''}
+                    ${testsCompleted / completedChapters.length < 0.8 ? '<li><strong>Test Completion Issue:</strong> Many completed chapters lack proper testing. Focus on conducting chapter tests.</li>' : ''}
+                    ${subjectPerformance[subjectPerformance.length - 1].progress < 30 ? `<li><strong>Subject Focus:</strong> ${subjectPerformance[subjectPerformance.length - 1].subject} needs immediate attention with only ${subjectPerformance[subjectPerformance.length - 1].progress.toFixed(1)}% completion.</li>` : ''}
+                    <li><strong>Current Phase:</strong> ${overallCompletion > 75 ? 'Final Phase - Focus on revision and remaining chapters' : overallCompletion > 50 ? 'Mid Phase - Maintain current pace and ensure quality' : 'Initial Phase - Accelerate teaching and establish consistent pace'}</li>
+                </ul>
+            </div>
+        `;
+        
+        reportContainer.innerHTML = report;
+    } catch (error) {
+        console.error('Analysis report error:', error);
+    }
+}
+
+// Admin Panel Functions - REQUIREMENTS 5 & 6
 function switchAdminTab(tab) {
-    document.querySelectorAll('.admin-tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    const activeBtn = document.querySelector(`[data-tab="${tab}"]`);
-    if (activeBtn) {
-        activeBtn.classList.add('active');
-    }
-    
-    document.querySelectorAll('.admin-tab-content').forEach(content => {
-        content.classList.remove('active');
-    });
-    const activeContent = document.getElementById(`admin${tab.charAt(0).toUpperCase() + tab.slice(1)}`);
-    if (activeContent) {
-        activeContent.classList.add('active');
-    }
-    
-    if (tab === 'chapters') {
-        loadAdminChapters();
-    } else if (tab === 'teachers') {
-        loadAdminTeachers();
+    try {
+        document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        const activeBtn = document.querySelector(`[data-tab="${tab}"]`);
+        if (activeBtn) {
+            activeBtn.classList.add('active');
+        }
+        
+        document.querySelectorAll('.admin-tab-content').forEach(content => {
+            content.classList.remove('active');
+        });
+        const activeContent = document.getElementById(`admin${tab.charAt(0).toUpperCase() + tab.slice(1)}`);
+        if (activeContent) {
+            activeContent.classList.add('active');
+        }
+        
+        if (tab === 'chapters') {
+            loadAdminChapters();
+        } else if (tab === 'teachers') {
+            loadAdminTeachers();
+        }
+    } catch (error) {
+        console.error('Admin tab switch error:', error);
     }
 }
 
 function loadAdminPanel() {
-    loadAdminChapters();
-    loadAdminTeachers();
+    try {
+        loadAdminChapters();
+        loadAdminTeachers();
+    } catch (error) {
+        console.error('Admin panel loading error:', error);
+    }
 }
 
 function loadAdminChapters() {
-    const subjectSelect = document.getElementById('adminSubject');
-    const gradeSelect = document.getElementById('adminGrade');
-    const container = document.getElementById('adminChaptersList');
-    
-    if (!subjectSelect || !gradeSelect || !container) return;
-    
-    const subject = subjectSelect.value;
-    const grade = gradeSelect.value;
-    const chapters = appData.curriculum[subject][grade];
-    
-    container.innerHTML = chapters.map(chapter => `
-        <div class="admin-chapter-item">
-            <span>${chapter}</span>
-            <button class="btn btn--outline btn--sm" onclick="removeChapter('${subject}', ${grade}, '${chapter}')">
-                Remove
-            </button>
-        </div>
-    `).join('');
+    try {
+        const subjectSelect = document.getElementById('adminSubject');
+        const gradeSelect = document.getElementById('adminGrade');
+        const container = document.getElementById('adminChaptersList');
+        
+        if (!subjectSelect || !gradeSelect || !container) return;
+        
+        const subject = subjectSelect.value;
+        const grade = gradeSelect.value;
+        const chapters = appData.curriculum[subject][grade];
+        
+        container.innerHTML = chapters.map(chapter => `
+            <div class="admin-chapter-item">
+                <span>${chapter}</span>
+                <div class="teacher-actions">
+                    <button class="btn btn--outline btn--sm" onclick="editChapterCompletion('${subject}', ${grade}, '${chapter}')">
+                        Edit Status
+                    </button>
+                    <button class="btn btn--outline btn--sm" onclick="removeChapter('${subject}', ${grade}, '${chapter}')">
+                        Remove
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    } catch (error) {
+        console.error('Admin chapters loading error:', error);
+    }
 }
 
 function loadAdminTeachers() {
-    const container = document.getElementById('adminTeachersList');
-    if (!container) return;
-    
-    const teachers = Object.entries(appData.teachers)
-        .filter(([id]) => id !== 'admin');
-    
-    container.innerHTML = teachers.map(([id, teacher]) => `
-        <div class="teacher-item">
-            <div class="teacher-actions">
-                <button class="btn btn--outline btn--sm" onclick="editTeacher('${id}')">Edit</button>
-                <button class="btn btn--outline btn--sm" onclick="deleteTeacherConfirm('${id}')">Delete</button>
+    try {
+        const container = document.getElementById('adminTeachersList');
+        if (!container) return;
+        
+        const teachers = Object.entries(appData.teachers)
+            .filter(([id]) => id !== 'admin');
+        
+        container.innerHTML = teachers.map(([id, teacher]) => `
+            <div class="teacher-item">
+                <h4>${teacher.name}</h4>
+                <p><strong>ID:</strong> ${id}</p>
+                <p><strong>Subject:</strong> ${teacher.subject.charAt(0).toUpperCase() + teacher.subject.slice(1)}</p>
+                <p><strong>School:</strong> ${appData.schools[teacher.school]}</p>
+                <p><strong>Email:</strong> ${teacher.email}</p>
+                <p><strong>Phone:</strong> ${teacher.phone}</p>
+                <div class="teacher-actions">
+                    <button class="btn btn--secondary btn--sm" onclick="editTeacher('${id}')">Edit</button>
+                    <button class="btn btn--outline btn--sm" onclick="removeTeacher('${id}')">Remove</button>
+                </div>
             </div>
-            <h4>${teacher.name}</h4>
-            <p><strong>ID:</strong> ${id}</p>
-            <p><strong>Subject:</strong> ${teacher.subject.charAt(0).toUpperCase() + teacher.subject.slice(1)}</p>
-            <p><strong>School:</strong> ${appData.schools[teacher.school]}</p>
-            <p><strong>Email:</strong> ${teacher.email}</p>
-            <p><strong>Phone:</strong> ${teacher.phone}</p>
-        </div>
-    `).join('');
-}
-
-function addNewChapter() {
-    const subjectSelect = document.getElementById('adminSubject');
-    const gradeSelect = document.getElementById('adminGrade');
-    const chapterInput = document.getElementById('newChapter');
-    
-    if (!subjectSelect || !gradeSelect || !chapterInput) return;
-    
-    const subject = subjectSelect.value;
-    const grade = parseInt(gradeSelect.value);
-    const chapterName = chapterInput.value.trim();
-    
-    if (!chapterName) {
-        alert('Please enter a chapter name');
-        return;
-    }
-    
-    if (appData.curriculum[subject][grade].includes(chapterName)) {
-        alert('Chapter already exists');
-        return;
-    }
-    
-    appData.curriculum[subject][grade].push(chapterName);
-    chapterInput.value = '';
-    
-    // CRITICAL FIX: Save to localStorage immediately
-    saveToStorage();
-    
-    loadAdminChapters();
-    
-    if (currentCurriculumSubject === subject && currentGrade === grade) {
-        loadChaptersList();
-    }
-    
-    loadMultiSubjectDashboard();
-    
-    alert('Chapter added successfully!');
-}
-
-// FIXED Teacher Management Functions
-function openAddTeacherModal() {
-    currentEditingTeacher = null;
-    clearTeacherForm();
-    
-    const modal = document.getElementById('teacherModal');
-    const modalTitle = document.getElementById('teacherModalTitle');
-    const deleteBtn = document.getElementById('deleteTeacherBtn');
-    
-    if (modalTitle) modalTitle.textContent = 'Add New Teacher';
-    if (deleteBtn) deleteBtn.style.display = 'none';
-    if (modal) modal.classList.remove('hidden');
-}
-
-function editTeacher(teacherId) {
-    currentEditingTeacher = teacherId;
-    const teacher = appData.teachers[teacherId];
-    
-    if (!teacher) return;
-    
-    // Fill form with teacher data
-    const fields = {
-        'teacherEmployeeId': teacherId,
-        'teacherName': teacher.name,
-        'teacherSchool': teacher.school,
-        'teacherSubject': teacher.subject,
-        'teacherEmail': teacher.email,
-        'teacherPhone': teacher.phone,
-        'teacherDob': teacher.dob
-    };
-    
-    Object.entries(fields).forEach(([fieldId, value]) => {
-        const field = document.getElementById(fieldId);
-        if (field) field.value = value;
-    });
-    
-    // Disable employee ID field for editing
-    const employeeIdField = document.getElementById('teacherEmployeeId');
-    if (employeeIdField) employeeIdField.disabled = true;
-    
-    const modal = document.getElementById('teacherModal');
-    const modalTitle = document.getElementById('teacherModalTitle');
-    const deleteBtn = document.getElementById('deleteTeacherBtn');
-    
-    if (modalTitle) modalTitle.textContent = 'Edit Teacher';
-    if (deleteBtn) deleteBtn.style.display = 'inline-flex';
-    if (modal) modal.classList.remove('hidden');
-}
-
-function clearTeacherForm() {
-    const fields = ['teacherEmployeeId', 'teacherName', 'teacherSchool', 'teacherSubject', 'teacherEmail', 'teacherPhone', 'teacherDob'];
-    fields.forEach(fieldId => {
-        const field = document.getElementById(fieldId);
-        if (field) {
-            field.value = '';
-            field.disabled = false;
-        }
-    });
-}
-
-function closeTeacherModalHandler() {
-    const modal = document.getElementById('teacherModal');
-    if (modal) modal.classList.add('hidden');
-    currentEditingTeacher = null;
-    clearTeacherForm();
-}
-
-// FIXED saveTeacher function with better validation
-function saveTeacher() {
-    const fields = {
-        employeeId: document.getElementById('teacherEmployeeId')?.value?.trim(),
-        name: document.getElementById('teacherName')?.value?.trim(),
-        school: document.getElementById('teacherSchool')?.value,
-        subject: document.getElementById('teacherSubject')?.value,
-        email: document.getElementById('teacherEmail')?.value?.trim(),
-        phone: document.getElementById('teacherPhone')?.value?.trim(),
-        dob: document.getElementById('teacherDob')?.value
-    };
-    
-    console.log('💾 Saving teacher with fields:', fields);
-    
-    // Validate all fields
-    const requiredFields = ['employeeId', 'name', 'school', 'subject', 'email', 'phone', 'dob'];
-    for (let field of requiredFields) {
-        if (!fields[field]) {
-            alert(`Please fill in the ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}`);
-            console.log('❌ Missing field:', field);
-            return;
-        }
-    }
-    
-    // Check if employee ID already exists (only for new teachers)
-    if (!currentEditingTeacher && appData.teachers[fields.employeeId]) {
-        alert('Employee ID already exists. Please use a different ID.');
-        return;
-    }
-    
-    // Create teacher object
-    const teacherData = {
-        name: fields.name,
-        school: fields.school,
-        subject: fields.subject,
-        email: fields.email,
-        phone: fields.phone,
-        dob: fields.dob
-    };
-    
-    if (currentEditingTeacher) {
-        // Edit existing teacher
-        appData.teachers[currentEditingTeacher] = teacherData;
-        console.log('✅ Teacher updated:', currentEditingTeacher, teacherData);
-    } else {
-        // Add new teacher
-        appData.teachers[fields.employeeId] = teacherData;
-        console.log('✅ New teacher added:', fields.employeeId, teacherData);
-    }
-    
-    // CRITICAL FIX: Save to localStorage immediately
-    saveToStorage();
-    
-    closeTeacherModalHandler();
-    loadAdminTeachers();
-    loadTeamMembers();
-    
-    alert(`Teacher ${currentEditingTeacher ? 'updated' : 'added'} successfully!`);
-}
-
-function deleteTeacher() {
-    if (!currentEditingTeacher) return;
-    
-    if (confirm(`Are you sure you want to delete ${appData.teachers[currentEditingTeacher]?.name}?`)) {
-        delete appData.teachers[currentEditingTeacher];
-        
-        // CRITICAL FIX: Save to localStorage immediately
-        saveToStorage();
-        
-        closeTeacherModalHandler();
-        loadAdminTeachers();
-        loadTeamMembers();
-        
-        console.log('✅ Teacher deleted:', currentEditingTeacher);
-        alert('Teacher deleted successfully!');
-    }
-}
-
-function deleteTeacherConfirm(teacherId) {
-    if (confirm(`Are you sure you want to delete ${appData.teachers[teacherId]?.name}?`)) {
-        delete appData.teachers[teacherId];
-        
-        // CRITICAL FIX: Save to localStorage immediately
-        saveToStorage();
-        
-        loadAdminTeachers();
-        loadTeamMembers();
-        
-        console.log('✅ Teacher deleted:', teacherId);
-        alert('Teacher deleted successfully!');
+        `).join('');
+    } catch (error) {
+        console.error('Admin teachers loading error:', error);
     }
 }
 
 // Make functions globally accessible for onclick handlers
+window.editChapterCompletion = function(subject, grade, chapter) {
+    currentCurriculumSubject = subject;
+    currentGrade = parseInt(grade);
+    openChapterModal(chapter);
+};
+
 window.removeChapter = function(subject, grade, chapter) {
     if (confirm(`Are you sure you want to remove "${chapter}"?`)) {
-        const index = appData.curriculum[subject][grade].indexOf(chapter);
-        if (index > -1) {
-            appData.curriculum[subject][grade].splice(index, 1);
-            
-            // Remove related progress data
-            const key = `${subject}_${grade}_${chapter}`;
-            delete chapterProgress[key];
-            
-            // CRITICAL FIX: Save to localStorage immediately
-            saveToStorage();
-            
-            loadAdminChapters();
-            
-            if (currentCurriculumSubject === subject && currentGrade === grade) {
-                loadChaptersList();
+        try {
+            const index = appData.curriculum[subject][grade].indexOf(chapter);
+            if (index > -1) {
+                appData.curriculum[subject][grade].splice(index, 1);
+                loadAdminChapters();
+                
+                const key = `${subject}_${grade}_${chapter}`;
+                delete chapterProgress[key];
+                saveToStorage();
+                
+                if (currentCurriculumSubject === subject && currentGrade === grade) {
+                    loadChaptersList();
+                }
+                
+                loadMultiSubjectDashboard();
+                alert('Chapter removed successfully!');
             }
-            
-            loadMultiSubjectDashboard();
-            
-            alert('Chapter removed successfully!');
+        } catch (error) {
+            console.error('Remove chapter error:', error);
+            alert('Error removing chapter. Please try again.');
         }
     }
 };
 
-window.editTeacher = editTeacher;
-window.deleteTeacherConfirm = deleteTeacherConfirm;
+window.editTeacher = function(teacherId) {
+    try {
+        currentEditingTeacher = teacherId;
+        const teacher = appData.teachers[teacherId];
+        
+        if (!teacher) return;
+        
+        // Populate modal with teacher data
+        document.getElementById('modalTeacherTitle').textContent = 'Edit Teacher';
+        document.getElementById('teacherEmployeeId').value = teacherId;
+        document.getElementById('teacherName').value = teacher.name;
+        document.getElementById('teacherSchool').value = teacher.school;
+        document.getElementById('teacherSubject').value = teacher.subject;
+        document.getElementById('teacherEmail').value = teacher.email;
+        document.getElementById('teacherPhone').value = teacher.phone;
+        document.getElementById('teacherDob').value = teacher.dob;
+        
+        // Disable employee ID editing
+        document.getElementById('teacherEmployeeId').disabled = true;
+        
+        // Show modal
+        document.getElementById('teacherModal').classList.remove('hidden');
+    } catch (error) {
+        console.error('Edit teacher error:', error);
+        alert('Error editing teacher. Please try again.');
+    }
+};
+
+window.removeTeacher = function(teacherId) {
+    if (confirm('Are you sure you want to remove this teacher?')) {
+        try {
+            delete appData.teachers[teacherId];
+            loadAdminTeachers();
+            loadTeamMembers();
+            saveToStorage();
+            alert('Teacher removed successfully!');
+        } catch (error) {
+            console.error('Remove teacher error:', error);
+            alert('Error removing teacher. Please try again.');
+        }
+    }
+};
+
+function addNewChapter() {
+    try {
+        const subjectSelect = document.getElementById('adminSubject');
+        const gradeSelect = document.getElementById('adminGrade');
+        const chapterInput = document.getElementById('newChapter');
+        
+        if (!subjectSelect || !gradeSelect || !chapterInput) return;
+        
+        const subject = subjectSelect.value;
+        const grade = parseInt(gradeSelect.value);
+        const chapterName = chapterInput.value.trim();
+        
+        if (!chapterName) {
+            alert('Please enter a chapter name');
+            return;
+        }
+        
+        if (appData.curriculum[subject][grade].includes(chapterName)) {
+            alert('Chapter already exists');
+            return;
+        }
+        
+        appData.curriculum[subject][grade].push(chapterName);
+        chapterInput.value = '';
+        loadAdminChapters();
+        
+        if (currentCurriculumSubject === subject && currentGrade === grade) {
+            loadChaptersList();
+        }
+        
+        loadMultiSubjectDashboard();
+        saveToStorage();
+        alert('Chapter added successfully!');
+    } catch (error) {
+        console.error('Add chapter error:', error);
+        alert('Error adding chapter. Please try again.');
+    }
+}
+
+// Teacher Modal Functions
+function showAddTeacherModal() {
+    try {
+        currentEditingTeacher = null;
+        
+        // Clear and reset modal
+        document.getElementById('modalTeacherTitle').textContent = 'Add New Teacher';
+        document.getElementById('teacherEmployeeId').value = '';
+        document.getElementById('teacherName').value = '';
+        document.getElementById('teacherSchool').value = '';
+        document.getElementById('teacherSubject').value = '';
+        document.getElementById('teacherEmail').value = '';
+        document.getElementById('teacherPhone').value = '';
+        document.getElementById('teacherDob').value = '';
+        
+        // Enable employee ID editing
+        document.getElementById('teacherEmployeeId').disabled = false;
+        
+        // Show modal
+        document.getElementById('teacherModal').classList.remove('hidden');
+    } catch (error) {
+        console.error('Show add teacher modal error:', error);
+    }
+}
+
+function closeTeacherModal() {
+    try {
+        document.getElementById('teacherModal').classList.add('hidden');
+        currentEditingTeacher = null;
+    } catch (error) {
+        console.error('Close teacher modal error:', error);
+    }
+}
+
+function saveTeacher() {
+    try {
+        const employeeId = document.getElementById('teacherEmployeeId').value.trim();
+        const name = document.getElementById('teacherName').value.trim();
+        const school = document.getElementById('teacherSchool').value;
+        const subject = document.getElementById('teacherSubject').value;
+        const email = document.getElementById('teacherEmail').value.trim();
+        const phone = document.getElementById('teacherPhone').value.trim();
+        const dob = document.getElementById('teacherDob').value;
+        
+        // Validation
+        if (!employeeId || !name || !school || !subject || !email || !phone || !dob) {
+            alert('Please fill in all fields');
+            return;
+        }
+        
+        // Check for duplicate employee ID when adding new teacher
+        if (!currentEditingTeacher && appData.teachers[employeeId]) {
+            alert('Employee ID already exists');
+            return;
+        }
+        
+        // Save teacher data
+        appData.teachers[employeeId] = {
+            name,
+            school,
+            subject,
+            email,
+            phone,
+            dob
+        };
+        
+        closeTeacherModal();
+        loadAdminTeachers();
+        loadTeamMembers();
+        saveToStorage();
+        
+        alert(currentEditingTeacher ? 'Teacher updated successfully!' : 'Teacher added successfully!');
+    } catch (error) {
+        console.error('Save teacher error:', error);
+        alert('Error saving teacher. Please try again.');
+    }
+}
+
+// Data Storage
+function saveToStorage() {
+    try {
+        const data = {
+            chapterProgress,
+            chatMessages,
+            curriculum: appData.curriculum,
+            teachers: appData.teachers
+        };
+        localStorage.setItem('jnvCurriculumData', JSON.stringify(data));
+        console.log('✅ Data saved to localStorage');
+    } catch (error) {
+        console.error('❌ Error saving data:', error);
+    }
+}
+
+function loadStoredData() {
+    try {
+        const stored = localStorage.getItem('jnvCurriculumData');
+        if (stored) {
+            const data = JSON.parse(stored);
+            if (data.chapterProgress) chapterProgress = data.chapterProgress;
+            if (data.chatMessages) chatMessages = data.chatMessages;
+            if (data.curriculum) appData.curriculum = data.curriculum;
+            if (data.teachers) appData.teachers = { ...appData.teachers, ...data.teachers };
+            console.log('✅ Data loaded from localStorage');
+        }
+    } catch (error) {
+        console.error('❌ Error loading stored data:', error);
+    }
+}
 
 // Logout
 function handleLogout() {
     if (confirm('Are you sure you want to logout?')) {
-        currentUser = null;
-        currentGrade = 11;
-        currentModalChapter = null;
-        currentSelectedSchool = null;
-        currentCurriculumSubject = 'physics';
-        currentEditingTeacher = null;
-        
-        const loginForm = document.getElementById('loginForm');
-        if (loginForm) {
-            loginForm.reset();
+        try {
+            // Reset state
+            currentUser = null;
+            currentGrade = 11;
+            currentModalChapter = null;
+            currentEditingTeacher = null;
+            currentSelectedSchool = null;
+            currentCurriculumSubject = 'physics';
+            analyticsFilters = { school: '', subject: '', testMode: '' };
+            
+            // Clear forms
+            hideError();
+            hideAdminPasswordField();
+            
+            // Reset form fields
+            const schoolField = document.getElementById('school');
+            const employeeField = document.getElementById('employeeId');
+            const subjectField = document.getElementById('subject');
+            
+            if (schoolField) schoolField.selectedIndex = 0;
+            if (employeeField) employeeField.value = '';
+            if (subjectField) subjectField.selectedIndex = 0;
+            
+            // Hide admin features
+            document.querySelectorAll('.admin-only').forEach(element => {
+                element.classList.add('hidden');
+                element.classList.remove('show');
+            });
+            
+            // Hide teacher features
+            const teacherSchoolSelector = document.getElementById('teacherSchoolSelector');
+            const curriculumSchoolSelector = document.getElementById('curriculumSchoolSelector');
+            
+            if (teacherSchoolSelector) teacherSchoolSelector.classList.add('hidden');
+            if (curriculumSchoolSelector) curriculumSchoolSelector.classList.add('hidden');
+            
+            // Switch back to login screen
+            const loginScreen = document.getElementById('loginScreen');
+            const mainApp = document.getElementById('mainApp');
+            
+            if (loginScreen && mainApp) {
+                mainApp.classList.remove('active');
+                mainApp.classList.add('hidden');
+                mainApp.style.display = 'none';
+                loginScreen.classList.add('active');
+                loginScreen.style.display = 'flex';
+            }
+            
+            // Reset to dashboard
+            navigateToSection('dashboard');
+            
+            // Destroy chart instances
+            if (window.subjectChartInstance) window.subjectChartInstance.destroy();
+            if (window.schoolChartInstance) window.schoolChartInstance.destroy();
+            if (window.testChartInstance) window.testChartInstance.destroy();
+            if (window.timelineChartInstance) window.timelineChartInstance.destroy();
+            
+            console.log('✅ Logout completed successfully');
+        } catch (error) {
+            console.error('❌ Logout error:', error);
+            location.reload(); // Fallback - reload page if logout fails
         }
-        hideError();
-        hideAdminPasswordField();
-        
-        document.querySelectorAll('.admin-only').forEach(element => {
-            element.classList.add('hidden');
-            element.classList.remove('show');
-        });
-        
-        const teacherSchoolSelector = document.getElementById('teacherSchoolSelector');
-        const curriculumSchoolSelector = document.getElementById('curriculumSchoolSelector');
-        
-        if (teacherSchoolSelector) teacherSchoolSelector.classList.add('hidden');
-        if (curriculumSchoolSelector) curriculumSchoolSelector.classList.add('hidden');
-        
-        const loginScreen = document.getElementById('loginScreen');
-        const mainApp = document.getElementById('mainApp');
-        
-        if (loginScreen && mainApp) {
-            mainApp.classList.remove('active');
-            mainApp.classList.add('hidden');
-            mainApp.style.display = 'none';
-            loginScreen.classList.add('active');
-            loginScreen.style.display = 'flex';
-        }
-        
-        navigateToSection('dashboard');
-        console.log('✅ Logout completed');
     }
 }
