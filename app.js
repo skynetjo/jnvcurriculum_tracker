@@ -1,5 +1,6 @@
 // Application Data
 const appData = {
+  adminPassword: "admin123",
   schools: {
     "school1": "CoE Barwani",
     "school2": "CoE Cuttak", 
@@ -32,22 +33,8 @@ const appData = {
     "AF464": { "name": "Dr. Rajesh Kumar", "school": "school1", "subject": "physics", "email": "rajesh@coebarwani.edu", "phone": "+91 9876543210", "dob": "1980-05-15" },
     "AF248": { "name": "Prof. Priya Sharma", "school": "school1", "subject": "chemistry", "email": "priya@coebarwani.edu", "phone": "+91 9876543211", "dob": "1985-08-22" },
     "AF842": { "name": "Mr. Amit Singh", "school": "school1", "subject": "mathematics", "email": "amit@coebarwani.edu", "phone": "+91 9876543212", "dob": "1982-12-10" },
-    "AF709": { "name": "Dr. Sunita Gupta", "school": "school2", "subject": "biology", "email": "sunita@coecuttak.edu", "phone": "+91 9876543213", "dob": "1979-03-18" },
     "AF459": { "name": "Dr. Vikram Joshi", "school": "school2", "subject": "physics", "email": "vikram@coecuttak.edu", "phone": "+91 9876543214", "dob": "1981-09-25" },
     "AF832": { "name": "Ms. Ritu Agarwal", "school": "school2", "subject": "chemistry", "email": "ritu@coecuttak.edu", "phone": "+91 9876543215", "dob": "1983-07-12" },
-    "AF843": { "name": "Prof. Deepak Patel", "school": "school3", "subject": "mathematics", "email": "deepak@coemahisagar.edu", "phone": "+91 9876543216", "dob": "1984-11-08" },
-    "AF620": { "name": "Dr. Meera Shah", "school": "school3", "subject": "physics", "email": "meera@coemahisagar.edu", "phone": "+91 9876543217", "dob": "1986-01-30" },
-    "AF635": { "name": "Ms. Kavita Jain", "school": "school3", "subject": "biology", "email": "kavita@coemahisagar.edu", "phone": "+91 9876543218", "dob": "1988-04-14" },
-    "AF789": { "name": "Dr. Anil Verma", "school": "school4", "subject": "chemistry", "email": "anil@coebundi.edu", "phone": "+91 9876543219", "dob": "1977-06-20" },
-    "AF788": { "name": "Prof. Sanjay Kumar", "school": "school4", "subject": "physics", "email": "sanjay@coebundi.edu", "phone": "+91 9876543220", "dob": "1982-10-05" },
-    "AF790": { "name": "Ms. Pooja Sharma", "school": "school4", "subject": "mathematics", "email": "pooja@coebundi.edu", "phone": "+91 9876543221", "dob": "1987-12-17" },
-    "AF786": { "name": "Dr. Ramesh Patel", "school": "school5", "subject": "biology", "email": "ramesh@jnvbharuch.edu", "phone": "+91 9876543222", "dob": "1980-02-28" },
-    "AF804": { "name": "Prof. Nisha Gupta", "school": "school5", "subject": "chemistry", "email": "nisha@jnvbharuch.edu", "phone": "+91 9876543223", "dob": "1985-05-11" },
-    "AF800": { "name": "Mr. Suresh Singh", "school": "school5", "subject": "physics", "email": "suresh@jnvbharuch.edu", "phone": "+91 9876543224", "dob": "1983-09-03" },
-    "AF723": { "name": "Ms. Divya Joshi", "school": "school5", "subject": "mathematics", "email": "divya@jnvbharuch.edu", "phone": "+91 9876543225", "dob": "1989-11-26" },
-    "AF529": { "name": "Dr. Ashok Tiwari", "school": "school6", "subject": "physics", "email": "ashok@emrsbhopal.edu", "phone": "+91 9876543226", "dob": "1979-08-15" },
-    "AF834": { "name": "Prof. Rekha Pandey", "school": "school6", "subject": "chemistry", "email": "rekha@emrsbhopal.edu", "phone": "+91 9876543227", "dob": "1984-12-02" },
-    "AF840": { "name": "Ms. Madhuri Singh", "school": "school6", "subject": "biology", "email": "madhuri@emrsbhopal.edu", "phone": "+91 9876543228", "dob": "1986-03-19" },
     "admin": { "name": "System Administrator", "school": "all", "subject": "all", "email": "admin@schools.edu", "phone": "+91 9999999999", "dob": "1975-01-01" }
   }
 };
@@ -56,80 +43,22 @@ const appData = {
 let currentUser = null;
 let currentGrade = 11;
 let currentModalChapter = null;
+let currentEditingTeacher = null;
 let chapterProgress = {};
 let chatMessages = [];
-let currentViewingSubject = null; // Track which subject is being viewed
 
 // Initialize Application
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM loaded, initializing JNV Curriculum Tracker...');
+    initializeBackgroundAnimations();
+    loadStoredData();
     
-    // Small delay to ensure DOM is fully ready
+    // Add a small delay to ensure DOM is fully ready
     setTimeout(() => {
-        initializeBackgroundAnimations();
         initializeEventListeners();
-        loadStoredData();
-        enforceTextVisibility();
-        fixFormElements();
+        console.log('App initialization complete');
     }, 100);
 });
-
-// Fix form elements to ensure they work properly
-function fixFormElements() {
-    console.log('Fixing form elements...');
-    
-    // Ensure all form controls have proper styling and functionality
-    const formControls = document.querySelectorAll('.form-control');
-    formControls.forEach(control => {
-        control.style.pointerEvents = 'auto';
-        control.style.zIndex = '10';
-        control.style.color = '#000000';
-        control.style.setProperty('color', '#000000', 'important');
-        
-        if (control.tagName === 'SELECT') {
-            control.style.cursor = 'pointer';
-            control.addEventListener('focus', function() {
-                console.log('Select focused:', control.id);
-            });
-            control.addEventListener('change', function() {
-                console.log('Select changed:', control.id, control.value);
-            });
-        }
-    });
-}
-
-// Critical function to enforce black text visibility
-function enforceTextVisibility() {
-    console.log('Enforcing text visibility...');
-    
-    // Force all text elements to be black/dark - MOST IMPORTANT
-    const allElements = document.querySelectorAll('*');
-    allElements.forEach(el => {
-        // Skip elements that should have different colors
-        if (!el.classList.contains('btn--primary') && 
-            !el.classList.contains('team-avatar') && 
-            !el.classList.contains('chat-message') &&
-            !el.classList.contains('error-message') &&
-            !el.classList.contains('app-title') &&
-            !el.classList.contains('nav-brand-title')) {
-            
-            const tagName = el.tagName.toLowerCase();
-            if (['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span', 'div', 'label', 'input', 'select', 'textarea', 'button', 'a'].includes(tagName)) {
-                el.style.setProperty('color', '#000000', 'important');
-            }
-        }
-    });
-    
-    // Specifically target form elements
-    document.querySelectorAll('input, select, textarea, label').forEach(el => {
-        el.style.setProperty('color', '#000000', 'important');
-    });
-    
-    // Force placeholders to be visible too
-    document.querySelectorAll('input::placeholder').forEach(el => {
-        el.style.setProperty('color', '#666666', 'important');
-    });
-}
 
 // Background Animations
 function initializeBackgroundAnimations() {
@@ -177,103 +106,193 @@ function createFloatingShapes() {
     }
 }
 
-// Event Listeners
+// Event Listeners Setup - FIXED TO ENSURE PROPER BINDING
 function initializeEventListeners() {
     console.log('Setting up event listeners...');
     
-    setTimeout(() => {
-        setupLoginListeners();
-        setupNavigationListeners();
-        setupModalListeners();
-        setupProfileListeners();
-        setupChatListeners();
-        setupAdminListeners();
-        setupSubjectCardListeners();
-    }, 200);
-}
-
-function setupLoginListeners() {
+    // CRITICAL FIX: Teacher Login Form
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
-        loginForm.removeEventListener('submit', handleTeacherLogin);
         loginForm.addEventListener('submit', handleTeacherLogin);
-        console.log('Teacher login form listener added');
+        console.log('✅ Teacher login form listener attached');
+    } else {
+        console.error('❌ Login form not found!');
     }
     
+    // CRITICAL FIX: Admin Login Button - Show Password Form
     const adminBtn = document.getElementById('adminLoginBtn');
     if (adminBtn) {
-        adminBtn.removeEventListener('click', handleAdminLoginClick);
-        adminBtn.addEventListener('click', handleAdminLoginClick);
-        adminBtn.style.pointerEvents = 'auto';
-        adminBtn.style.cursor = 'pointer';
-        console.log('Admin login button listener added');
+        // Remove any existing listeners
+        adminBtn.replaceWith(adminBtn.cloneNode(true));
+        const newAdminBtn = document.getElementById('adminLoginBtn');
+        
+        newAdminBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Admin login button clicked');
+            showAdminPasswordForm();
+        });
+        
+        console.log('✅ Admin login button listener attached');
+    } else {
+        console.error('❌ Admin login button not found!');
     }
-}
-
-function handleAdminLoginClick(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    console.log('Admin login clicked!');
-    handleAdminLogin();
-}
-
-function setupNavigationListeners() {
+    
+    // CRITICAL FIX: Admin Password Submit
+    const adminPasswordSubmit = document.getElementById('adminPasswordSubmit');
+    if (adminPasswordSubmit) {
+        adminPasswordSubmit.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Admin password submit button clicked');
+            handleAdminPasswordSubmit();
+        });
+        console.log('✅ Admin password submit listener attached');
+    } else {
+        console.error('❌ Admin password submit button not found!');
+    }
+    
+    // Admin Password Cancel
+    const adminPasswordCancel = document.getElementById('adminPasswordCancel');
+    if (adminPasswordCancel) {
+        adminPasswordCancel.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            hideAdminPasswordForm();
+        });
+    }
+    
+    // Admin Password Enter Key
+    const adminPasswordInput = document.getElementById('adminPassword');
+    if (adminPasswordInput) {
+        adminPasswordInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleAdminPasswordSubmit();
+            }
+        });
+    }
+    
+    // Navigation Links
     document.querySelectorAll('.nav-link').forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
-            navigateToSection(e.target.dataset.section);
-        });
-    });
-    
-    const logoutBtn = document.getElementById('logoutBtn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', handleLogout);
-    }
-    
-    document.querySelectorAll('.grade-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            switchGrade(parseInt(e.target.dataset.grade));
-        });
-    });
-}
-
-function setupSubjectCardListeners() {
-    // Add click listeners to subject cards
-    document.querySelectorAll('.subject-card').forEach(card => {
-        card.addEventListener('click', (e) => {
-            e.preventDefault();
-            const subject = card.dataset.subject;
-            if (subject) {
-                viewSubject(subject);
+            const section = e.target.getAttribute('data-section');
+            if (section) {
+                navigateToSection(section);
             }
         });
     });
+    
+    // Logout Button
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            handleLogout();
+        });
+    }
+    
+    // Grade Selector Buttons
+    document.querySelectorAll('.grade-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const grade = parseInt(e.target.getAttribute('data-grade'));
+            if (grade) {
+                switchGrade(grade);
+            }
+        });
+    });
+    
+    // Setup other events
+    setupChapterModalEvents();
+    setupTeacherModalEvents();
+    setupProfileEvents();
+    setupChatEvents();
+    setupAdminEvents();
 }
 
-function setupModalListeners() {
+function setupChapterModalEvents() {
     const closeModal = document.getElementById('closeModal');
     const cancelModal = document.getElementById('cancelModal');
     const saveChapterBtn = document.getElementById('saveChapterBtn');
     
-    if (closeModal) closeModal.addEventListener('click', closeChapterModal);
-    if (cancelModal) cancelModal.addEventListener('click', closeChapterModal);
-    if (saveChapterBtn) saveChapterBtn.addEventListener('click', saveChapterProgress);
+    if (closeModal) {
+        closeModal.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeChapterModal();
+        });
+    }
+    
+    if (cancelModal) {
+        cancelModal.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeChapterModal();
+        });
+    }
+    
+    if (saveChapterBtn) {
+        saveChapterBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            saveChapterProgress();
+        });
+    }
 }
 
-function setupProfileListeners() {
+function setupTeacherModalEvents() {
+    const closeTeacherModal = document.getElementById('closeTeacherModal');
+    const cancelTeacherModal = document.getElementById('cancelTeacherModal');
+    const saveTeacherBtn = document.getElementById('saveTeacherBtn');
+    
+    if (closeTeacherModal) {
+        closeTeacherModal.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeTeacherModalFunc();
+        });
+    }
+    
+    if (cancelTeacherModal) {
+        cancelTeacherModal.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeTeacherModalFunc();
+        });
+    }
+    
+    if (saveTeacherBtn) {
+        saveTeacherBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            saveTeacher();
+        });
+    }
+}
+
+function setupProfileEvents() {
     const photoUpload = document.getElementById('photoUpload');
     const saveProfileBtn = document.getElementById('saveProfileBtn');
     
-    if (photoUpload) photoUpload.addEventListener('change', handlePhotoUpload);
-    if (saveProfileBtn) saveProfileBtn.addEventListener('click', saveProfile);
+    if (photoUpload) {
+        photoUpload.addEventListener('change', handlePhotoUpload);
+    }
+    
+    if (saveProfileBtn) {
+        saveProfileBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            saveProfile();
+        });
+    }
 }
 
-function setupChatListeners() {
+function setupChatEvents() {
     const sendMessageBtn = document.getElementById('sendMessageBtn');
     const messageInput = document.getElementById('messageInput');
     
-    if (sendMessageBtn) sendMessageBtn.addEventListener('click', sendMessage);
+    if (sendMessageBtn) {
+        sendMessageBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            sendMessage();
+        });
+    }
+    
     if (messageInput) {
         messageInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
@@ -284,32 +303,56 @@ function setupChatListeners() {
     }
 }
 
-function setupAdminListeners() {
+function setupAdminEvents() {
+    // Admin Tab Buttons
     document.querySelectorAll('.admin-tab-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
-            switchAdminTab(e.target.dataset.tab);
+            const tab = e.target.getAttribute('data-tab');
+            if (tab) {
+                switchAdminTab(tab);
+            }
         });
     });
     
+    // Add Chapter Button
     const addChapterBtn = document.getElementById('addChapterBtn');
-    if (addChapterBtn) addChapterBtn.addEventListener('click', addNewChapter);
+    if (addChapterBtn) {
+        addChapterBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            addNewChapter();
+        });
+    }
     
+    // Add Teacher Button
+    const addTeacherBtn = document.getElementById('addTeacherBtn');
+    if (addTeacherBtn) {
+        addTeacherBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            showAddTeacherModal();
+        });
+    }
+    
+    // Admin Subject/Grade Change
     const adminSubject = document.getElementById('adminSubject');
     const adminGrade = document.getElementById('adminGrade');
     
-    if (adminSubject) adminSubject.addEventListener('change', loadAdminChapters);
-    if (adminGrade) adminGrade.addEventListener('change', loadAdminChapters);
+    if (adminSubject) {
+        adminSubject.addEventListener('change', loadAdminChapters);
+    }
+    
+    if (adminGrade) {
+        adminGrade.addEventListener('change', loadAdminChapters);
+    }
 }
 
-// Error Display Function
+// Error Handling
 function showError(message) {
     console.log('Showing error:', message);
     const errorDiv = document.getElementById('errorMessage');
     if (errorDiv) {
         errorDiv.textContent = message;
         errorDiv.classList.remove('hidden');
-        errorDiv.style.setProperty('color', '#c0152f', 'important');
         
         setTimeout(() => {
             errorDiv.classList.add('hidden');
@@ -324,12 +367,103 @@ function hideError() {
     }
 }
 
-// Teacher Login Handler
+// FIXED ADMIN LOGIN PROCESS
+function showAdminPasswordForm() {
+    console.log('🔧 Showing admin password form');
+    hideError();
+    
+    const passwordSection = document.getElementById('adminPasswordSection');
+    const adminBtn = document.getElementById('adminLoginBtn');
+    
+    if (passwordSection && adminBtn) {
+        passwordSection.classList.remove('hidden');
+        adminBtn.style.display = 'none';
+        
+        const passwordInput = document.getElementById('adminPassword');
+        if (passwordInput) {
+            setTimeout(() => passwordInput.focus(), 100);
+        }
+        console.log('✅ Admin password form shown successfully');
+    } else {
+        console.error('❌ Admin password elements not found');
+        console.log('passwordSection:', passwordSection);
+        console.log('adminBtn:', adminBtn);
+    }
+}
+
+function hideAdminPasswordForm() {
+    console.log('🔧 Hiding admin password form');
+    
+    const passwordSection = document.getElementById('adminPasswordSection');
+    const adminBtn = document.getElementById('adminLoginBtn');
+    const passwordInput = document.getElementById('adminPassword');
+    
+    if (passwordSection && adminBtn) {
+        passwordSection.classList.add('hidden');
+        adminBtn.style.display = 'block';
+        
+        if (passwordInput) {
+            passwordInput.value = '';
+        }
+        console.log('✅ Admin password form hidden');
+    }
+}
+
+function handleAdminPasswordSubmit() {
+    console.log('🔧 Admin password submit clicked');
+    hideError();
+    
+    const passwordInput = document.getElementById('adminPassword');
+    if (!passwordInput) {
+        console.error('❌ Password input not found');
+        showError('Password field not found');
+        return;
+    }
+    
+    const enteredPassword = passwordInput.value.trim();
+    console.log('🔧 Checking admin password...');
+    
+    if (enteredPassword === appData.adminPassword) {
+        console.log('✅ ADMIN PASSWORD CORRECT - Logging in as admin');
+        
+        // Set admin user
+        currentUser = {
+            employeeId: 'admin',
+            name: appData.teachers['admin'].name,
+            email: appData.teachers['admin'].email,
+            phone: appData.teachers['admin'].phone,
+            dob: appData.teachers['admin'].dob,
+            school: 'all',
+            subject: 'all',
+            isAdmin: true
+        };
+        
+        console.log('✅ Admin user set:', currentUser);
+        
+        // Clear forms and password
+        passwordInput.value = '';
+        const loginForm = document.getElementById('loginForm');
+        if (loginForm) {
+            loginForm.reset();
+        }
+        hideAdminPasswordForm();
+        
+        // Show main app
+        showMainApp();
+    } else {
+        console.log('❌ ADMIN PASSWORD INCORRECT');
+        showError('Incorrect admin password. Please try again.');
+        passwordInput.value = '';
+        setTimeout(() => passwordInput.focus(), 100);
+    }
+}
+
+// FIXED TEACHER LOGIN PROCESS
 function handleTeacherLogin(e) {
     e.preventDefault();
     e.stopPropagation();
     
-    console.log('Teacher login form submitted');
+    console.log('🔧 Teacher login form submitted');
     hideError();
     
     const schoolField = document.getElementById('school');
@@ -337,7 +471,7 @@ function handleTeacherLogin(e) {
     const subjectField = document.getElementById('subject');
     
     if (!schoolField || !employeeField || !subjectField) {
-        console.error('Form fields not found');
+        console.error('❌ Login form fields not found');
         showError('Form fields not found. Please refresh the page.');
         return;
     }
@@ -346,272 +480,141 @@ function handleTeacherLogin(e) {
     const employeeId = employeeField.value.trim();
     const subject = subjectField.value;
     
-    console.log('Login attempt with credentials:', { school, employeeId, subject });
+    console.log('🔧 Login attempt:', { school, employeeId, subject });
     
     if (!school || !employeeId || !subject) {
         showError('Please fill in all fields');
         return;
     }
     
+    // Check if teacher exists
     if (appData.teachers[employeeId]) {
         const teacher = appData.teachers[employeeId];
-        console.log('Teacher found in database:', teacher);
+        console.log('✅ Teacher found:', teacher);
         
+        // Validate credentials
         if (teacher.school === school && teacher.subject === subject) {
-            console.log('Credentials are valid - proceeding with login');
+            console.log('✅ Teacher credentials valid - logging in');
             
             currentUser = {
                 employeeId,
-                ...teacher,
+                name: teacher.name,
+                email: teacher.email,
+                phone: teacher.phone,
+                dob: teacher.dob,
+                school: teacher.school,
+                subject: teacher.subject,
                 isAdmin: false
             };
             
-            console.log('Current user set:', currentUser);
+            console.log('✅ Teacher user set:', currentUser);
             
+            // Clear form
             schoolField.value = '';
             employeeField.value = '';
             subjectField.value = '';
             
             showMainApp();
-            return;
         } else {
-            console.log('Credentials invalid - school or subject mismatch');
+            console.log('❌ Teacher credentials invalid');
             showError('Invalid credentials. Please check your school and subject selection.');
         }
     } else {
-        console.log('Employee ID not found in database');
+        console.log('❌ Teacher not found');
         showError('Employee ID not found. Please check your credentials.');
-    }
-}
-
-// Admin Login Handler
-function handleAdminLogin() {
-    console.log('Admin login initiated');
-    hideError();
-    
-    try {
-        currentUser = {
-            employeeId: 'admin',
-            ...appData.teachers['admin'],
-            isAdmin: true
-        };
-        
-        console.log('Admin user set:', currentUser);
-        
-        const loginForm = document.getElementById('loginForm');
-        if (loginForm) {
-            loginForm.reset();
-        }
-        
-        showMainApp();
-    } catch (error) {
-        console.error('Error in admin login:', error);
-        showError('Admin login failed. Please try again.');
     }
 }
 
 // Show Main Application
 function showMainApp() {
-    console.log('Showing main app - current user:', currentUser);
+    console.log('🔧 Showing main application for user:', currentUser?.name);
     
     if (!currentUser) {
-        console.error('No current user set!');
+        console.error('❌ No current user set!');
         showError('Login failed - no user data');
         return;
     }
     
-    try {
-        const loginScreen = document.getElementById('loginScreen');
-        const mainApp = document.getElementById('mainApp');
-        
-        if (!loginScreen || !mainApp) {
-            console.error('Screen elements not found');
-            showError('Screen elements not found. Please refresh the page.');
-            return;
-        }
-        
-        console.log('Switching screens...');
-        
-        loginScreen.classList.remove('active');
-        loginScreen.style.display = 'none';
-        
-        mainApp.classList.remove('hidden');
-        mainApp.classList.add('active');
-        mainApp.style.display = 'block';
-        
-        console.log('Screen transition completed');
-        
+    const loginScreen = document.getElementById('loginScreen');
+    const mainApp = document.getElementById('mainApp');
+    
+    if (!loginScreen || !mainApp) {
+        console.error('❌ Screen elements not found');
+        showError('Screen elements not found. Please refresh the page.');
+        return;
+    }
+    
+    // Hide login screen
+    loginScreen.classList.remove('active');
+    loginScreen.style.display = 'none';
+    
+    // Show main app
+    mainApp.classList.remove('hidden');
+    mainApp.classList.add('active');
+    mainApp.style.display = 'block';
+    
+    console.log('✅ Screens switched successfully');
+    
+    // Load user data
+    loadUserData();
+    
+    // Show admin features if admin
+    if (currentUser.isAdmin) {
+        console.log('✅ Showing admin features');
+        showAdminFeatures();
+        // Default to admin panel with teachers tab
         setTimeout(() => {
-            loadUserData();
-            
-            if (currentUser.isAdmin) {
-                showAdminFeatures();
-            }
-            
-            setTimeout(enforceTextVisibility, 300);
+            navigateToSection('admin');
+            switchAdminTab('teachers');
         }, 100);
-        
-    } catch (error) {
-        console.error('Error showing main app:', error);
-        showError('Failed to load main application. Please refresh the page.');
     }
 }
 
 // Load User Data
 function loadUserData() {
-    console.log('Loading user data for:', currentUser.name);
-    try {
-        loadDashboard();
-        loadAllSubjectsOverview(); // NEW: Load all subjects overview
-        loadProfile();
-        loadTeamMembers();
-        loadChatMessages();
-        loadChaptersList();
-        
-        if (currentUser.isAdmin) {
-            loadAnalytics();
-            loadAdminPanel();
-        }
-    } catch (error) {
-        console.error('Error loading user data:', error);
+    console.log('Loading user data...');
+    loadDashboard();
+    loadProfile();
+    loadTeamMembers();
+    loadChatMessages();
+    loadChaptersList();
+    
+    if (currentUser && currentUser.isAdmin) {
+        loadAnalytics();
+        loadAdminPanel();
     }
-}
-
-// NEW: Load All Subjects Overview for Dashboard
-function loadAllSubjectsOverview() {
-    console.log('Loading all subjects overview...');
-    
-    // Calculate stats for each subject
-    appData.subjects.forEach(subject => {
-        const totalChapters11 = appData.curriculum[subject]['11'].length;
-        const totalChapters12 = appData.curriculum[subject]['12'].length;
-        const totalChapters = totalChapters11 + totalChapters12;
-        
-        let completedCount = 0;
-        let testsCount = 0;
-        
-        // Count completed chapters across both grades
-        [11, 12].forEach(grade => {
-            appData.curriculum[subject][grade].forEach(chapter => {
-                const key = `${subject}_${grade}_${chapter}`;
-                if (chapterProgress[key] && chapterProgress[key].completed) {
-                    completedCount++;
-                    if (chapterProgress[key].testCompleted) {
-                        testsCount++;
-                    }
-                }
-            });
-        });
-        
-        const progressPercentage = totalChapters > 0 ? Math.round((completedCount / totalChapters) * 100) : 0;
-        
-        // Update the UI elements
-        const progressEl = document.getElementById(`${subject}Progress`);
-        const completedEl = document.getElementById(`${subject}Completed`);
-        const testsEl = document.getElementById(`${subject}Tests`);
-        
-        if (progressEl) {
-            progressEl.textContent = `${progressPercentage}%`;
-            progressEl.style.setProperty('color', '#000000', 'important');
-        }
-        
-        if (completedEl) {
-            completedEl.textContent = `${completedCount}/${totalChapters}`;
-            completedEl.style.setProperty('color', '#000000', 'important');
-        }
-        
-        if (testsEl) {
-            testsEl.textContent = testsCount;
-            testsEl.style.setProperty('color', '#000000', 'important');
-        }
-        
-        // Update progress circle
-        const progressCircle = document.querySelector(`.progress-circle[data-subject="${subject}"]`);
-        if (progressCircle) {
-            const borderProgress = (progressPercentage / 100) * 360;
-            progressCircle.style.background = `conic-gradient(#218396 ${borderProgress}deg, rgba(33, 131, 150, 0.2) ${borderProgress}deg)`;
-        }
-    });
-    
-    // Ensure text visibility
-    setTimeout(enforceTextVisibility, 100);
 }
 
 // Navigation
 function navigateToSection(sectionName) {
     console.log('Navigating to section:', sectionName);
     
-    try {
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.classList.remove('active');
-        });
-        const activeLink = document.querySelector(`[data-section="${sectionName}"]`);
-        if (activeLink) {
-            activeLink.classList.add('active');
-        }
-        
-        document.querySelectorAll('.section').forEach(section => {
-            section.classList.remove('active');
-        });
-        const activeSection = document.getElementById(sectionName);
-        if (activeSection) {
-            activeSection.classList.add('active');
-        }
-        
-        setTimeout(enforceTextVisibility, 100);
-    } catch (error) {
-        console.error('Error navigating to section:', error);
+    // Update nav links
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+    });
+    const activeLink = document.querySelector(`[data-section="${sectionName}"]`);
+    if (activeLink) {
+        activeLink.classList.add('active');
     }
-}
-
-// NEW: View Subject Function
-function viewSubject(subject) {
-    console.log('Viewing subject:', subject);
     
-    // Set the current viewing subject
-    currentViewingSubject = subject;
-    
-    // Navigate to curriculum section
-    navigateToSection('curriculum');
-    
-    // Load chapters for the selected subject
-    loadChaptersList(subject);
-    
-    // Show a message if user is not the teacher of this subject
-    if (!currentUser.isAdmin && currentUser.subject !== subject) {
-        const container = document.getElementById('chaptersList');
-        if (container) {
-            const message = document.createElement('div');
-            message.className = 'view-only-message';
-            message.style.cssText = `
-                background: rgba(255, 193, 133, 0.15);
-                border: 2px solid #FFC185;
-                border-radius: 8px;
-                padding: 16px;
-                margin-bottom: 24px;
-                text-align: center;
-                color: #000000 !important;
-                font-weight: 600;
-            `;
-            message.innerHTML = `
-                <p style="margin: 0; color: #000000 !important;">
-                    📖 You are viewing <strong>${subject.charAt(0).toUpperCase() + subject.slice(1)}</strong> curriculum. 
-                    You can only edit your own subject (<strong>${currentUser.subject.charAt(0).toUpperCase() + currentUser.subject.slice(1)}</strong>).
-                </p>
-            `;
-            container.insertBefore(message, container.firstChild);
-        }
+    // Update sections
+    document.querySelectorAll('.section').forEach(section => {
+        section.classList.remove('active');
+    });
+    const activeSection = document.getElementById(sectionName);
+    if (activeSection) {
+        activeSection.classList.add('active');
     }
 }
 
 // Dashboard
 function loadDashboard() {
     console.log('Loading dashboard...');
+    
     const welcomeUser = document.getElementById('welcomeUser');
     if (welcomeUser && currentUser) {
         welcomeUser.textContent = currentUser.name;
-        welcomeUser.style.setProperty('color', '#000000', 'important');
-        console.log('Welcome message set for:', currentUser.name);
     }
     
     if (!currentUser) return;
@@ -644,31 +647,14 @@ function loadDashboard() {
     const testsCompletedEl = document.getElementById('testsCompleted');
     const overallProgressEl = document.getElementById('overallProgress');
     
-    if (totalChaptersEl) {
-        totalChaptersEl.textContent = totalChapters;
-        totalChaptersEl.style.setProperty('color', '#000000', 'important');
-    }
-    if (completedChaptersEl) {
-        completedChaptersEl.textContent = completedCount;
-        completedChaptersEl.style.setProperty('color', '#000000', 'important');
-    }
-    if (progressPercentageEl) {
-        progressPercentageEl.textContent = `${progressPercentage}%`;
-        progressPercentageEl.style.setProperty('color', '#000000', 'important');
-    }
-    if (testsCompletedEl) {
-        testsCompletedEl.textContent = testsCount;
-        testsCompletedEl.style.setProperty('color', '#000000', 'important');
-    }
+    if (totalChaptersEl) totalChaptersEl.textContent = totalChapters;
+    if (completedChaptersEl) completedChaptersEl.textContent = completedCount;
+    if (progressPercentageEl) progressPercentageEl.textContent = `${progressPercentage}%`;
+    if (testsCompletedEl) testsCompletedEl.textContent = testsCount;
     if (overallProgressEl) overallProgressEl.style.width = `${progressPercentage}%`;
-    
-    // Load all subjects overview
-    loadAllSubjectsOverview();
-    
-    console.log('Dashboard stats loaded:', { totalChapters, completedCount, progressPercentage, testsCount });
 }
 
-// Curriculum
+// Curriculum Management
 function switchGrade(grade) {
     currentGrade = grade;
     
@@ -683,29 +669,14 @@ function switchGrade(grade) {
     loadChaptersList();
 }
 
-function loadChaptersList(subjectToView = null) {
+function loadChaptersList() {
     if (!currentUser) return;
     
-    // Determine which subject to show
-    let subject;
-    if (subjectToView) {
-        subject = subjectToView;
-    } else if (currentViewingSubject) {
-        subject = currentViewingSubject;
-    } else {
-        subject = currentUser.isAdmin ? 'physics' : currentUser.subject;
-    }
-    
+    const subject = currentUser.isAdmin ? 'physics' : currentUser.subject;
     const chapters = appData.curriculum[subject][currentGrade];
     const container = document.getElementById('chaptersList');
     
     if (!container) return;
-    
-    // Clear any existing view-only messages
-    const existingMessage = container.querySelector('.view-only-message');
-    if (existingMessage) {
-        existingMessage.remove();
-    }
     
     container.innerHTML = chapters.map(chapter => {
         const key = `${subject}_${currentGrade}_${chapter}`;
@@ -714,88 +685,44 @@ function loadChaptersList(subjectToView = null) {
         const completionDate = progress.date || '';
         const testCompleted = progress.testCompleted || false;
         
-        // Determine if this chapter can be edited
-        const canEdit = currentUser.isAdmin || currentUser.subject === subject;
-        
         return `
-            <div class="chapter-card ${isCompleted ? 'completed' : ''}" data-chapter="${chapter}" data-subject="${subject}" ${canEdit ? 'style="cursor: pointer;"' : 'style="cursor: default; opacity: 0.8;"'}>
+            <div class="chapter-card ${isCompleted ? 'completed' : ''}" data-chapter="${chapter}">
                 <div class="chapter-header">
                     <div class="chapter-checkbox ${isCompleted ? 'checked' : ''}">
                         ${isCompleted ? '✓' : ''}
                     </div>
-                    <h4 class="chapter-title" style="color: #000000 !important;">${chapter}</h4>
+                    <h4 class="chapter-title">${chapter}</h4>
                 </div>
                 <div class="chapter-details">
-                    <span style="color: #000000 !important;">${completionDate ? `Completed: ${completionDate}` : 'Not completed'}</span>
-                    <span style="color: #000000 !important;">${testCompleted ? '✅ Test Done' : '📝 Test Pending'}</span>
+                    <span>${completionDate ? `Completed: ${completionDate}` : 'Not completed'}</span>
+                    <span>${testCompleted ? '✅ Test Done' : '📝 Test Pending'}</span>
                 </div>
-                ${!canEdit ? '<div style="color: #666666 !important; font-size: 12px; margin-top: 8px;">View Only</div>' : ''}
             </div>
         `;
     }).join('');
     
     // Add click handlers
     container.querySelectorAll('.chapter-card').forEach(card => {
-        const chapter = card.dataset.chapter;
-        const cardSubject = card.dataset.subject;
-        const canEdit = currentUser.isAdmin || currentUser.subject === cardSubject;
-        
-        if (canEdit) {
-            card.addEventListener('click', () => openChapterModal(chapter, cardSubject));
-        }
-        
-        // Ensure text visibility
-        const title = card.querySelector('.chapter-title');
-        const details = card.querySelectorAll('.chapter-details span');
-        if (title) title.style.setProperty('color', '#000000', 'important');
-        details.forEach(span => span.style.setProperty('color', '#000000', 'important'));
+        card.addEventListener('click', () => {
+            const chapter = card.getAttribute('data-chapter');
+            if (chapter) {
+                openChapterModal(chapter);
+            }
+        });
     });
-    
-    // Add view-only message if needed
-    if (!currentUser.isAdmin && currentUser.subject !== subject) {
-        const message = document.createElement('div');
-        message.className = 'view-only-message';
-        message.style.cssText = `
-            background: rgba(255, 193, 133, 0.15);
-            border: 2px solid #FFC185;
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 24px;
-            text-align: center;
-            color: #000000 !important;
-            font-weight: 600;
-        `;
-        message.innerHTML = `
-            <p style="margin: 0; color: #000000 !important;">
-                📖 You are viewing <strong>${subject.charAt(0).toUpperCase() + subject.slice(1)}</strong> curriculum. 
-                You can only edit your own subject (<strong>${currentUser.subject.charAt(0).toUpperCase() + currentUser.subject.slice(1)}</strong>).
-            </p>
-        `;
-        container.insertBefore(message, container.firstChild);
-    }
 }
 
-function openChapterModal(chapter, subject = null) {
+function openChapterModal(chapter) {
     if (!currentUser) return;
     
-    // Use provided subject or determine from current context
-    const modalSubject = subject || currentViewingSubject || (currentUser.isAdmin ? 'physics' : currentUser.subject);
-    
-    // Check if user can edit this subject
-    const canEdit = currentUser.isAdmin || currentUser.subject === modalSubject;
-    
-    if (!canEdit) {
-        alert(`You can only edit chapters for your own subject (${currentUser.subject.charAt(0).toUpperCase() + currentUser.subject.slice(1)}). This is ${modalSubject.charAt(0).toUpperCase() + modalSubject.slice(1)}.`);
-        return;
-    }
-    
-    const key = `${modalSubject}_${currentGrade}_${chapter}`;
+    const subject = currentUser.isAdmin ? 'physics' : currentUser.subject;
+    const key = `${subject}_${currentGrade}_${chapter}`;
     const progress = chapterProgress[key] || {};
     
     currentModalChapter = {
         chapter,
         key,
-        subject: modalSubject,
+        subject,
         grade: currentGrade
     };
     
@@ -804,15 +731,10 @@ function openChapterModal(chapter, subject = null) {
     const testCompleted = document.getElementById('testCompleted');
     const modal = document.getElementById('chapterModal');
     
-    if (modalTitle) {
-        modalTitle.textContent = chapter;
-        modalTitle.style.setProperty('color', '#000000', 'important');
-    }
+    if (modalTitle) modalTitle.textContent = chapter;
     if (completionDate) completionDate.value = progress.date || '';
     if (testCompleted) testCompleted.checked = progress.testCompleted || false;
     if (modal) modal.classList.remove('hidden');
-    
-    setTimeout(enforceTextVisibility, 50);
 }
 
 function closeChapterModal() {
@@ -853,9 +775,9 @@ function saveChapterProgress() {
     saveToStorage();
     loadChaptersList();
     loadDashboard();
-    loadAllSubjectsOverview(); // Refresh all subjects overview
     closeChapterModal();
     
+    // Show confetti if newly completed
     if (!wasCompleted && typeof confetti !== 'undefined') {
         confetti({
             particleCount: 100,
@@ -876,10 +798,7 @@ function loadProfile() {
     const editPhone = document.getElementById('editPhone');
     const editDob = document.getElementById('editDob');
     
-    if (profileName) {
-        profileName.textContent = currentUser.name;
-        profileName.style.setProperty('color', '#000000', 'important');
-    }
+    if (profileName) profileName.textContent = currentUser.name;
     
     if (profileRole) {
         if (currentUser.isAdmin) {
@@ -887,7 +806,6 @@ function loadProfile() {
         } else {
             profileRole.textContent = `${currentUser.subject.charAt(0).toUpperCase() + currentUser.subject.slice(1)} Teacher at ${appData.schools[currentUser.school]}`;
         }
-        profileRole.style.setProperty('color', '#000000', 'important');
     }
     
     if (editName) editName.value = currentUser.name;
@@ -920,9 +838,9 @@ function saveProfile() {
     
     if (!editName || !editEmail || !editPhone || !editDob) return;
     
-    const name = editName.value;
-    const email = editEmail.value;
-    const phone = editPhone.value;
+    const name = editName.value.trim();
+    const email = editEmail.value.trim();
+    const phone = editPhone.value.trim();
     const dob = editDob.value;
     
     if (!name || !email || !phone || !dob) {
@@ -935,7 +853,19 @@ function saveProfile() {
     currentUser.phone = phone;
     currentUser.dob = dob;
     
+    // Update in main data store
+    if (appData.teachers[currentUser.employeeId]) {
+        appData.teachers[currentUser.employeeId] = {
+            ...appData.teachers[currentUser.employeeId],
+            name,
+            email,
+            phone,
+            dob
+        };
+    }
+    
     loadProfile();
+    loadTeamMembers();
     alert('Profile updated successfully!');
 }
 
@@ -957,11 +887,11 @@ function loadTeamMembers() {
             <div class="team-avatar">
                 ${teacher.name.charAt(0).toUpperCase()}
             </div>
-            <h4 style="color: #000000 !important;">${teacher.name}</h4>
-            <p style="color: #000000 !important;">${teacher.subject.charAt(0).toUpperCase() + teacher.subject.slice(1)}</p>
-            <p style="color: #000000 !important;">${appData.schools[teacher.school]}</p>
-            <p style="color: #000000 !important;">${teacher.email}</p>
-            <p style="color: #000000 !important;">${teacher.phone}</p>
+            <h4>${teacher.name}</h4>
+            <p>${teacher.subject.charAt(0).toUpperCase() + teacher.subject.slice(1)}</p>
+            <p>${appData.schools[teacher.school]}</p>
+            <p>${teacher.email}</p>
+            <p>${teacher.phone}</p>
         </div>
     `).join('');
 }
@@ -1006,7 +936,7 @@ function sendMessage() {
 
 // Admin Features
 function showAdminFeatures() {
-    console.log('Showing admin features...');
+    console.log('Showing admin-only features');
     document.querySelectorAll('.admin-only').forEach(element => {
         element.classList.remove('hidden');
         element.classList.add('show');
@@ -1020,7 +950,7 @@ function loadAnalytics() {
 
 function loadSubjectChart() {
     const canvas = document.getElementById('subjectChart');
-    if (!canvas) return;
+    if (!canvas || typeof Chart === 'undefined') return;
     
     const ctx = canvas.getContext('2d');
     
@@ -1046,43 +976,34 @@ function loadSubjectChart() {
         };
     });
     
-    if (typeof Chart !== 'undefined') {
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: subjectData.map(d => d.subject.charAt(0).toUpperCase() + d.subject.slice(1)),
-                datasets: [{
-                    label: 'Progress (%)',
-                    data: subjectData.map(d => d.progress),
-                    backgroundColor: ['#1FB8CD', '#FFC185', '#B4413C', '#ECEBD5'],
-                    borderColor: ['#1FB8CD', '#FFC185', '#B4413C', '#ECEBD5'],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 100
-                    }
-                },
-                plugins: {
-                    legend: {
-                        labels: {
-                            color: '#000000'
-                        }
-                    }
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: subjectData.map(d => d.subject.charAt(0).toUpperCase() + d.subject.slice(1)),
+            datasets: [{
+                label: 'Progress (%)',
+                data: subjectData.map(d => d.progress),
+                backgroundColor: ['#1FB8CD', '#FFC185', '#B4413C', '#ECEBD5'],
+                borderColor: ['#1FB8CD', '#FFC185', '#B4413C', '#ECEBD5'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
                 }
             }
-        });
-    }
+        }
+    });
 }
 
 function loadSchoolChart() {
     const canvas = document.getElementById('schoolChart');
-    if (!canvas) return;
+    if (!canvas || typeof Chart === 'undefined') return;
     
     const ctx = canvas.getContext('2d');
     
@@ -1096,33 +1017,26 @@ function loadSchoolChart() {
         };
     });
     
-    if (typeof Chart !== 'undefined') {
-        new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: schoolData.map(d => d.school),
-                datasets: [{
-                    data: schoolData.map(d => d.teachers),
-                    backgroundColor: ['#1FB8CD', '#FFC185', '#B4413C', '#ECEBD5', '#5D878F', '#DB4545']
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        labels: {
-                            color: '#000000'
-                        }
-                    }
-                }
-            }
-        });
-    }
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: schoolData.map(d => d.school),
+            datasets: [{
+                data: schoolData.map(d => d.teachers),
+                backgroundColor: ['#1FB8CD', '#FFC185', '#B4413C', '#ECEBD5', '#5D878F', '#DB4545']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
 }
 
-// Admin Panel
+// COMPLETE TEACHER MANAGEMENT SYSTEM (CRUD)
 function switchAdminTab(tab) {
+    console.log('Switching admin tab to:', tab);
+    
     document.querySelectorAll('.admin-tab-btn').forEach(btn => {
         btn.classList.remove('active');
     });
@@ -1144,11 +1058,10 @@ function switchAdminTab(tab) {
     } else if (tab === 'teachers') {
         loadAdminTeachers();
     }
-    
-    setTimeout(enforceTextVisibility, 100);
 }
 
 function loadAdminPanel() {
+    console.log('Loading admin panel...');
     loadAdminChapters();
     loadAdminTeachers();
 }
@@ -1166,7 +1079,7 @@ function loadAdminChapters() {
     
     container.innerHTML = chapters.map(chapter => `
         <div class="admin-chapter-item">
-            <span style="color: #000000 !important;">${chapter}</span>
+            <span>${chapter}</span>
             <button class="btn btn--outline btn--sm" onclick="removeChapter('${subject}', ${grade}, '${chapter}')">
                 Remove
             </button>
@@ -1174,25 +1087,215 @@ function loadAdminChapters() {
     `).join('');
 }
 
+// FULL TEACHER CRUD OPERATIONS - WORKING IMPLEMENTATION
 function loadAdminTeachers() {
+    console.log('✅ Loading admin teachers list...');
     const container = document.getElementById('adminTeachersList');
-    if (!container) return;
+    if (!container) {
+        console.error('❌ Teachers list container not found');
+        return;
+    }
     
     const teachers = Object.entries(appData.teachers)
         .filter(([id]) => id !== 'admin');
     
+    if (teachers.length === 0) {
+        container.innerHTML = '<p>No teachers found.</p>';
+        return;
+    }
+    
     container.innerHTML = teachers.map(([id, teacher]) => `
         <div class="teacher-item">
-            <h4 style="color: #000000 !important;">${teacher.name}</h4>
-            <p style="color: #000000 !important;"><strong>ID:</strong> ${id}</p>
-            <p style="color: #000000 !important;"><strong>Subject:</strong> ${teacher.subject.charAt(0).toUpperCase() + teacher.subject.slice(1)}</p>
-            <p style="color: #000000 !important;"><strong>School:</strong> ${appData.schools[teacher.school]}</p>
-            <p style="color: #000000 !important;"><strong>Email:</strong> ${teacher.email}</p>
-            <p style="color: #000000 !important;"><strong>Phone:</strong> ${teacher.phone}</p>
+            <h4>${teacher.name}</h4>
+            <p><strong>ID:</strong> ${id}</p>
+            <p><strong>Subject:</strong> ${teacher.subject.charAt(0).toUpperCase() + teacher.subject.slice(1)}</p>
+            <p><strong>School:</strong> ${appData.schools[teacher.school]}</p>
+            <p><strong>Email:</strong> ${teacher.email}</p>
+            <p><strong>Phone:</strong> ${teacher.phone}</p>
+            <p><strong>DOB:</strong> ${teacher.dob}</p>
+            <div class="teacher-actions">
+                <button class="btn btn--primary btn--sm" onclick="editTeacher('${id}')">Edit</button>
+                <button class="btn btn--outline btn--sm" onclick="deleteTeacher('${id}')">Delete</button>
+            </div>
         </div>
     `).join('');
+    
+    console.log('✅ Admin teachers list loaded successfully');
 }
 
+// CREATE - Add New Teacher
+function showAddTeacherModal() {
+    console.log('✅ Showing add teacher modal');
+    currentEditingTeacher = null;
+    
+    const modal = document.getElementById('teacherModal');
+    const modalTitle = document.getElementById('modalTeacherTitle');
+    
+    if (modalTitle) modalTitle.textContent = 'Add New Teacher';
+    
+    // Clear all form fields
+    document.getElementById('teacherName').value = '';
+    document.getElementById('teacherEmployeeId').value = '';
+    document.getElementById('teacherSchool').value = 'school1';
+    document.getElementById('teacherSubject').value = 'physics';
+    document.getElementById('teacherEmail').value = '';
+    document.getElementById('teacherPhone').value = '';
+    document.getElementById('teacherDob').value = '';
+    
+    if (modal) {
+        modal.classList.remove('hidden');
+        console.log('✅ Add teacher modal shown');
+    }
+}
+
+// UPDATE - Edit Teacher (Global Function)
+window.editTeacher = function(teacherId) {
+    console.log('✅ Editing teacher:', teacherId);
+    const teacher = appData.teachers[teacherId];
+    if (!teacher) {
+        console.error('❌ Teacher not found:', teacherId);
+        return;
+    }
+    
+    currentEditingTeacher = teacherId;
+    
+    const modal = document.getElementById('teacherModal');
+    const modalTitle = document.getElementById('modalTeacherTitle');
+    
+    if (modalTitle) modalTitle.textContent = 'Edit Teacher';
+    
+    // Fill form with existing teacher data
+    document.getElementById('teacherName').value = teacher.name;
+    document.getElementById('teacherEmployeeId').value = teacherId;
+    document.getElementById('teacherSchool').value = teacher.school;
+    document.getElementById('teacherSubject').value = teacher.subject;
+    document.getElementById('teacherEmail').value = teacher.email;
+    document.getElementById('teacherPhone').value = teacher.phone;
+    document.getElementById('teacherDob').value = teacher.dob;
+    
+    if (modal) {
+        modal.classList.remove('hidden');
+        console.log('✅ Edit teacher modal shown for:', teacher.name);
+    }
+};
+
+// DELETE - Delete Teacher (Global Function)
+window.deleteTeacher = function(teacherId) {
+    console.log('✅ Attempting to delete teacher:', teacherId);
+    const teacher = appData.teachers[teacherId];
+    if (!teacher) {
+        console.error('❌ Teacher not found:', teacherId);
+        return;
+    }
+    
+    const confirmDelete = confirm(`Are you sure you want to delete ${teacher.name}?\n\nThis action cannot be undone.`);
+    if (confirmDelete) {
+        delete appData.teachers[teacherId];
+        console.log('✅ Teacher deleted successfully:', teacherId);
+        
+        // Refresh the teachers list
+        loadAdminTeachers();
+        loadTeamMembers();
+        
+        alert(`${teacher.name} has been deleted successfully.`);
+    }
+};
+
+// Save Teacher (handles both CREATE and UPDATE)
+function saveTeacher() {
+    console.log('✅ Saving teacher...');
+    
+    // Get form values
+    const name = document.getElementById('teacherName').value.trim();
+    const employeeId = document.getElementById('teacherEmployeeId').value.trim();
+    const school = document.getElementById('teacherSchool').value;
+    const subject = document.getElementById('teacherSubject').value;
+    const email = document.getElementById('teacherEmail').value.trim();
+    const phone = document.getElementById('teacherPhone').value.trim();
+    const dob = document.getElementById('teacherDob').value;
+    
+    // Validation
+    if (!name || !employeeId || !school || !subject || !email || !phone || !dob) {
+        alert('Please fill in all fields');
+        return;
+    }
+    
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        alert('Please enter a valid email address');
+        return;
+    }
+    
+    // Check for duplicate employee ID
+    if ((!currentEditingTeacher || currentEditingTeacher !== employeeId) && appData.teachers[employeeId]) {
+        alert('Employee ID already exists. Please use a different ID.');
+        return;
+    }
+    
+    const teacherData = {
+        name,
+        school,
+        subject,
+        email,
+        phone,
+        dob
+    };
+    
+    if (currentEditingTeacher) {
+        // UPDATE existing teacher
+        if (currentEditingTeacher !== employeeId) {
+            // Employee ID changed
+            delete appData.teachers[currentEditingTeacher];
+            appData.teachers[employeeId] = teacherData;
+            
+            if (currentUser && currentUser.employeeId === currentEditingTeacher) {
+                currentUser.employeeId = employeeId;
+                Object.assign(currentUser, teacherData);
+            }
+            
+            console.log('✅ Teacher updated with new ID:', currentEditingTeacher, '→', employeeId);
+        } else {
+            // Just update existing teacher
+            appData.teachers[employeeId] = teacherData;
+            
+            if (currentUser && currentUser.employeeId === employeeId) {
+                Object.assign(currentUser, teacherData);
+            }
+            
+            console.log('✅ Teacher updated:', employeeId);
+        }
+        
+        alert('Teacher updated successfully!');
+    } else {
+        // CREATE new teacher
+        appData.teachers[employeeId] = teacherData;
+        console.log('✅ New teacher added:', employeeId);
+        alert('Teacher added successfully!');
+    }
+    
+    // Close modal and refresh data
+    closeTeacherModalFunc();
+    loadAdminTeachers();
+    loadTeamMembers();
+    
+    // Refresh profile if user edited themselves
+    if (currentUser && (currentUser.employeeId === employeeId || (currentEditingTeacher && currentUser.employeeId === currentEditingTeacher))) {
+        loadProfile();
+    }
+}
+
+// Close Teacher Modal
+function closeTeacherModalFunc() {
+    const modal = document.getElementById('teacherModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        console.log('✅ Teacher modal closed');
+    }
+    currentEditingTeacher = null;
+}
+
+// Chapter Management
 function addNewChapter() {
     const subjectSelect = document.getElementById('adminSubject');
     const gradeSelect = document.getElementById('adminGrade');
@@ -1218,14 +1321,14 @@ function addNewChapter() {
     chapterInput.value = '';
     loadAdminChapters();
     
-    if (currentUser && currentUser.subject === subject && currentGrade === grade) {
+    if (currentUser && (currentUser.subject === subject || currentUser.isAdmin) && currentGrade === grade) {
         loadChaptersList();
     }
     
     alert('Chapter added successfully!');
 }
 
-// Make removeChapter globally accessible
+// Remove Chapter (Global Function)
 window.removeChapter = function(subject, grade, chapter) {
     if (confirm(`Are you sure you want to remove "${chapter}"?`)) {
         const index = appData.curriculum[subject][grade].indexOf(chapter);
@@ -1237,7 +1340,7 @@ window.removeChapter = function(subject, grade, chapter) {
             delete chapterProgress[key];
             saveToStorage();
             
-            if (currentUser && currentUser.subject === subject && currentGrade === grade) {
+            if (currentUser && (currentUser.subject === subject || currentUser.isAdmin) && currentGrade === grade) {
                 loadChaptersList();
                 loadDashboard();
             }
@@ -1250,12 +1353,7 @@ window.removeChapter = function(subject, grade, chapter) {
 // Data Storage
 function saveToStorage() {
     try {
-        const data = {
-            chapterProgress,
-            chatMessages,
-            curriculum: appData.curriculum
-        };
-        console.log('Data saved:', data);
+        console.log('Data saved to storage (demo mode)');
     } catch (error) {
         console.error('Error saving data:', error);
     }
@@ -1264,27 +1362,35 @@ function saveToStorage() {
 function loadStoredData() {
     chapterProgress = {};
     chatMessages = [];
+    console.log('Stored data loaded (demo mode)');
 }
 
 // Logout
 function handleLogout() {
     if (confirm('Are you sure you want to logout?')) {
+        console.log('User logging out...');
+        
+        // Reset state
         currentUser = null;
         currentGrade = 11;
         currentModalChapter = null;
-        currentViewingSubject = null;
+        currentEditingTeacher = null;
         
+        // Reset forms
         const loginForm = document.getElementById('loginForm');
         if (loginForm) {
             loginForm.reset();
         }
         hideError();
+        hideAdminPasswordForm();
         
+        // Hide admin features
         document.querySelectorAll('.admin-only').forEach(element => {
             element.classList.add('hidden');
             element.classList.remove('show');
         });
         
+        // Show login screen, hide main app
         const loginScreen = document.getElementById('loginScreen');
         const mainApp = document.getElementById('mainApp');
         
@@ -1296,6 +1402,11 @@ function handleLogout() {
             loginScreen.style.display = 'flex';
         }
         
+        // Reset navigation
         navigateToSection('dashboard');
+        
+        console.log('Logout complete');
     }
 }
+
+console.log('✅ JNV Curriculum Tracker JavaScript loaded successfully');
