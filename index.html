@@ -3,27 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JNV Curriculum Tracker - Cloud Connected</title>
+    <title>JNV Curriculum Tracker</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+        import { getDatabase, ref, set, get, child, onValue, push, remove } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js';
+        
+        // Firebase configuration with fallback
+        const firebaseConfig = {
+            apiKey: "AIzaSyBvOlHl7FzW8oK2gH1qR9LnGvQgBwN8Xu4",
+            authDomain: "jnv-curriculum-tracker.firebaseapp.com",
+            databaseURL: "https://jnv-curriculum-tracker-default-rtdb.firebaseio.com",
+            projectId: "jnv-curriculum-tracker",
+            storageBucket: "jnv-curriculum-tracker.appspot.com",
+            messagingSenderId: "123456789012",
+            appId: "1:123456789012:web:abcdef123456789012345678"
+        };
+
+        try {
+            const app = initializeApp(firebaseConfig);
+            window.firebaseApp = app;
+            window.database = getDatabase(app);
+            window.firebaseRef = ref;
+            window.firebaseSet = set;
+            window.firebaseGet = get;
+            window.firebaseChild = child;
+            window.firebaseOnValue = onValue;
+            window.firebasePush = push;
+            window.firebaseRemove = remove;
+            console.log('✅ Firebase initialized successfully');
+            
+            // Test connection
+            const testRef = ref(window.database, '.info/connected');
+            onValue(testRef, (snapshot) => {
+                const connected = snapshot.val();
+                updateConnectionStatus(connected);
+            });
+            
+        } catch (error) {
+            console.warn('⚠️ Firebase initialization failed, using local storage:', error);
+            window.firebaseApp = null;
+            updateConnectionStatus(false);
+        }
+        
+        function updateConnectionStatus(connected) {
+            window.isCloudConnected = connected;
+            const statusEl = document.getElementById('connectionStatus');
+            if (statusEl) {
+                statusEl.textContent = connected ? '🟢 Connected to Cloud' : '🔴 Using Local Data';
+                statusEl.className = connected ? 'connection-status connected' : 'connection-status disconnected';
+            }
+        }
+    </script>
 </head>
 <body>
-    <!-- Cloud Status Bar -->
-    <div id="cloudStatusBar" class="cloud-status-bar">
-        <div class="container">
-            <div id="connectionStatus" class="connection-status">
-                <span class="status--info">🔄 Initializing cloud connection...</span>
-            </div>
-            <div id="cloudLoading" class="cloud-loading" style="display: none;">
-                <div class="loading"></div>
-                <span>Syncing with cloud...</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Cloud Messages Container -->
-    <div id="cloudMessages" class="cloud-messages-container"></div>
+    <!-- Connection Status -->
+    <div id="connectionStatus" class="connection-status disconnected">🔴 Connecting...</div>
 
     <!-- Animated Background -->
     <div class="animated-bg">
@@ -37,11 +75,8 @@
         <div class="container">
             <div class="login-card">
                 <div class="login-header">
-                    <h1 class="app-title">JNV Curriculum Tracker</h1>
-                    <p class="app-tagline">विद्या ददाति विनयम्</p>
-                    <div class="cloud-indicator">
-                        <span class="cloud-badge">☁️ Cloud Database - Cross-device access</span>
-                    </div>
+                    <h1>JNV Curriculum Tracker</h1>
+                    <p>विद्या ददाति विनयम्</p>
                 </div>
                 
                 <!-- Teacher Login Section -->
@@ -88,6 +123,18 @@
                 <div id="adminLoginSection">
                     <h3 class="login-section-title">Administrator Access</h3>
                     <button type="button" id="adminLoginBtn" class="btn btn--secondary btn--full-width">Login as Admin</button>
+                    
+                    <!-- Admin Password Form (initially hidden) -->
+                    <div id="adminPasswordSection" class="admin-password-section hidden">
+                        <div class="form-group">
+                            <label for="adminPassword" class="form-label">Admin Password</label>
+                            <input type="password" id="adminPassword" class="form-control" placeholder="Enter admin password" autocomplete="off" required>
+                        </div>
+                        <div class="admin-password-buttons">
+                            <button type="button" id="adminPasswordSubmit" class="btn btn--primary">Login</button>
+                            <button type="button" id="adminPasswordCancel" class="btn btn--outline">Cancel</button>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="errorMessage" class="error-message hidden"></div>
@@ -100,8 +147,7 @@
         <!-- Navigation -->
         <nav class="navbar">
             <div class="nav-brand">
-                <h2 class="nav-brand-title">JNV Curriculum Tracker</h2>
-                <span class="nav-brand-tagline">विद्या ददाति विनयम्</span>
+                <h2>JNV Curriculum Tracker</h2>
             </div>
             <div class="nav-links">
                 <button class="nav-link active" data-section="dashboard">Dashboard</button>
@@ -115,116 +161,76 @@
             <button class="btn btn--outline btn--sm" id="logoutBtn">Logout</button>
         </nav>
 
-        <!-- Dashboard Section -->
+        <!-- Enhanced Dashboard Section -->
         <div id="dashboard" class="section active">
             <div class="container">
                 <div class="section-header">
-                    <h1 class="section-title">Dashboard</h1>
-                    <p class="welcome-text">Welcome back, <span id="welcomeUser" class="user-name"></span>!</p>
+                    <h1>Enhanced Dashboard</h1>
+                    <p>Welcome back, <span id="welcomeUser"></span>!</p>
+                    
+                    <!-- School Selector for Teachers -->
+                    <div id="schoolSelector" class="school-selector hidden">
+                        <label for="viewSchool" class="form-label">View School Progress:</label>
+                        <select id="viewSchool" class="form-control">
+                            <option value="">Select School...</option>
+                            <option value="school1">CoE Barwani</option>
+                            <option value="school2">CoE Cuttak</option>
+                            <option value="school3">CoE Mahisagar</option>
+                            <option value="school4">CoE Bundi</option>
+                            <option value="school5">JNV Bharuch</option>
+                            <option value="school6">EMRS Bhopal</option>
+                        </select>
+                    </div>
                 </div>
-                
-                <!-- All Subjects Overview for Teachers -->
-                <div class="all-subjects-overview" id="allSubjectsOverview">
-                    <h2 class="overview-title">All Subjects Progress Overview</h2>
-                    <div class="subjects-grid">
-                        <div class="subject-card" data-subject="physics">
-                            <div class="subject-header">
-                                <div class="subject-icon">⚛️</div>
-                                <h3 class="subject-title">Physics</h3>
+
+                <!-- Multi-Subject Progress Overview -->
+                <div id="subjectProgress" class="subject-progress-grid">
+                    <div class="subject-card" data-subject="physics">
+                        <div class="subject-icon">⚛️</div>
+                        <div class="subject-info">
+                            <h3>Physics</h3>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="physicsProgress" style="width: 0%"></div>
                             </div>
-                            <div class="subject-stats">
-                                <div class="subject-progress">
-                                    <div class="progress-circle" data-subject="physics">
-                                        <span class="progress-percentage" id="physicsProgress">0%</span>
-                                    </div>
-                                </div>
-                                <div class="subject-details">
-                                    <div class="detail-item">
-                                        <span class="detail-label">Completed:</span>
-                                        <span class="detail-value" id="physicsCompleted">0/0</span>
-                                    </div>
-                                    <div class="detail-item">
-                                        <span class="detail-label">Tests:</span>
-                                        <span class="detail-value" id="physicsTests">0</span>
-                                    </div>
-                                </div>
-                            </div>
+                            <span class="progress-text" id="physicsText">0% Complete</span>
                         </div>
-                        
-                        <div class="subject-card" data-subject="chemistry">
-                            <div class="subject-header">
-                                <div class="subject-icon">🧪</div>
-                                <h3 class="subject-title">Chemistry</h3>
+                    </div>
+                    
+                    <div class="subject-card" data-subject="chemistry">
+                        <div class="subject-icon">🧪</div>
+                        <div class="subject-info">
+                            <h3>Chemistry</h3>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="chemistryProgress" style="width: 0%"></div>
                             </div>
-                            <div class="subject-stats">
-                                <div class="subject-progress">
-                                    <div class="progress-circle" data-subject="chemistry">
-                                        <span class="progress-percentage" id="chemistryProgress">0%</span>
-                                    </div>
-                                </div>
-                                <div class="subject-details">
-                                    <div class="detail-item">
-                                        <span class="detail-label">Completed:</span>
-                                        <span class="detail-value" id="chemistryCompleted">0/0</span>
-                                    </div>
-                                    <div class="detail-item">
-                                        <span class="detail-label">Tests:</span>
-                                        <span class="detail-value" id="chemistryTests">0</span>
-                                    </div>
-                                </div>
-                            </div>
+                            <span class="progress-text" id="chemistryText">0% Complete</span>
                         </div>
-                        
-                        <div class="subject-card" data-subject="mathematics">
-                            <div class="subject-header">
-                                <div class="subject-icon">🔢</div>
-                                <h3 class="subject-title">Mathematics</h3>
+                    </div>
+                    
+                    <div class="subject-card" data-subject="mathematics">
+                        <div class="subject-icon">📐</div>
+                        <div class="subject-info">
+                            <h3>Mathematics</h3>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="mathematicsProgress" style="width: 0%"></div>
                             </div>
-                            <div class="subject-stats">
-                                <div class="subject-progress">
-                                    <div class="progress-circle" data-subject="mathematics">
-                                        <span class="progress-percentage" id="mathematicsProgress">0%</span>
-                                    </div>
-                                </div>
-                                <div class="subject-details">
-                                    <div class="detail-item">
-                                        <span class="detail-label">Completed:</span>
-                                        <span class="detail-value" id="mathematicsCompleted">0/0</span>
-                                    </div>
-                                    <div class="detail-item">
-                                        <span class="detail-label">Tests:</span>
-                                        <span class="detail-value" id="mathematicsTests">0</span>
-                                    </div>
-                                </div>
-                            </div>
+                            <span class="progress-text" id="mathematicsText">0% Complete</span>
                         </div>
-                        
-                        <div class="subject-card" data-subject="biology">
-                            <div class="subject-header">
-                                <div class="subject-icon">🧬</div>
-                                <h3 class="subject-title">Biology</h3>
+                    </div>
+                    
+                    <div class="subject-card" data-subject="biology">
+                        <div class="subject-icon">🧬</div>
+                        <div class="subject-info">
+                            <h3>Biology</h3>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="biologyProgress" style="width: 0%"></div>
                             </div>
-                            <div class="subject-stats">
-                                <div class="subject-progress">
-                                    <div class="progress-circle" data-subject="biology">
-                                        <span class="progress-percentage" id="biologyProgress">0%</span>
-                                    </div>
-                                </div>
-                                <div class="subject-details">
-                                    <div class="detail-item">
-                                        <span class="detail-label">Completed:</span>
-                                        <span class="detail-value" id="biologyCompleted">0/0</span>
-                                    </div>
-                                    <div class="detail-item">
-                                        <span class="detail-label">Tests:</span>
-                                        <span class="detail-value" id="biologyTests">0</span>
-                                    </div>
-                                </div>
-                            </div>
+                            <span class="progress-text" id="biologyText">0% Complete</span>
                         </div>
                     </div>
                 </div>
 
+                <!-- Stats Grid -->
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-icon">📚</div>
@@ -244,45 +250,221 @@
                         <div class="stat-icon">📈</div>
                         <div class="stat-content">
                             <div class="stat-number" id="progressPercentage">0%</div>
-                            <div class="stat-label">Your Progress</div>
+                            <div class="stat-label">Progress</div>
                         </div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon">🎯</div>
+                        <div class="stat-icon">⚠️</div>
                         <div class="stat-content">
-                            <div class="stat-number" id="testsCompleted">0</div>
-                            <div class="stat-label">Tests Done</div>
+                            <div class="stat-number" id="pendingTests">0</div>
+                            <div class="stat-label">Tests Pending</div>
                         </div>
-                    </div>
-                </div>
-                <div class="progress-bar-container">
-                    <label class="progress-label">Your Subject Progress</label>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="overallProgress" style="width: 0%"></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Curriculum Section -->
+        <!-- Enhanced Curriculum Section -->
         <div id="curriculum" class="section">
             <div class="container">
                 <div class="section-header">
-                    <h1 class="section-title">Curriculum Progress</h1>
-                    <div class="grade-selector">
-                        <button class="btn btn--secondary grade-btn active" data-grade="11">Grade 11</button>
-                        <button class="btn btn--secondary grade-btn" data-grade="12">Grade 12</button>
+                    <h1>Curriculum Progress</h1>
+                    <div class="curriculum-controls">
+                        <div class="grade-selector">
+                            <button class="btn btn--secondary grade-btn active" data-grade="11">Grade 11</button>
+                            <button class="btn btn--secondary grade-btn" data-grade="12">Grade 12</button>
+                        </div>
+                        <div class="subject-selector">
+                            <select id="subjectFilter" class="form-control">
+                                <option value="">All Subjects</option>
+                                <option value="physics">Physics</option>
+                                <option value="chemistry">Chemistry</option>
+                                <option value="mathematics">Mathematics</option>
+                                <option value="biology">Biology</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
                 <div id="chaptersList" class="chapters-list"></div>
             </div>
         </div>
 
-        <!-- Profile Section -->
+        <!-- Enhanced Analytics Section (Admin Only) -->
+        <div id="analytics" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h1>Advanced Analytics Dashboard</h1>
+                    <div class="analytics-filters">
+                        <select id="analyticsSchool" class="form-control">
+                            <option value="">All Schools</option>
+                            <option value="school1">CoE Barwani</option>
+                            <option value="school2">CoE Cuttak</option>
+                            <option value="school3">CoE Mahisagar</option>
+                            <option value="school4">CoE Bundi</option>
+                            <option value="school5">JNV Bharuch</option>
+                            <option value="school6">EMRS Bhopal</option>
+                        </select>
+                        <select id="analyticsSubject" class="form-control">
+                            <option value="">All Subjects</option>
+                            <option value="physics">Physics</option>
+                            <option value="chemistry">Chemistry</option>
+                            <option value="mathematics">Mathematics</option>
+                            <option value="biology">Biology</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Analytics Summary Cards -->
+                <div class="analytics-summary">
+                    <div class="summary-card">
+                        <h4>Overall Completion</h4>
+                        <div class="summary-value" id="overallCompletion">0%</div>
+                        <div class="summary-subtitle">Across All Schools</div>
+                    </div>
+                    <div class="summary-card">
+                        <h4>Current Phase</h4>
+                        <div class="summary-value" id="currentPhase">Beginning</div>
+                        <div class="summary-subtitle">Based on Progress</div>
+                    </div>
+                    <div class="summary-card">
+                        <h4>Projected Completion</h4>
+                        <div class="summary-value" id="projectedCompletion">Mar 2026</div>
+                        <div class="summary-subtitle">At Current Speed</div>
+                    </div>
+                    <div class="summary-card">
+                        <h4>Required Speed</h4>
+                        <div class="summary-value" id="requiredSpeed">2.5x</div>
+                        <div class="summary-subtitle">To Complete on Time</div>
+                    </div>
+                </div>
+
+                <!-- Analytics Charts -->
+                <div class="analytics-grid">
+                    <div class="card">
+                        <div class="card__header">
+                            <h4>Subject Progress Comparison</h4>
+                        </div>
+                        <div class="card__body">
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="subjectChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card__header">
+                            <h4>School Performance Overview</h4>
+                        </div>
+                        <div class="card__body">
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="schoolChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Insights -->
+                <div class="insights-section">
+                    <div class="card">
+                        <div class="card__header">
+                            <h4>Detailed Analysis & Recommendations</h4>
+                        </div>
+                        <div class="card__body">
+                            <div id="detailedInsights"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Admin Panel Section -->
+        <div id="admin" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h1>Admin Control Panel</h1>
+                    <div class="admin-filters">
+                        <select id="adminFilterSchool" class="form-control">
+                            <option value="">Filter by School</option>
+                            <option value="school1">CoE Barwani</option>
+                            <option value="school2">CoE Cuttak</option>
+                            <option value="school3">CoE Mahisagar</option>
+                            <option value="school4">CoE Bundi</option>
+                            <option value="school5">JNV Bharuch</option>
+                            <option value="school6">EMRS Bhopal</option>
+                        </select>
+                        <select id="adminFilterSubject" class="form-control">
+                            <option value="">Filter by Subject</option>
+                            <option value="physics">Physics</option>
+                            <option value="chemistry">Chemistry</option>
+                            <option value="mathematics">Mathematics</option>
+                            <option value="biology">Biology</option>
+                        </select>
+                        <select id="adminFilterTestStatus" class="form-control">
+                            <option value="">Filter by Test Status</option>
+                            <option value="completed">Tests Completed</option>
+                            <option value="pending">Tests Pending</option>
+                        </select>
+                        <select id="adminFilterTestMode" class="form-control">
+                            <option value="">Filter by Test Mode</option>
+                            <option value="online">Online Tests</option>
+                            <option value="offline">Offline Tests</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="admin-tabs">
+                    <button class="admin-tab-btn active" data-tab="teachers">Manage Teachers</button>
+                    <button class="admin-tab-btn" data-tab="chapters">Manage Chapters</button>
+                    <button class="admin-tab-btn" data-tab="progress">Progress Control</button>
+                </div>
+
+                <!-- Teachers Management Tab -->
+                <div id="adminTeachers" class="admin-tab-content active">
+                    <div class="admin-teacher-actions">
+                        <button class="btn btn--primary" id="addTeacherBtn">Add New Teacher</button>
+                        <button class="btn btn--secondary" id="exportTeachersBtn">Export Data</button>
+                    </div>
+                    <div class="teachers-list" id="adminTeachersList"></div>
+                </div>
+
+                <!-- Chapters Management Tab -->
+                <div id="adminChapters" class="admin-tab-content">
+                    <div class="admin-actions">
+                        <select id="adminSubject" class="form-control">
+                            <option value="physics">Physics</option>
+                            <option value="chemistry">Chemistry</option>
+                            <option value="mathematics">Mathematics</option>
+                            <option value="biology">Biology</option>
+                        </select>
+                        <select id="adminGrade" class="form-control">
+                            <option value="11">Grade 11</option>
+                            <option value="12">Grade 12</option>
+                        </select>
+                        <input type="text" id="newChapter" class="form-control" placeholder="New chapter name">
+                        <button class="btn btn--primary" id="addChapterBtn">Add Chapter</button>
+                    </div>
+                    <div id="adminChaptersList" class="admin-chapters-list"></div>
+                </div>
+
+                <!-- Progress Control Tab -->
+                <div id="adminProgress" class="admin-tab-content">
+                    <div class="progress-controls">
+                        <h4>Global Progress Management</h4>
+                        <p>Mark chapters as complete/incomplete, change dates, and manage test status across all schools.</p>
+                        <div class="bulk-actions">
+                            <button class="btn btn--secondary" id="markAllCompleteBtn">Mark All Current Grade Complete</button>
+                            <button class="btn btn--outline" id="resetProgressBtn">Reset All Progress</button>
+                        </div>
+                    </div>
+                    <div id="progressManagementList" class="progress-management-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Other existing sections: Profile, Team, Chat -->
         <div id="profile" class="section">
             <div class="container">
                 <div class="section-header">
-                    <h1 class="section-title">Profile</h1>
+                    <h1>Profile</h1>
                 </div>
                 <div class="profile-grid">
                     <div class="card">
@@ -293,14 +475,14 @@
                                 <button class="btn btn--sm btn--primary upload-btn" onclick="document.getElementById('photoUpload').click()">Upload Photo</button>
                             </div>
                             <div class="profile-info">
-                                <h3 id="profileName" class="profile-name">Name</h3>
-                                <p id="profileRole" class="profile-role">Role</p>
+                                <h3 id="profileName">Name</h3>
+                                <p id="profileRole">Role</p>
                             </div>
                         </div>
                     </div>
                     <div class="card">
                         <div class="card__header">
-                            <h4 class="card-title">Personal Information</h4>
+                            <h4>Personal Information</h4>
                         </div>
                         <div class="card__body">
                             <div class="form-group">
@@ -326,22 +508,19 @@
             </div>
         </div>
 
-        <!-- Team Section -->
         <div id="team" class="section">
             <div class="container">
                 <div class="section-header">
-                    <h1 class="section-title">Team Members</h1>
+                    <h1>Team Members</h1>
                 </div>
                 <div id="teamMembers" class="team-grid"></div>
             </div>
         </div>
 
-        <!-- Chat Section -->
         <div id="chat" class="section">
             <div class="container">
                 <div class="section-header">
-                    <h1 class="section-title">Team Chat</h1>
-                    <p class="section-subtitle">Real-time messaging across all devices</p>
+                    <h1>Team Chat</h1>
                 </div>
                 <div class="chat-container">
                     <div class="chat-messages" id="chatMessages"></div>
@@ -352,80 +531,14 @@
                 </div>
             </div>
         </div>
-
-        <!-- Analytics Section (Admin Only) -->
-        <div id="analytics" class="section">
-            <div class="container">
-                <div class="section-header">
-                    <h1 class="section-title">Analytics</h1>
-                    <p class="section-subtitle">Real-time data across all schools</p>
-                </div>
-                <div class="analytics-grid">
-                    <div class="card">
-                        <div class="card__header">
-                            <h4 class="card-title">Subject Progress Overview</h4>
-                        </div>
-                        <div class="card__body">
-                            <div class="chart-container" style="position: relative; height: 300px;">
-                                <canvas id="subjectChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card__header">
-                            <h4 class="card-title">School Performance</h4>
-                        </div>
-                        <div class="card__body">
-                            <div class="chart-container" style="position: relative; height: 300px;">
-                                <canvas id="schoolChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Admin Panel Section -->
-        <div id="admin" class="section">
-            <div class="container">
-                <div class="section-header">
-                    <h1 class="section-title">Admin Panel</h1>
-                    <p class="section-subtitle">Changes sync instantly to all devices</p>
-                </div>
-                <div class="admin-tabs">
-                    <button class="admin-tab-btn active" data-tab="chapters">Manage Chapters</button>
-                    <button class="admin-tab-btn" data-tab="teachers">Manage Teachers</button>
-                </div>
-                <div id="adminChapters" class="admin-tab-content active">
-                    <div class="admin-actions">
-                        <select id="adminSubject" class="form-control">
-                            <option value="physics">Physics</option>
-                            <option value="chemistry">Chemistry</option>
-                            <option value="mathematics">Mathematics</option>
-                            <option value="biology">Biology</option>
-                        </select>
-                        <select id="adminGrade" class="form-control">
-                            <option value="11">Grade 11</option>
-                            <option value="12">Grade 12</option>
-                        </select>
-                        <input type="text" id="newChapter" class="form-control" placeholder="New chapter name">
-                        <button class="btn btn--primary" id="addChapterBtn">Add Chapter</button>
-                    </div>
-                    <div id="adminChaptersList" class="admin-chapters-list"></div>
-                </div>
-                <div id="adminTeachers" class="admin-tab-content">
-                    <div class="teachers-list" id="adminTeachersList"></div>
-                </div>
-            </div>
-        </div>
     </div>
 
-    <!-- Chapter Modal -->
+    <!-- Enhanced Chapter Modal -->
     <div id="chapterModal" class="modal hidden">
         <div class="modal-backdrop"></div>
         <div class="modal-content">
             <div class="modal-header">
-                <h3 id="modalChapterTitle" class="modal-title">Chapter Details</h3>
+                <h3 id="modalChapterTitle">Chapter Details</h3>
                 <button class="modal-close" id="closeModal">&times;</button>
             </div>
             <div class="modal-body">
@@ -433,27 +546,96 @@
                     <label class="form-label">Completion Date</label>
                     <input type="date" id="completionDate" class="form-control">
                 </div>
+                <div class="form-group">
+                    <label class="form-label">Test Date</label>
+                    <input type="date" id="testDate" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Test Mode</label>
+                    <select id="testMode" class="form-control">
+                        <option value="">Select Mode</option>
+                        <option value="online">Online</option>
+                        <option value="offline">Offline</option>
+                    </select>
+                </div>
                 <div class="checkbox-group">
                     <label class="checkbox-label">
                         <input type="checkbox" id="testCompleted">
                         <span class="checkbox-custom"></span>
-                        <span class="checkbox-text">Chapter Test Completed</span>
+                        Test Completed
                     </label>
                 </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn--secondary" id="cancelModal">Cancel</button>
-                <button class="btn btn--primary" id="saveChapterBtn">Save to Cloud</button>
+                <button class="btn btn--primary" id="saveChapterBtn">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Teacher Modal -->
+    <div id="teacherModal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTeacherTitle">Teacher Details</h3>
+                <button class="modal-close" id="closeTeacherModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Name</label>
+                    <input type="text" id="teacherName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Employee ID</label>
+                    <input type="text" id="teacherEmployeeId" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">School</label>
+                    <select id="teacherSchool" class="form-control" required>
+                        <option value="school1">CoE Barwani</option>
+                        <option value="school2">CoE Cuttak</option>
+                        <option value="school3">CoE Mahisagar</option>
+                        <option value="school4">CoE Bundi</option>
+                        <option value="school5">JNV Bharuch</option>
+                        <option value="school6">EMRS Bhopal</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Subject</label>
+                    <select id="teacherSubject" class="form-control" required>
+                        <option value="physics">Physics</option>
+                        <option value="chemistry">Chemistry</option>
+                        <option value="mathematics">Mathematics</option>
+                        <option value="biology">Biology</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" id="teacherEmail" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Phone</label>
+                    <input type="tel" id="teacherPhone" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Date of Birth</label>
+                    <input type="date" id="teacherDob" class="form-control" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn--secondary" id="cancelTeacherModal">Cancel</button>
+                <button class="btn btn--primary" id="saveTeacherBtn">Save</button>
             </div>
         </div>
     </div>
 
     <!-- Footer -->
-    <footer class="app-footer">
+    <div class="footer">
         <div class="container">
-            <p class="footer-text">made by Anand ♥ | Cloud Database - Cross-device access</p>
+            <p>made by Anand ♥</p>
         </div>
-    </footer>
+    </div>
 
     <script src="app.js"></script>
 </body>
